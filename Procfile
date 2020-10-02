@@ -1,0 +1,1 @@
+web: java -jar target/springboot-image-uploader-0.0.1-SNAPSHOT.jar $PORT
