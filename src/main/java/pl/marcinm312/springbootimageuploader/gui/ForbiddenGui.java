@@ -19,10 +19,9 @@ public class ForbiddenGui extends VerticalLayout {
 		log.info("authentication.getName()=" + authentication.getName());
 
 		H1 h1 = new H1("No permission. Only the administrator can add new photos");
-		add(h1);
-
 		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		add(mainPageAnchor);
+
+		add(h1, mainPageAnchor);
 	}
 
 }

@@ -25,13 +25,10 @@ public class GalleryGui extends VerticalLayout {
 		log.info("authentication.getName()=" + authentication.getName());
 
 		Anchor logoutAnchor = new Anchor("../logout", "Log out");
-		add(logoutAnchor);
-
 		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		add(mainPageAnchor);
-
 		H1 h1 = new H1("Image gallery");
-		add(h1);
+
+		add(logoutAnchor, mainPageAnchor, h1);
 
 		log.info("Loading all images from DB");
 		List<Image> allImagesFromDB = imageService.getAllImagesFromDB();

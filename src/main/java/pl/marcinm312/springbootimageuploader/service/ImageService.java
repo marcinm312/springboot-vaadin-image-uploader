@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +38,8 @@ public class ImageService {
 		return imageRepo.findAll();
 	}
 
-	public String uploadFile(String path) throws IOException {
-		File file = new File(path);
-		Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+	public String uploadFile(InputStream inputStream) throws IOException {
+		Map uploadResult = cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 		assert uploadResult != null;
 		return uploadResult.get("url").toString();
 	}

@@ -21,21 +21,16 @@ public class RegisterGui extends VerticalLayout {
 		BeanValidationBinder<AppUser> binder = new BeanValidationBinder<>(AppUser.class);
 
 		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		add(mainPageAnchor);
-
 		H1 h1 = new H1("Registration form");
-		add(h1);
 
 		TextField loginTextField = new TextField();
 		loginTextField.setLabel("Login");
 		binder.forField(loginTextField).bind("username");
-		add(loginTextField);
 
 		PasswordField passwordField = new PasswordField();
 		passwordField.setLabel("Password");
 		passwordField.setRevealButtonVisible(false);
 		binder.forField(passwordField).bind("password");
-		add(passwordField);
 
 		Button button = new Button("Register!");
 		button.addClickListener(event -> {
@@ -55,6 +50,6 @@ public class RegisterGui extends VerticalLayout {
 				Notification.show("Error: Check the validation messages on the form", 5000, Notification.Position.MIDDLE);
 			}
 		});
-		add(button);
+		add(mainPageAnchor, h1, loginTextField, passwordField, button);
 	}
 }
