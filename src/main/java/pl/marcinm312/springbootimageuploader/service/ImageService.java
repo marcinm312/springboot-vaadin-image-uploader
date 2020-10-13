@@ -41,7 +41,7 @@ public class ImageService {
 	public String uploadFile(InputStream inputStream) throws IOException {
 		Map uploadResult = cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 		assert uploadResult != null;
-		return uploadResult.get("url").toString();
+		return uploadResult.get("secure_url").toString();
 	}
 
 	public Image saveFileToDB(String fileUrl) {
