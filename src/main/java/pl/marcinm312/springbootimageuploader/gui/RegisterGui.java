@@ -16,23 +16,30 @@ import pl.marcinm312.springbootimageuploader.service.UserService;
 @Route("register")
 public class RegisterGui extends VerticalLayout {
 
+	BeanValidationBinder<AppUser> binder;
+	Anchor mainPageAnchor;
+	H1 h1;
+	TextField loginTextField;
+	PasswordField passwordField;
+	Button button;
+
 	@Autowired
 	public RegisterGui(UserService userService) {
-		BeanValidationBinder<AppUser> binder = new BeanValidationBinder<>(AppUser.class);
+		binder = new BeanValidationBinder<>(AppUser.class);
 
-		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		H1 h1 = new H1("Registration form");
+		mainPageAnchor = new Anchor("..", "Back to main page");
+		h1 = new H1("Registration form");
 
-		TextField loginTextField = new TextField();
+		loginTextField = new TextField();
 		loginTextField.setLabel("Login");
 		binder.forField(loginTextField).bind("username");
 
-		PasswordField passwordField = new PasswordField();
+		passwordField = new PasswordField();
 		passwordField.setLabel("Password");
 		passwordField.setRevealButtonVisible(false);
 		binder.forField(passwordField).bind("password");
 
-		Button button = new Button("Register!");
+		button = new Button("Register!");
 		button.addClickListener(event -> {
 			String username = loginTextField.getValue();
 			String password = passwordField.getValue();
@@ -42,14 +49,18 @@ public class RegisterGui extends VerticalLayout {
 			if (binder.isValid()) {
 				if (!userService.getUserByUsername(username).isPresent()) {
 					userService.createUser(appUser);
-					Notification.show("User successfully registered", 5000, Notification.Position.MIDDLE);
+					showNotification("User successfully registered");
 				} else {
-					Notification.show("Error: This user already exists!", 5000, Notification.Position.MIDDLE);
+					showNotification("Error: This user already exists!");
 				}
 			} else {
-				Notification.show("Error: Check the validation messages on the form", 5000, Notification.Position.MIDDLE);
+				showNotification("Error: Check the validation messages on the form");
 			}
 		});
 		add(mainPageAnchor, h1, loginTextField, passwordField, button);
+	}
+
+	protected void showNotification(String notificationText) {
+		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }
