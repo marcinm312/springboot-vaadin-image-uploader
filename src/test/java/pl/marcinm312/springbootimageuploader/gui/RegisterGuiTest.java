@@ -35,25 +35,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void guiTest_simpleCase_binderIsValid() {
-		RegisterGui registerGui = new RegisterGui(userService);
-		registerGui.loginTextField.setValue("hhhhhh");
-		registerGui.passwordField.setValue("hhhhhh");
-		boolean binderResult = registerGui.binder.isValid();
-		Assertions.assertTrue(binderResult);
-	}
-
-	@Test
-	void guiTest_tooShortLoginAndPassword_binderIsNotValid() {
-		RegisterGui registerGui = new RegisterGui(userService);
-		registerGui.loginTextField.setValue("hh");
-		registerGui.passwordField.setValue("hhhhh");
-		boolean binderResult = registerGui.binder.isValid();
-		Assertions.assertFalse(binderResult);
-	}
-
-	@Test
-	void guiTest_simpleCase_successNotification() {
+	void guiTest_simpleCase_success() {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
@@ -63,7 +45,23 @@ class RegisterGuiTest {
 		};
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
+	}
+
+	@Test
+	void guiTest_tooShortLoginAndPassword_binderIsNotValid() {
+		RegisterGui registerGui = new RegisterGui(userService) {
+			@Override
+			protected void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
+			}
+		};
+		registerGui.loginTextField.setValue("hh");
+		registerGui.passwordField.setValue("hhhhh");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertFalse(binderResult);
 	}
 
 	@Test
@@ -77,6 +75,8 @@ class RegisterGuiTest {
 		};
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
 	}
 }
