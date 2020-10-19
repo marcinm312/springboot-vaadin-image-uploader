@@ -62,6 +62,7 @@ class RegisterGuiTest {
 		registerGui.passwordField.setValue("hhhhh");
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertFalse(binderResult);
+		registerGui.button.click();
 	}
 
 	@Test
