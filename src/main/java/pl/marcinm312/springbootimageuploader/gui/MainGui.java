@@ -7,11 +7,15 @@ import com.vaadin.flow.router.Route;
 @Route("")
 public class MainGui extends VerticalLayout {
 
+	Anchor registerAnchor;
+	Anchor galleryAnchor;
+	Anchor uploadAnchor;
+
 	public MainGui() {
 
-		Anchor registerAnchor = new Anchor("/register", "Create new account");
-		Anchor galleryAnchor = new Anchor("/gallery", "Gallery");
-		Anchor uploadAnchor = new Anchor("/upload", "Upload image");
+		registerAnchor = new Anchor("/register", "Create new account");
+		galleryAnchor = new Anchor("/gallery", "Gallery");
+		uploadAnchor = new Anchor("/upload", "Upload image");
 
 		add(registerAnchor, galleryAnchor, uploadAnchor);
 	}

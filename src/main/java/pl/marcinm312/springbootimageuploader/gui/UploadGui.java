@@ -19,6 +19,12 @@ import java.io.*;
 @Route("upload")
 public class UploadGui extends VerticalLayout {
 
+	Anchor logoutAnchor;
+	Anchor mainPageAnchor;
+	H1 h1;
+	Upload upload;
+	Image image;
+
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
@@ -27,12 +33,12 @@ public class UploadGui extends VerticalLayout {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()=" + authentication.getName());
 
-		Anchor logoutAnchor = new Anchor("../logout", "Log out");
-		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		H1 h1 = new H1("Upload image");
+		logoutAnchor = new Anchor("../logout", "Log out");
+		mainPageAnchor = new Anchor("..", "Back to main page");
+		h1 = new H1("Upload image");
 
 		MemoryBuffer vaadinBuffer = new MemoryBuffer();
-		Upload upload = new Upload(vaadinBuffer);
+		upload = new Upload(vaadinBuffer);
 
 		upload.addSucceededListener(event -> {
 			String fileType = event.getMIMEType();
@@ -47,7 +53,7 @@ public class UploadGui extends VerticalLayout {
 					imageService.saveFileToDB(uploadedImageUrl);
 					log.info("Image saved in DB: " + uploadedImageUrl);
 					log.info("Loading uploaded image:" + uploadedImageUrl);
-					Image image = new Image(uploadedImageUrl, "image not found");
+					image = new Image(uploadedImageUrl, "image not found");
 					image.setMaxHeight("800px");
 					image.setMaxWidth("800px");
 					add(image);

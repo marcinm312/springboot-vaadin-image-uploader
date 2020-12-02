@@ -11,6 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Route("forbidden")
 public class ForbiddenGui extends VerticalLayout {
 
+	H1 h1;
+	Anchor mainPageAnchor;
+
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	public ForbiddenGui() {
@@ -18,8 +21,8 @@ public class ForbiddenGui extends VerticalLayout {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()=" + authentication.getName());
 
-		H1 h1 = new H1("No permission. Only the administrator can add new photos");
-		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
+		h1 = new H1("No permission. Only the administrator can add new photos");
+		mainPageAnchor = new Anchor("..", "Back to main page");
 
 		add(h1, mainPageAnchor);
 	}

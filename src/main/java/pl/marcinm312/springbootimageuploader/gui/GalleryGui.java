@@ -11,22 +11,30 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Route("gallery")
 public class GalleryGui extends VerticalLayout {
+
+	Anchor logoutAnchor;
+	Anchor mainPageAnchor;
+	H1 h1;
+	List<com.vaadin.flow.component.html.Image> listOfVaadinImages = new ArrayList<>();
 
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public GalleryGui(ImageService imageService) {
 
+		listOfVaadinImages.clear();
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()=" + authentication.getName());
 
-		Anchor logoutAnchor = new Anchor("../logout", "Log out");
-		Anchor mainPageAnchor = new Anchor("..", "Back to main page");
-		H1 h1 = new H1("Image gallery");
+		logoutAnchor = new Anchor("../logout", "Log out");
+		mainPageAnchor = new Anchor("..", "Back to main page");
+		h1 = new H1("Image gallery");
 
 		add(logoutAnchor, mainPageAnchor, h1);
 
@@ -37,6 +45,7 @@ public class GalleryGui extends VerticalLayout {
 			com.vaadin.flow.component.html.Image image = new com.vaadin.flow.component.html.Image(element.getImageAddress(), "image not found");
 			image.setMaxHeight("800px");
 			image.setMaxWidth("800px");
+			listOfVaadinImages.add(image);
 			add(image);
 		});
 		log.info("All images loaded");
