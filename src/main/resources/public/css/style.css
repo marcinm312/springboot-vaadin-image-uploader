@@ -1,0 +1,15 @@
+h1 {
+    margin: 0.25em;
+}
+
+vaadin-grid vaadin-grid-cell-content:nth-child(2) {
+     overflow-x: scroll !important;
+}
+
+vaadin-grid vaadin-grid-cell-content img {
+    height: 600px;
+}
+
+* {
+    border-style: none !important;
+}

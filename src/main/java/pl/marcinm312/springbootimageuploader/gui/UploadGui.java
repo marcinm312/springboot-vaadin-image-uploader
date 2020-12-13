@@ -40,6 +40,8 @@ public class UploadGui extends VerticalLayout {
 		MemoryBuffer vaadinBuffer = new MemoryBuffer();
 		upload = new Upload(vaadinBuffer);
 
+		image = new Image();
+
 		upload.addSucceededListener(event -> {
 			String fileType = event.getMIMEType();
 			if (fileType.startsWith("image")) {
@@ -53,10 +55,9 @@ public class UploadGui extends VerticalLayout {
 					imageService.saveFileToDB(uploadedImageUrl);
 					log.info("Image saved in DB: " + uploadedImageUrl);
 					log.info("Loading uploaded image:" + uploadedImageUrl);
-					image = new Image(uploadedImageUrl, "image not found");
-					image.setMaxHeight("800px");
-					image.setMaxWidth("800px");
-					add(image);
+					image.setSrc(uploadedImageUrl);
+					image.setAlt(uploadedImageUrl);
+					image.setMaxHeight("500px");
 					log.info("Image loaded: " + uploadedImageUrl);
 					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
 				} catch (IOException e) {
@@ -70,6 +71,6 @@ public class UploadGui extends VerticalLayout {
 			}
 
 		});
-		add(logoutAnchor, mainPageAnchor, h1, upload);
+		add(logoutAnchor, mainPageAnchor, h1, upload, image);
 	}
 }

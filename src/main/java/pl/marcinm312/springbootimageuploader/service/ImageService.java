@@ -35,7 +35,7 @@ public class ImageService {
 	}
 
 	public List<Image> getAllImagesFromDB() {
-		return imageRepo.findAll();
+		return imageRepo.findAllByOrderByIdDesc();
 	}
 
 	public String uploadFile(InputStream inputStream) throws IOException {
