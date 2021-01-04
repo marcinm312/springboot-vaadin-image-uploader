@@ -1,0 +1,64 @@
+package pl.marcinm312.springbootimageuploader.gui;
+
+import com.vaadin.flow.data.provider.Query;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.vaadin.klaudeta.PaginatedGrid;
+import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
+import pl.marcinm312.springbootimageuploader.service.ImageService;
+import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;
+
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
+
+public class GalleryGuiTest {
+
+	@Mock
+	ImageRepo imageRepo;
+
+	@InjectMocks
+	ImageService imageService;
+
+	@BeforeEach
+	void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
+
+	@Test
+	void galleryGuiTest_simpleCase_success() {
+		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
+		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+		GalleryGui galleryGui = new GalleryGui(imageService) {
+			@Override
+			protected String getAuthenticationName() {
+				return "user";
+			}
+		};
+
+		PaginatedGrid<Image> grid = galleryGui.grid;
+		grid.setPageSize(100);
+		int receivedSize = grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(expectedImageList.size(), receivedSize);
+	}
+
+	@Test
+	void galleryGuiTest_emptyImageList_success() {
+		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
+		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+		GalleryGui galleryGui = new GalleryGui(imageService) {
+			@Override
+			protected String getAuthenticationName() {
+				return "user";
+			}
+		};
+
+		int receivedSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(expectedImageList.size(), receivedSize);
+	}
+}

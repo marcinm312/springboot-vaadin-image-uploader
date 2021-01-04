@@ -30,12 +30,12 @@ class RegisterGuiTest {
 
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
 	}
 
 	@Test
-	void guiTest_simpleCase_success() {
+	void registerGuiTest_simpleCase_success() {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
@@ -51,7 +51,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void guiTest_tooShortLoginAndPassword_binderIsNotValid() {
+	void registerGuiTest_tooShortLoginAndPassword_binderIsNotValid() {
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -66,7 +66,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void guiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
+	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new AppUser()));
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override

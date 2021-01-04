@@ -31,8 +31,7 @@ public class GalleryGui extends VerticalLayout {
 	@Autowired
 	public GalleryGui(ImageService imageService) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()=" + authentication.getName());
+		log.info("authentication.getName()=" + getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		mainPageAnchor = new Anchor("..", "Back to main page");
@@ -57,5 +56,10 @@ public class GalleryGui extends VerticalLayout {
 		log.info("All images loaded");
 
 		add(logoutAnchor, mainPageAnchor, h1, grid);
+	}
+
+	protected String getAuthenticationName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();
 	}
 }

@@ -17,6 +17,11 @@ public class Image {
 		this.imageAddress = imageAddress;
 	}
 
+	public Image(Long id, String imageAddress) {
+		this.id = id;
+		this.imageAddress = imageAddress;
+	}
+
 	public Image() {
 	}
 
