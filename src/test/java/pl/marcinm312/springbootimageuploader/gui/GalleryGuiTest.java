@@ -34,15 +34,13 @@ public class GalleryGuiTest {
 	void galleryGuiTest_simpleCase_success() {
 		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		GalleryGui galleryGui = new GalleryGui(imageService) {
-			@Override
-			protected String getAuthenticationName() {
-				return "user";
-			}
-		};
+		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
 
 		PaginatedGrid<Image> grid = galleryGui.grid;
-		grid.setPageSize(100);
+		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(1, receivedNormalSize);
+
+		grid.setPageSize(expectedImageList.size() + 5);
 		int receivedSize = grid.getDataProvider().size(new Query<>());
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 	}
@@ -51,14 +49,18 @@ public class GalleryGuiTest {
 	void galleryGuiTest_emptyImageList_success() {
 		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		GalleryGui galleryGui = new GalleryGui(imageService) {
+		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
+
+		int receivedSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(expectedImageList.size(), receivedSize);
+	}
+
+	private GalleryGui getGalleryGuiWithModifiedMethod() {
+		return new GalleryGui(imageService) {
 			@Override
 			protected String getAuthenticationName() {
 				return "user";
 			}
 		};
-
-		int receivedSize = galleryGui.grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 	}
 }
