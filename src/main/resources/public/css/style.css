@@ -1,5 +1,6 @@
 h1 {
-    margin: 0.25em;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
 }
 
 vaadin-grid vaadin-grid-cell-content:nth-child(2) {
@@ -12,4 +13,8 @@ vaadin-grid vaadin-grid-cell-content img {
 
 * {
     border-style: none !important;
+}
+
+p.registration {
+    margin-bottom: 0;
 }

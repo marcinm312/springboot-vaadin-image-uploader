@@ -66,6 +66,10 @@ public class GalleryGuiTest {
 			protected String getAuthenticationName() {
 				return "user";
 			}
+			@Override
+			protected boolean isAdmin() {
+				return false;
+			}
 		};
 	}
 }

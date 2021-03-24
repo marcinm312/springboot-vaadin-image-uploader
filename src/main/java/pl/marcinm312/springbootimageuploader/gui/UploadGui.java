@@ -1,9 +1,11 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -19,10 +21,12 @@ import pl.marcinm312.springbootimageuploader.service.UserService;
 import java.io.*;
 
 @Route("upload")
+@StyleSheet("/css/style.css")
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;
-	Anchor mainPageAnchor;
+	Anchor galleryAnchor;
+	HorizontalLayout horizontalMenu;
 	H1 h1;
 	Upload upload;
 	Image image;
@@ -36,7 +40,10 @@ public class UploadGui extends VerticalLayout {
 		log.info("authentication.getName()=" + authentication.getName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		mainPageAnchor = new Anchor("..", "Back to main page");
+		galleryAnchor = new Anchor("../gallery", "Back to gallery");
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(logoutAnchor, galleryAnchor);
+
 		h1 = new H1("Upload image");
 
 		MemoryBuffer vaadinBuffer = new MemoryBuffer();
@@ -45,7 +52,7 @@ public class UploadGui extends VerticalLayout {
 		image = new Image();
 
 		upload.addSucceededListener(event -> uploadImageAction(imageService, userService, authentication, vaadinBuffer, event));
-		add(logoutAnchor, mainPageAnchor, h1, upload, image);
+		add(horizontalMenu, h1, upload, image);
 	}
 
 	private void uploadImageAction(ImageService imageService, UserService userService, Authentication authentication, MemoryBuffer vaadinBuffer, com.vaadin.flow.component.upload.SucceededEvent event) {

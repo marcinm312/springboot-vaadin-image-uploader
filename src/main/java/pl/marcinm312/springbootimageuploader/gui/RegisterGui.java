@@ -1,6 +1,7 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
@@ -17,6 +18,7 @@ import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
 @Route("register")
+@StyleSheet("/css/style.css")
 public class RegisterGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;
@@ -38,6 +40,7 @@ public class RegisterGui extends VerticalLayout {
 		mainPageAnchor = new Anchor("..", "Back to main page");
 		h1 = new H1("Registration form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
+		paragraph.setClassName("registration");
 
 		loginTextField = new TextField();
 		loginTextField.setLabel("Login");

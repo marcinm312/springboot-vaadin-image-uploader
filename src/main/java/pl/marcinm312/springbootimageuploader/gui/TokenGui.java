@@ -1,6 +1,7 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -11,6 +12,7 @@ import pl.marcinm312.springbootimageuploader.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
 @Route("token")
+@StyleSheet("/css/style.css")
 public class TokenGui extends VerticalLayout {
 
 	H1 h1;

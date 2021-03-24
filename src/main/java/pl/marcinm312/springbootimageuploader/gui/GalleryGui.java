@@ -4,6 +4,7 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
+import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
@@ -21,8 +23,9 @@ import java.util.List;
 @StyleSheet("/css/style.css")
 public class GalleryGui extends VerticalLayout {
 
+	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
-	Anchor mainPageAnchor;
+	Anchor uploadAnchor;
 	H1 h1;
 	PaginatedGrid<Image> grid;
 
@@ -34,7 +37,14 @@ public class GalleryGui extends VerticalLayout {
 		log.info("authentication.getName()=" + getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		mainPageAnchor = new Anchor("..", "Back to main page");
+		uploadAnchor = new Anchor("../upload", "Upload image");
+		horizontalMenu = new HorizontalLayout();
+		if (isAdmin()) {
+			horizontalMenu.add(logoutAnchor, uploadAnchor);
+		} else {
+			horizontalMenu.add(logoutAnchor);
+		}
+
 		h1 = new H1("Image gallery");
 
 		log.info("Loading all images from DB");
@@ -55,11 +65,16 @@ public class GalleryGui extends VerticalLayout {
 		grid.setPaginatorTexts("Image", "of");
 		log.info("All images loaded");
 
-		add(logoutAnchor, mainPageAnchor, h1, grid);
+		add(horizontalMenu, h1, grid);
 	}
 
 	protected String getAuthenticationName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
+	}
+
+	protected boolean isAdmin() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return "ROLE_ADMIN".equals(((AppUser) authentication.getPrincipal()).getRole());
 	}
 }
