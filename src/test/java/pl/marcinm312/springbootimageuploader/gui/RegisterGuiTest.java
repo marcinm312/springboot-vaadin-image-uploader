@@ -8,13 +8,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
+import pl.marcinm312.springbootimageuploader.model.Token;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
+import pl.marcinm312.springbootimageuploader.service.MailService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
+import javax.mail.MessagingException;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 
 
 class RegisterGuiTest {
@@ -25,26 +31,41 @@ class RegisterGuiTest {
 	@Mock
 	PasswordEncoder passwordEncoder;
 
+	@Mock
+	MailService mailService;
+
+	@Mock
+	TokenRepo tokenRepo;
+
 	@InjectMocks
 	UserService userService;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws MessagingException {
 		MockitoAnnotations.openMocks(this);
 		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
+		doNothing().when(mailService).sendMail(isA(String.class), isA(String.class), isA(String.class), isA(boolean.class));
 	}
 
 	@Test
 	void registerGuiTest_simpleCase_success() {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully registered", notificationText);
 			}
+
+			@Override
+			protected String getUriString() {
+				return "http://localhost:8080";
+			}
 		};
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
+		registerGui.confirmPasswordField.setValue("hhhhhh");
+		registerGui.emailTextField.setValue("aaa@abc.com");
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
@@ -60,6 +81,8 @@ class RegisterGuiTest {
 		};
 		registerGui.loginTextField.setValue("hh");
 		registerGui.passwordField.setValue("hhhhh");
+		registerGui.confirmPasswordField.setValue("hhhhh");
+		registerGui.emailTextField.setValue("aaa@abc.com");
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertFalse(binderResult);
 		registerGui.button.click();
@@ -76,6 +99,50 @@ class RegisterGuiTest {
 		};
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
+		registerGui.confirmPasswordField.setValue("hhhhhh");
+		registerGui.emailTextField.setValue("aaa@abc.com");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertTrue(binderResult);
+		registerGui.button.click();
+	}
+
+	@Test
+	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() {
+		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		RegisterGui registerGui = new RegisterGui(userService) {
+			@Override
+			protected void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
+			}
+		};
+		registerGui.loginTextField.setValue("hhhhhh");
+		registerGui.passwordField.setValue("hhhhhh");
+		registerGui.confirmPasswordField.setValue("hhhhhh");
+		registerGui.emailTextField.setValue("aaaaaaaaaaaaaaaaaa");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertFalse(binderResult);
+		registerGui.button.click();
+	}
+
+	@Test
+	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() {
+		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
+		RegisterGui registerGui = new RegisterGui(userService) {
+			@Override
+			protected void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
+			}
+
+			@Override
+			protected String getUriString() {
+				return "http://localhost:8080";
+			}
+		};
+		registerGui.loginTextField.setValue("hhhhhh");
+		registerGui.passwordField.setValue("hhhhhh");
+		registerGui.confirmPasswordField.setValue("aaaaaaaaaa");
+		registerGui.emailTextField.setValue("aaa@abc.com");
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertTrue(binderResult);
 		registerGui.button.click();

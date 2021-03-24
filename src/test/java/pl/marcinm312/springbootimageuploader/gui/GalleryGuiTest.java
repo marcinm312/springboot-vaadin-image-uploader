@@ -1,12 +1,14 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.data.provider.Query;
+import org.springframework.core.env.Environment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
@@ -21,6 +23,9 @@ public class GalleryGuiTest {
 
 	@Mock
 	ImageRepo imageRepo;
+
+	@Spy
+	Environment environment;
 
 	@InjectMocks
 	ImageService imageService;

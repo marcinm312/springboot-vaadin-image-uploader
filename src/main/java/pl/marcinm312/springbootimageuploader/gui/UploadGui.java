@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
+import pl.marcinm312.springbootimageuploader.service.UserService;
 
 import java.io.*;
 
@@ -28,7 +30,7 @@ public class UploadGui extends VerticalLayout {
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public UploadGui(ImageService imageService) {
+	public UploadGui(ImageService imageService, UserService userService) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()=" + authentication.getName());
@@ -42,35 +44,37 @@ public class UploadGui extends VerticalLayout {
 
 		image = new Image();
 
-		upload.addSucceededListener(event -> {
-			String fileType = event.getMIMEType();
-			if (fileType.startsWith("image")) {
-				log.info("Start uploading an image");
-				InputStream initialStream = vaadinBuffer.getInputStream();
-				log.info("Get input stream");
-				try {
-					log.info("Starting uploading a file");
-					String uploadedImageUrl = imageService.uploadFile(initialStream);
-					log.info("Image uploaded to Cloudinary server: " + uploadedImageUrl);
-					imageService.saveFileToDB(uploadedImageUrl);
-					log.info("Image saved in DB: " + uploadedImageUrl);
-					log.info("Loading uploaded image:" + uploadedImageUrl);
-					image.setSrc(uploadedImageUrl);
-					image.setAlt(uploadedImageUrl);
-					image.setMaxHeight("500px");
-					log.info("Image loaded: " + uploadedImageUrl);
-					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
-				} catch (IOException e) {
-					e.printStackTrace();
-					Notification.show("Error occurred: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
-				}
-			} else {
-				log.info("Invalid file type");
-				log.info("fileType=" + fileType);
-				Notification.show("Error: Invalid file type", 5000, Notification.Position.MIDDLE);
-			}
-
-		});
+		upload.addSucceededListener(event -> uploadImageAction(imageService, userService, authentication, vaadinBuffer, event));
 		add(logoutAnchor, mainPageAnchor, h1, upload, image);
+	}
+
+	private void uploadImageAction(ImageService imageService, UserService userService, Authentication authentication, MemoryBuffer vaadinBuffer, com.vaadin.flow.component.upload.SucceededEvent event) {
+		String fileType = event.getMIMEType();
+		if (fileType.startsWith("image")) {
+			log.info("Start uploading an image");
+			InputStream initialStream = vaadinBuffer.getInputStream();
+			log.info("Get input stream");
+			try {
+				log.info("Starting uploading a file");
+				String uploadedImageUrl = imageService.uploadFile(initialStream);
+				log.info("Image uploaded to Cloudinary server: " + uploadedImageUrl);
+				AppUser appUser = userService.getUserByAuthentication(authentication);
+				imageService.saveFileToDB(uploadedImageUrl, appUser);
+				log.info("Image saved in DB: " + uploadedImageUrl);
+				log.info("Loading uploaded image:" + uploadedImageUrl);
+				image.setSrc(uploadedImageUrl);
+				image.setAlt(uploadedImageUrl);
+				image.setMaxHeight("500px");
+				log.info("Image loaded: " + uploadedImageUrl);
+				Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
+			} catch (IOException e) {
+				e.printStackTrace();
+				Notification.show("Error occurred: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
+			}
+		} else {
+			log.info("Invalid file type");
+			log.info("fileType=" + fileType);
+			Notification.show("Error: Invalid file type", 5000, Notification.Position.MIDDLE);
+		}
 	}
 }

@@ -5,13 +5,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 @Entity
-public class AppUser implements UserDetails {
+public class AppUser extends AuditModel implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +30,26 @@ public class AppUser implements UserDetails {
 
 	private String role;
 
-	public AppUser(String username, String password, String role) {
+	private boolean isEnabled;
+
+	@NotBlank(message = "This field must be completed!")
+	@Email(message = "Incorrect email address! ")
+	private String email;
+
+	public AppUser(String username, String password, String role, String email) {
 		this.username = username;
 		this.password = password;
 		this.role = role;
+		this.email = email;
+	}
+
+	public AppUser(Long id, String username, String password, String role, boolean isEnabled, String email) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.isEnabled = isEnabled;
+		this.email = email;
 	}
 
 	public AppUser() {
@@ -93,6 +111,42 @@ public class AppUser implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return isEnabled;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setEnabled(boolean isEnabled) {
+		this.isEnabled = isEnabled;
+	}
+
+	@Override
+	public String toString() {
+		return "AppUser{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", role='" + role + '\'' +
+				", isEnabled=" + isEnabled +
+				", email='" + email + '\'' +
+				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AppUser appUser = (AppUser) o;
+		return isEnabled == appUser.isEnabled && Objects.equals(id, appUser.id) && username.equals(appUser.username) && password.equals(appUser.password) && Objects.equals(role, appUser.role) && Objects.equals(email, appUser.email);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, username, password, role, isEnabled, email);
 	}
 }

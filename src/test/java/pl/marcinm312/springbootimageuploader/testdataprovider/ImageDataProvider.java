@@ -11,9 +11,9 @@ public class ImageDataProvider {
 
 	public static List<Image> prepareExampleImageList() {
 		List<Image> images = new ArrayList<>();
-		images.add(new Image(1L, IMAGE_URL));
-		images.add(new Image(2L, IMAGE_URL));
-		images.add(new Image(3L, IMAGE_URL));
+		images.add(new Image(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator()));
+		images.add(new Image(2L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator()));
+		images.add(new Image(3L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator()));
 		return images;
 	}
 
