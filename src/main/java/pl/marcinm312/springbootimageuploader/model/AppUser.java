@@ -129,8 +129,7 @@ public class AppUser extends AuditModel implements UserDetails {
 	@Override
 	public String toString() {
 		return "AppUser{" +
-				"id=" + id +
-				", username='" + username + '\'' +
+				"username='" + username + '\'' +
 				", role='" + role + '\'' +
 				", isEnabled=" + isEnabled +
 				", email='" + email + '\'' +

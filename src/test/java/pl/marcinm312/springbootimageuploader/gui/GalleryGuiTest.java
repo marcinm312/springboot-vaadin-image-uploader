@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 
-public class GalleryGuiTest {
+class GalleryGuiTest {
 
 	@Mock
 	ImageRepo imageRepo;
@@ -66,8 +66,9 @@ public class GalleryGuiTest {
 			protected String getAuthenticationName() {
 				return "user";
 			}
+
 			@Override
-			protected boolean isAdmin() {
+			protected boolean isUserAdmin() {
 				return false;
 			}
 		};

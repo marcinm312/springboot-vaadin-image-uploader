@@ -1,6 +1,7 @@
 package pl.marcinm312.springbootimageuploader.service;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
@@ -12,6 +13,7 @@ import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Token;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
+import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -25,16 +27,19 @@ public class UserService {
 	private final Environment environment;
 	private final TokenRepo tokenRepo;
 	private final MailService mailService;
+	private final SessionUtils sessionUtils;
 
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
+	@Autowired
 	public UserService(AppUserRepo appUserRepo, PasswordEncoder passwordEncoder, Environment environment,
-					   TokenRepo tokenRepo, MailService mailService) {
+					   TokenRepo tokenRepo, MailService mailService, SessionUtils sessionUtils) {
 		this.appUserRepo = appUserRepo;
 		this.passwordEncoder = passwordEncoder;
 		this.environment = environment;
 		this.tokenRepo = tokenRepo;
 		this.mailService = mailService;
+		this.sessionUtils = sessionUtils;
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -56,7 +61,7 @@ public class UserService {
 	}
 
 	public AppUser createUser(AppUser appUser, boolean isFirstUser, String appURL) {
-		log.info("Creating user: " + appUser.getUsername());
+		log.info("Creating user: " + appUser.toString());
 		AppUser savedUser;
 		appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
 		if (isFirstUser) {
@@ -68,6 +73,18 @@ public class UserService {
 			sendToken(appUser, appURL);
 		}
 		log.info("User: " + appUser.getUsername() + " created");
+		return savedUser;
+	}
+
+	public AppUser updateUser(String oldLogin, AppUser newUser) {
+		log.info("Updating user");
+		log.info("New user = " + newUser.toString());
+		AppUser savedUser = appUserRepo.save(newUser);
+		if (!oldLogin.equals(newUser.getUsername())) {
+			sessionUtils.expireUserSessions(oldLogin, true);
+			sessionUtils.expireUserSessions(newUser.getUsername(), true);
+		}
+		log.info("User updated");
 		return savedUser;
 	}
 

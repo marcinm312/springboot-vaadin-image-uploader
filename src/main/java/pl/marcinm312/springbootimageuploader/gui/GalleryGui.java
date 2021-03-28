@@ -26,6 +26,7 @@ public class GalleryGui extends VerticalLayout {
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
 	Anchor uploadAnchor;
+	Anchor myProfileAnchor;
 	H1 h1;
 	PaginatedGrid<Image> grid;
 
@@ -38,11 +39,11 @@ public class GalleryGui extends VerticalLayout {
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		uploadAnchor = new Anchor("../upload", "Upload image");
+		myProfileAnchor = new Anchor("../myprofile/update", "Update my profile");
 		horizontalMenu = new HorizontalLayout();
-		if (isAdmin()) {
-			horizontalMenu.add(logoutAnchor, uploadAnchor);
-		} else {
-			horizontalMenu.add(logoutAnchor);
+		horizontalMenu.add(logoutAnchor, myProfileAnchor);
+		if (isUserAdmin()) {
+			horizontalMenu.add(uploadAnchor);
 		}
 
 		h1 = new H1("Image gallery");
@@ -73,7 +74,7 @@ public class GalleryGui extends VerticalLayout {
 		return authentication.getName();
 	}
 
-	protected boolean isAdmin() {
+	protected boolean isUserAdmin() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return "ROLE_ADMIN".equals(((AppUser) authentication.getPrincipal()).getRole());
 	}
