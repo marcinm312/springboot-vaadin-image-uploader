@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 
 class RegisterGuiTest {
@@ -48,7 +48,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_simpleCase_success() {
+	void registerGuiTest_simpleCase_success() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
 		RegisterGui registerGui = new RegisterGui(userService) {
@@ -69,10 +69,12 @@ class RegisterGuiTest {
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
+
+		verify(mailService, times(1)).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 	}
 
 	@Test
-	void registerGuiTest_tooShortLoginAndPassword_binderIsNotValid() {
+	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() throws MessagingException {
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -86,10 +88,12 @@ class RegisterGuiTest {
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertFalse(binderResult);
 		registerGui.button.click();
+
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 	}
 
 	@Test
-	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
+	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new AppUser()));
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
@@ -104,10 +108,12 @@ class RegisterGuiTest {
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
+
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 	}
 
 	@Test
-	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() {
+	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		RegisterGui registerGui = new RegisterGui(userService) {
 			@Override
@@ -122,10 +128,12 @@ class RegisterGuiTest {
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertFalse(binderResult);
 		registerGui.button.click();
+
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 	}
 
 	@Test
-	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() {
+	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
 		RegisterGui registerGui = new RegisterGui(userService) {
@@ -146,5 +154,7 @@ class RegisterGuiTest {
 		boolean binderResult = registerGui.binder.isValid();
 		Assertions.assertTrue(binderResult);
 		registerGui.button.click();
+
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 	}
 }
