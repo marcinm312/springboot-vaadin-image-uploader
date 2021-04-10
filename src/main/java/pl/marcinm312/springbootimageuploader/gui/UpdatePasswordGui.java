@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
@@ -25,6 +26,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 	Anchor galleryAnchor;
 	H1 h1;
 	Paragraph paragraph;
+	PasswordField currentPasswordField;
 	PasswordField passwordField;
 	PasswordField confirmPasswordField;
 	Button button;
@@ -34,10 +36,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public UpdatePasswordGui(UserService userService) {
-
-		AppUser appUser = getAuthenticatedUser(userService);
-		log.info("Old user = " + appUser.toString());
+	public UpdatePasswordGui(UserService userService, PasswordEncoder passwordEncoder) {
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -45,6 +44,11 @@ public class UpdatePasswordGui extends VerticalLayout {
 		h1 = new H1("Update user password form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
+
+		currentPasswordField = new PasswordField();
+		currentPasswordField.setLabel("Current password");
+		currentPasswordField.setRevealButtonVisible(false);
+		currentPasswordField.setRequired(true);
 
 		passwordField = new PasswordField();
 		passwordField.setLabel("Password");
@@ -57,8 +61,8 @@ public class UpdatePasswordGui extends VerticalLayout {
 		confirmPasswordField.setRequired(true);
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUser(userService, appUser));
-		add(galleryAnchor, h1, paragraph, passwordField, confirmPasswordField, button);
+		button.addClickListener(event -> updateUserPassword(userService, passwordEncoder));
+		add(galleryAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
 	}
 
 	protected AppUser getAuthenticatedUser(UserService userService) {
@@ -66,19 +70,29 @@ public class UpdatePasswordGui extends VerticalLayout {
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUser(UserService userService, AppUser appUser) {
-		appUser.setPassword(passwordField.getValue());
-		binder.setBean(appUser);
-		binder.validate();
-		if (binder.isValid()) {
-			if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
-				userService.updateUserPassword(appUser);
-				showNotification("User password successfully updated");
+	private void updateUserPassword(UserService userService, PasswordEncoder passwordEncoder) {
+		AppUser appUser = getAuthenticatedUser(userService);
+		log.info("Old user = " + appUser.toString());
+		if (passwordEncoder.matches(currentPasswordField.getValue(), appUser.getPassword())) {
+			appUser.setPassword(passwordField.getValue());
+			binder.setBean(appUser);
+			binder.validate();
+			if (binder.isValid()) {
+				if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
+					if (!currentPasswordField.getValue().equals(passwordField.getValue())) {
+						userService.updateUserPassword(appUser);
+						showNotification("User password successfully updated");
+					} else {
+						showNotification("Error: The new password must be different from the previous one!");
+					}
+				} else {
+					showNotification("Error: The passwords in both fields must be the same!");
+				}
 			} else {
-				showNotification("Error: The passwords in both fields must be the same!");
+				showNotification("Error: Check the validation messages on the form");
 			}
 		} else {
-			showNotification("Error: Check the validation messages on the form");
+			showNotification("Error: The password is incorrect");
 		}
 	}
 

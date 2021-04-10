@@ -43,7 +43,7 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService) {
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, passwordEncoder) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("User password successfully updated", notificationText);
@@ -71,7 +71,7 @@ class UpdatePasswordGuiTest {
 		String password = "hh2";
 		String confirmPassword = "hh2";
 
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService) {
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, passwordEncoder) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
@@ -99,7 +99,7 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh3";
 
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService) {
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, passwordEncoder) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
