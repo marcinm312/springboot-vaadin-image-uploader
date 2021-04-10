@@ -27,6 +27,7 @@ public class GalleryGui extends VerticalLayout {
 	Anchor logoutAnchor;
 	Anchor uploadAnchor;
 	Anchor myProfileAnchor;
+	Anchor updatePasswordAnchor;
 	H1 h1;
 	PaginatedGrid<Image> grid;
 
@@ -40,8 +41,9 @@ public class GalleryGui extends VerticalLayout {
 		logoutAnchor = new Anchor("../logout", "Log out");
 		uploadAnchor = new Anchor("../upload", "Upload image");
 		myProfileAnchor = new Anchor("../myprofile/update", "Update my profile");
+		updatePasswordAnchor = new Anchor("../myprofile/updatePassword", "Update my password");
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, myProfileAnchor);
+		horizontalMenu.add(logoutAnchor, myProfileAnchor, updatePasswordAnchor);
 		if (isUserAdmin()) {
 			horizontalMenu.add(uploadAnchor);
 		}

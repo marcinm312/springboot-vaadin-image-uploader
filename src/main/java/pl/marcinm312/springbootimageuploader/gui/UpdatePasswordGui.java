@@ -7,7 +7,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
@@ -17,28 +17,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
-@Route("myprofile/update")
+@Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
-public class MyProfileGui extends VerticalLayout {
+public class UpdatePasswordGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;
 	Anchor galleryAnchor;
 	H1 h1;
 	Paragraph paragraph;
-	TextField loginTextField;
-	TextField emailTextField;
+	PasswordField passwordField;
+	PasswordField confirmPasswordField;
 	Button button;
 
-	static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
+	static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
 
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public MyProfileGui(UserService userService) {
+	public UpdatePasswordGui(UserService userService) {
 
 		AppUser appUser = getAuthenticatedUser(userService);
 		log.info("Old user = " + appUser.toString());
-		String oldLogin = appUser.getUsername();
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -47,24 +46,19 @@ public class MyProfileGui extends VerticalLayout {
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
 
-		loginTextField = new TextField();
-		loginTextField.setLabel("Login");
-		loginTextField.setValue(appUser.getUsername());
-		if ("administrator".equals(appUser.getUsername())) {
-			loginTextField.setEnabled(false);
-		}
-		binder.forField(loginTextField).bind("username");
+		passwordField = new PasswordField();
+		passwordField.setLabel("Password");
+		passwordField.setRevealButtonVisible(false);
+		binder.forField(passwordField).bind("password");
 
-		emailTextField = new TextField();
-		emailTextField.setLabel("Email");
-		if (appUser.getEmail() != null) {
-			emailTextField.setValue(appUser.getEmail());
-		}
-		binder.forField(emailTextField).bind("email");
+		confirmPasswordField = new PasswordField();
+		confirmPasswordField.setLabel("Confirm password");
+		confirmPasswordField.setRevealButtonVisible(false);
+		confirmPasswordField.setRequired(true);
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUser(userService, oldLogin, appUser));
-		add(galleryAnchor, h1, paragraph, loginTextField, emailTextField, button);
+		button.addClickListener(event -> updateUser(userService, appUser));
+		add(galleryAnchor, h1, paragraph, passwordField, confirmPasswordField, button);
 	}
 
 	protected AppUser getAuthenticatedUser(UserService userService) {
@@ -72,22 +66,16 @@ public class MyProfileGui extends VerticalLayout {
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUser(UserService userService, String oldLogin, AppUser appUser) {
-		appUser.setUsername(loginTextField.getValue());
-		appUser.setEmail(emailTextField.getValue());
+	private void updateUser(UserService userService, AppUser appUser) {
+		appUser.setPassword(passwordField.getValue());
 		binder.setBean(appUser);
 		binder.validate();
 		if (binder.isValid()) {
-			if (!appUser.getUsername().equals(oldLogin)) {
-				if (!userService.getUserByUsername(appUser.getUsername()).isPresent()) {
-					userService.updateUserData(oldLogin, appUser);
-					showNotification("User successfully updated");
-				} else {
-					showNotification("Error: This user already exists!");
-				}
-			} else {
-				userService.updateUserData(oldLogin, appUser);
+			if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
+				userService.updateUserPassword(appUser);
 				showNotification("User successfully updated");
+			} else {
+				showNotification("Error: The passwords in both fields must be the same!");
 			}
 		} else {
 			showNotification("Error: Check the validation messages on the form");

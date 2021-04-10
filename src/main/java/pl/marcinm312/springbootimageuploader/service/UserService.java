@@ -76,14 +76,24 @@ public class UserService {
 		return savedUser;
 	}
 
-	public AppUser updateUser(String oldLogin, AppUser newUser) {
-		log.info("Updating user");
+	public AppUser updateUserData(String oldLogin, AppUser newUser) {
+		log.info("Updating user data");
 		log.info("New user = " + newUser.toString());
 		AppUser savedUser = appUserRepo.save(newUser);
 		if (!oldLogin.equals(newUser.getUsername())) {
 			sessionUtils.expireUserSessions(oldLogin, true);
 			sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		}
+		log.info("User updated");
+		return savedUser;
+	}
+
+	public AppUser updateUserPassword(AppUser newUser) {
+		log.info("Updating user password");
+		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+		log.info("New user = " + newUser.toString());
+		AppUser savedUser = appUserRepo.save(newUser);
+		sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		log.info("User updated");
 		return savedUser;
 	}
