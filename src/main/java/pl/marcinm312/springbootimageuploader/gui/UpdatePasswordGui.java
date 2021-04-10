@@ -42,7 +42,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
-		h1 = new H1("Update profile form");
+		h1 = new H1("Update user password form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
 
@@ -73,7 +73,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		if (binder.isValid()) {
 			if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
 				userService.updateUserPassword(appUser);
-				showNotification("User successfully updated");
+				showNotification("User password successfully updated");
 			} else {
 				showNotification("Error: The passwords in both fields must be the same!");
 			}

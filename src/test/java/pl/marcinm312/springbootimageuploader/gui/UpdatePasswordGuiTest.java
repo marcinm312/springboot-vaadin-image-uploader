@@ -46,7 +46,7 @@ class UpdatePasswordGuiTest {
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService) {
 			@Override
 			protected void showNotification(String notificationText) {
-				Assertions.assertEquals("User successfully updated", notificationText);
+				Assertions.assertEquals("User password successfully updated", notificationText);
 			}
 
 			@Override
