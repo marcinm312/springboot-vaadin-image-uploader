@@ -6,15 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.mockito.Spy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 
@@ -26,8 +25,8 @@ class UpdatePasswordGuiTest {
 	@Mock
 	SessionUtils sessionUtils;
 
-	@Mock
-	PasswordEncoder passwordEncoder;
+	@Spy
+	BCryptPasswordEncoder passwordEncoder;
 
 	@InjectMocks
 	UserService userService;
@@ -35,11 +34,11 @@ class UpdatePasswordGuiTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
 	}
 
 	@Test
 	void updatePasswordGuiTest_simpleCase_success() {
+		String currentPassword = "password";
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
@@ -51,9 +50,10 @@ class UpdatePasswordGuiTest {
 
 			@Override
 			protected AppUser getAuthenticatedUser(UserService userService) {
-				return UserDataProvider.prepareExampleGoodUser();
+				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
+		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
 		boolean binderResult = updatePasswordGui.binder.isValid();
@@ -68,6 +68,7 @@ class UpdatePasswordGuiTest {
 
 	@Test
 	void updatePasswordGuiTest_tooShortPassword_binderIsNotValid() {
+		String currentPassword = "password";
 		String password = "hh2";
 		String confirmPassword = "hh2";
 
@@ -79,9 +80,10 @@ class UpdatePasswordGuiTest {
 
 			@Override
 			protected AppUser getAuthenticatedUser(UserService userService) {
-				return UserDataProvider.prepareExampleGoodUser();
+				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
+		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
 		boolean binderResult = updatePasswordGui.binder.isValid();
@@ -96,6 +98,7 @@ class UpdatePasswordGuiTest {
 
 	@Test
 	void updatePasswordGuiTest_differentPasswords_notificationThatPasswordsMustBeTheSame() {
+		String currentPassword = "password";
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh3";
 
@@ -107,9 +110,10 @@ class UpdatePasswordGuiTest {
 
 			@Override
 			protected AppUser getAuthenticatedUser(UserService userService) {
-				return UserDataProvider.prepareExampleGoodUser();
+				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
+		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
 		boolean binderResult = updatePasswordGui.binder.isValid();
