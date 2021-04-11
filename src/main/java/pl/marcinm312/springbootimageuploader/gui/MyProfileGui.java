@@ -80,13 +80,13 @@ public class MyProfileGui extends VerticalLayout {
 		if (binder.isValid()) {
 			if (!appUser.getUsername().equals(oldLogin)) {
 				if (!userService.getUserByUsername(appUser.getUsername()).isPresent()) {
-					userService.updateUser(oldLogin, appUser);
+					userService.updateUserData(oldLogin, appUser);
 					showNotification("User successfully updated");
 				} else {
 					showNotification("Error: This user already exists!");
 				}
 			} else {
-				userService.updateUser(oldLogin, appUser);
+				userService.updateUserData(oldLogin, appUser);
 				showNotification("User successfully updated");
 			}
 		} else {
