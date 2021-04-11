@@ -97,7 +97,7 @@ class UpdatePasswordGuiTest {
 	}
 
 	@Test
-	void updatePasswordGuiTest_differentPasswords_notificationThatPasswordsMustBeTheSame() {
+	void updatePasswordGuiTest_differentPasswordConfirmation_notificationThatPasswordsMustBeTheSame() {
 		String currentPassword = "password";
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh3";
@@ -106,6 +106,66 @@ class UpdatePasswordGuiTest {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
+			}
+
+			@Override
+			protected AppUser getAuthenticatedUser(UserService userService) {
+				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+			}
+		};
+		updatePasswordGui.currentPasswordField.setValue(currentPassword);
+		updatePasswordGui.passwordField.setValue(password);
+		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
+		boolean binderResult = updatePasswordGui.binder.isValid();
+
+		Assertions.assertTrue(binderResult);
+
+		updatePasswordGui.button.click();
+
+		verify(sessionUtils, never())
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+	}
+
+	@Test
+	void updatePasswordGuiTest_passwordTheSameAsPrevious_notificationThatPasswordsMustBeDifferentAsPrevious() {
+		String currentPassword = "password";
+		String password = "password";
+		String confirmPassword = "password";
+
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, passwordEncoder) {
+			@Override
+			protected void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: The new password must be different from the previous one!", notificationText);
+			}
+
+			@Override
+			protected AppUser getAuthenticatedUser(UserService userService) {
+				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+			}
+		};
+		updatePasswordGui.currentPasswordField.setValue(currentPassword);
+		updatePasswordGui.passwordField.setValue(password);
+		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
+		boolean binderResult = updatePasswordGui.binder.isValid();
+
+		Assertions.assertTrue(binderResult);
+
+		updatePasswordGui.button.click();
+
+		verify(sessionUtils, never())
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+	}
+
+	@Test
+	void updatePasswordGuiTest_incorrectCurrentPassword_notificationThatCurrentPasswordIsIncorrect() {
+		String currentPassword = "password2";
+		String password = "hhhhh2";
+		String confirmPassword = "hhhhh2";
+
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, passwordEncoder) {
+			@Override
+			protected void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: The current password is incorrect", notificationText);
 			}
 
 			@Override

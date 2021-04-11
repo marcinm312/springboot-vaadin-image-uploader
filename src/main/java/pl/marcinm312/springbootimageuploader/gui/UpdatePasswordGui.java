@@ -92,7 +92,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 				showNotification("Error: Check the validation messages on the form");
 			}
 		} else {
-			showNotification("Error: The password is incorrect");
+			showNotification("Error: The current password is incorrect");
 		}
 	}
 
