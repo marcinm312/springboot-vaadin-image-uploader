@@ -62,18 +62,20 @@ public class UploadGui extends VerticalLayout {
 			InputStream initialStream = vaadinBuffer.getInputStream();
 			log.info("Get input stream");
 			try {
-				log.info("Starting uploading a file");
-				String uploadedImageUrl = imageService.uploadFile(initialStream);
-				log.info("Image uploaded to Cloudinary server: " + uploadedImageUrl);
 				AppUser appUser = userService.getUserByAuthentication(authentication);
-				imageService.saveFileToDB(uploadedImageUrl, appUser);
-				log.info("Image saved in DB: " + uploadedImageUrl);
-				log.info("Loading uploaded image:" + uploadedImageUrl);
-				image.setSrc(uploadedImageUrl);
-				image.setAlt(uploadedImageUrl);
-				image.setMaxHeight("500px");
-				log.info("Image loaded: " + uploadedImageUrl);
-				Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
+				pl.marcinm312.springbootimageuploader.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
+				if (savedImage != null) {
+					String uploadedImageUrl = savedImage.getImageAddress();
+					log.info("Image saved in DB: " + uploadedImageUrl);
+					log.info("Loading uploaded image:" + uploadedImageUrl);
+					image.setSrc(uploadedImageUrl);
+					image.setAlt(uploadedImageUrl);
+					image.setMaxHeight("500px");
+					log.info("Image loaded: " + uploadedImageUrl);
+					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
+				} else {
+					Notification.show("Error uploading and saving the image", 5000, Notification.Position.MIDDLE);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				Notification.show("Error occurred: " + e.getMessage(), 5000, Notification.Position.MIDDLE);

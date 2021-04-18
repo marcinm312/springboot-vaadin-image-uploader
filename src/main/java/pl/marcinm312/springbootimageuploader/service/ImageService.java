@@ -36,14 +36,16 @@ public class ImageService {
 		return imageRepo.findAllByOrderByIdDesc();
 	}
 
-	public String uploadFile(InputStream inputStream) throws IOException {
+	public Image uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
+		log.info("Starting uploading a file");
 		Map uploadResult = cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
-		assert uploadResult != null;
-		return uploadResult.get("secure_url").toString();
-	}
-
-	public Image saveFileToDB(String fileUrl, AppUser appUser) {
-		log.info("Saving image in DB: " + fileUrl);
-		return imageRepo.save(new Image(fileUrl, appUser));
+		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
+			String uploadedImageUrl = uploadResult.get("secure_url").toString();
+			log.info("Image uploaded to Cloudinary server: " + uploadedImageUrl);
+			log.info("Saving image in DB: " + uploadedImageUrl);
+			return imageRepo.save(new Image(uploadedImageUrl, appUser));
+		} else {
+			return null;
+		}
 	}
 }
