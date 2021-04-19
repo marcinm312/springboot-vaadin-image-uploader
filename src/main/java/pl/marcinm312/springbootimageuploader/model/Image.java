@@ -1,5 +1,6 @@
 package pl.marcinm312.springbootimageuploader.model;
 
+import org.apache.commons.io.FilenameUtils;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -54,5 +55,11 @@ public class Image extends AuditModel {
 
 	public void setUser(AppUser appUser) {
 		this.appUser = appUser;
+	}
+
+	public String getPublicId() {
+		String[] splittedAddress = getImageAddress().split("/");
+		String fileName = splittedAddress[splittedAddress.length - 1];
+		return FilenameUtils.removeExtension(fileName);
 	}
 }

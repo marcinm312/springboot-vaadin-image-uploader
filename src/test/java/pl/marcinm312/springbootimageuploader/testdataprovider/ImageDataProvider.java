@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ImageDataProvider {
 
-	private static final String IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Stary_Rynek_Domki_1.JPG/800px-Stary_Rynek_Domki_1.JPG";
+	private static final String IMAGE_URL = "https://res.cloudinary.com/test/image/upload/v1111222233/test123.jpg";
 
 	public static List<Image> prepareExampleImageList() {
 		List<Image> images = new ArrayList<>();
@@ -19,5 +19,9 @@ public class ImageDataProvider {
 
 	public static List<Image> prepareEmptyImageList() {
 		return new ArrayList<>();
+	}
+
+	public static Image prepareExampleImage() {
+		return new Image(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator());
 	}
 }
