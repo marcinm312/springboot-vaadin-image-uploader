@@ -12,6 +12,7 @@ import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -47,5 +48,10 @@ public class ImageService {
 		} else {
 			return null;
 		}
+	}
+
+	public void deleteImageFromCloudinaryAndDB (Image image) throws Exception {
+		cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+		imageRepo.delete(image);
 	}
 }
