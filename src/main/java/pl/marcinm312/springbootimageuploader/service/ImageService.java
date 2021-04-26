@@ -56,15 +56,23 @@ public class ImageService {
 	}
 
 	public boolean deleteImageFromCloudinaryAndDB(Long imageId) throws Exception {
+		boolean deleteResult = false;
 		Optional<Image> optionalImage = imageRepo.findById(imageId);
 		if (optionalImage.isPresent()) {
 			Image image = optionalImage.get();
-			ApiResponse deleteResult = cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
-			imageRepo.delete(image);
-			return true;
-		} else {
-			return false;
+			ApiResponse deleteApiResponse = cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+			if (deleteApiResponse.containsKey("deleted")) {
+				Map deletedMap = (Map) deleteApiResponse.get("deleted");
+				if (deletedMap.containsKey(image.getPublicId())) {
+					String deleteImageResult = (String) deletedMap.get(image.getPublicId());
+					if ("deleted".equals(deleteImageResult)) {
+						imageRepo.delete(image);
+						deleteResult = true;
+					}
+				}
+			}
 		}
+		return deleteResult;
 	}
 
 	private ImageDto convertImageToImageDto(Image image) {
