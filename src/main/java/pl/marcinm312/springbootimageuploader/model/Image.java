@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Image extends AuditModel {
@@ -14,7 +15,7 @@ public class Image extends AuditModel {
 	private Long id;
 	private String imageAddress;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private AppUser appUser;
@@ -24,10 +25,12 @@ public class Image extends AuditModel {
 		this.appUser = appUser;
 	}
 
-	public Image(Long id, String imageAddress, AppUser appUser) {
+	public Image(Long id, String imageAddress, AppUser appUser, Date createdAt, Date updatedAt) {
 		this.id = id;
 		this.imageAddress = imageAddress;
 		this.appUser = appUser;
+		setCreatedAt(createdAt);
+		setUpdatedAt(updatedAt);
 	}
 
 	public Image() {

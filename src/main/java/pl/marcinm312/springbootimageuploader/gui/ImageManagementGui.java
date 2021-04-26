@@ -1,9 +1,11 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -13,59 +15,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
-import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
 import java.util.List;
 
-@Route("gallery")
+@Route("management")
 @StyleSheet("/css/style.css")
-public class GalleryGui extends VerticalLayout {
+public class ImageManagementGui extends VerticalLayout {
 
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
-	Anchor managementAnchor;
-	Anchor myProfileAnchor;
-	Anchor updatePasswordAnchor;
+	Anchor galleryAnchor;
+	Anchor uploadAnchor;
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
 	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public GalleryGui(ImageService imageService) {
+	public ImageManagementGui(ImageService imageService) {
 
 		log.info("authentication.getName()=" + getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		managementAnchor = new Anchor("../management", "Image management");
-		myProfileAnchor = new Anchor("../myprofile/update", "Update my profile");
-		updatePasswordAnchor = new Anchor("../myprofile/updatePassword", "Update my password");
+		galleryAnchor = new Anchor("../gallery", "Back to gallery");
+		uploadAnchor = new Anchor("../upload", "Upload image");
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, myProfileAnchor, updatePasswordAnchor);
-		if (isUserAdmin()) {
-			horizontalMenu.add(managementAnchor);
-		}
+		horizontalMenu.add(logoutAnchor, galleryAnchor, uploadAnchor);
 
-		h1 = new H1("Image gallery");
+		h1 = new H1("Image management");
 
 		log.info("Loading all images from DB");
 		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()=" + allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
 		grid.setItems(allImagesFromDB);
-		grid.removeAllColumns();
-		grid.addColumn(new ComponentRenderer<>(image -> {
-			com.vaadin.flow.component.html.Image vaadinImage = new com.vaadin.flow.component.html.Image(image.getImageAddress(), image.getImageAddress());
-			vaadinImage.setMaxHeight("500px");
-			return vaadinImage;
-		})).setHeader("Image").getElement().setProperty("min-width", "820px");
-		grid.setPageSize(1);
-		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.TOP);
-		grid.setPaginatorSize(0);
+		grid.setColumns("id", "publicId", "createdAt", "username");
+		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress()))).setHeader("Image link");
+		grid.addColumn(new ComponentRenderer<>(imageDto -> {
+			Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
+			image.setHeight("100px");
+			return image;
+		})).setHeader("Miniature");
+		grid.addColumn(new ComponentRenderer<>(imageDto -> {
+			Button deleteButton = new Button("Delete");
+			//deleteButton.addClickListener(event -> );
+			return deleteButton;
+		})).setHeader("Actions");
+		grid.setPageSize(5);
+		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
+		grid.setPaginatorSize(3);
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
-		grid.setPaginatorTexts("Image", "of");
+		grid.setHeightByRows(true);
+		grid.setPaginatorTexts("Page", "of");
 		log.info("All images loaded");
 
 		add(horizontalMenu, h1, grid);
@@ -74,10 +77,5 @@ public class GalleryGui extends VerticalLayout {
 	protected String getAuthenticationName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
-	}
-
-	protected boolean isUserAdmin() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return "ROLE_ADMIN".equals(((AppUser) authentication.getPrincipal()).getRole());
 	}
 }

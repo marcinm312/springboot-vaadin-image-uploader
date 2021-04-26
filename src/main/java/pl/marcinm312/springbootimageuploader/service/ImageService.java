@@ -8,13 +8,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ImageService {
@@ -33,8 +32,13 @@ public class ImageService {
 				"api_secret", environment.getProperty("cloudinary.apiSecretValue")));
 	}
 
-	public List<Image> getAllImagesFromDB() {
-		return imageRepo.findAllByOrderByIdDesc();
+	public List<ImageDto> getAllImagesFromDB() {
+		List<ImageDto> imagesDtoList = new ArrayList<>();
+		List<Image> imagesList = imageRepo.findAllByOrderByIdDesc();
+		for (Image image : imagesList) {
+			imagesDtoList.add(convertImageToImageDto(image));
+		}
+		return imagesDtoList;
 	}
 
 	public Image uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
@@ -50,8 +54,26 @@ public class ImageService {
 		}
 	}
 
-	public void deleteImageFromCloudinaryAndDB (Image image) throws Exception {
-		cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
-		imageRepo.delete(image);
+	public boolean deleteImageFromCloudinaryAndDB(Long imageId) throws Exception {
+		Optional<Image> optionalImage = imageRepo.findById(imageId);
+		if (optionalImage.isPresent()) {
+			Image image = optionalImage.get();
+			cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+			imageRepo.delete(image);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private ImageDto convertImageToImageDto(Image image) {
+		ImageDto imageDto = new ImageDto();
+		imageDto.setId(image.getId());
+		imageDto.setImageAddress(image.getImageAddress());
+		imageDto.setPublicId(image.getPublicId());
+		imageDto.setUsername(image.getUser().getUsername());
+		imageDto.setCreatedAt(image.getCreatedAtAsString());
+		imageDto.setUpdatedAt(image.getUpdatedAtAsString());
+		return imageDto;
 	}
 }

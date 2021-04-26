@@ -25,7 +25,7 @@ import java.io.*;
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;
-	Anchor galleryAnchor;
+	Anchor managementAnchor;
 	HorizontalLayout horizontalMenu;
 	H1 h1;
 	Upload upload;
@@ -40,9 +40,9 @@ public class UploadGui extends VerticalLayout {
 		log.info("authentication.getName()=" + authentication.getName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		galleryAnchor = new Anchor("../gallery", "Back to gallery");
+		managementAnchor = new Anchor("../management", "Back to image management");
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, galleryAnchor);
+		horizontalMenu.add(logoutAnchor, managementAnchor);
 
 		h1 = new H1("Upload image");
 
