@@ -1,11 +1,14 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -60,7 +63,33 @@ public class ImageManagementGui extends VerticalLayout {
 		})).setHeader("Miniature");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Button deleteButton = new Button("Delete");
-			//deleteButton.addClickListener(event -> );
+			deleteButton.addClickListener(deleteEvent -> {
+				Dialog dialog = new Dialog();
+				Text text = new Text("Are you sure you want to delete this image?");
+				Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
+				image.setHeight("100px");
+				Button confirmButton = new Button("Confirm", confirmEvent -> {
+					try {
+						boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+						if (deleteResult) {
+							log.info("Loading all images from DB");
+							List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
+							log.info("allImagesFromDBAfterDelete.size()=" + allImagesFromDBAfterDelete.size());
+							grid.setItems(allImagesFromDBAfterDelete);
+							showNotification("Image successfully deleted");
+						} else {
+							showNotification("The image has not been deleted");
+						}
+					} catch (Exception e) {
+						showNotification("Error occurred: " + e.getMessage());
+						e.printStackTrace();
+					}
+					dialog.close();
+				});
+				Button cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
+				dialog.add(new VerticalLayout(text, image, new HorizontalLayout(confirmButton, cancelButton)));
+				dialog.open();
+			});
 			return deleteButton;
 		})).setHeader("Actions");
 		grid.setPageSize(5);
@@ -77,5 +106,9 @@ public class ImageManagementGui extends VerticalLayout {
 	protected String getAuthenticationName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
+	}
+
+	protected void showNotification(String notificationText) {
+		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }
