@@ -53,6 +53,7 @@ public class ImageManagementGui extends VerticalLayout {
 		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()=" + allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
+		int pageSize = 5;
 		grid.setItems(allImagesFromDB);
 		grid.setColumns("id", "publicId", "createdAt", "username");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress()))).setHeader("Image link");
@@ -69,20 +70,18 @@ public class ImageManagementGui extends VerticalLayout {
 				Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
 				image.setHeight("100px");
 				Button confirmButton = new Button("Confirm", confirmEvent -> {
-					try {
-						boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
-						if (deleteResult) {
-							log.info("Loading all images from DB");
-							List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
-							log.info("allImagesFromDBAfterDelete.size()=" + allImagesFromDBAfterDelete.size());
-							grid.setItems(allImagesFromDBAfterDelete);
-							showNotification("Image successfully deleted");
-						} else {
-							showNotification("The image has not been deleted");
-						}
-					} catch (Exception e) {
-						showNotification("Error occurred: " + e.getMessage());
-						e.printStackTrace();
+					boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+					if (deleteResult) {
+						int pageNumber = grid.getPage();
+						log.info("Loading all images from DB");
+						List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
+						int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
+						log.info("sizeOfListAfterDeletingOfImage=" + sizeOfListAfterDeletingOfImage);
+						grid.setItems(allImagesFromDBAfterDelete);
+						grid.setPage(pageNumber);
+						showNotification("Image successfully deleted");
+					} else {
+						showNotification("The image has not been deleted");
 					}
 					dialog.close();
 				});
@@ -92,7 +91,7 @@ public class ImageManagementGui extends VerticalLayout {
 			});
 			return deleteButton;
 		})).setHeader("Actions");
-		grid.setPageSize(5);
+		grid.setPageSize(pageSize);
 		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
 		grid.setPaginatorSize(3);
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
