@@ -47,8 +47,8 @@ public class ImageService {
 		Map uploadResult = cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
 			String uploadedImageUrl = uploadResult.get("secure_url").toString();
-			log.info("Image uploaded to Cloudinary server: " + uploadedImageUrl);
-			log.info("Saving image in DB: " + uploadedImageUrl);
+			log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
+			log.info("Saving image in DB: {}", uploadedImageUrl);
 			return imageRepo.save(new Image(uploadedImageUrl, appUser));
 		} else {
 			return null;
@@ -56,7 +56,7 @@ public class ImageService {
 	}
 
 	public boolean deleteImageFromCloudinaryAndDB(Long imageId) {
-		log.info("Deleting imageId: " + imageId);
+		log.info("Deleting imageId: {}", imageId);
 		try {
 			Optional<Image> optionalImage = imageRepo.findById(imageId);
 			if (optionalImage.isPresent()) {
@@ -75,7 +75,7 @@ public class ImageService {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Error occurred during deleting imageId: " + imageId + "[MESSAGE]: " + e.getMessage());
+			log.error("Error occurred during deleting imageId: {} [MESSAGE]: {}", imageId, e.getMessage());
 			e.printStackTrace();
 		}
 		return false;
@@ -83,7 +83,7 @@ public class ImageService {
 
 	private boolean checkIfImageExistsInCloudinary(Image image) {
 		String publicId = image.getPublicId();
-		log.info("Checking if image exists in Cloudinary. publicId: " + publicId);
+		log.info("Checking if image exists in Cloudinary. publicId: {}", publicId);
 		try {
 			ApiResponse apiResponse = cloudinary.api().resourcesByIds(Collections.singletonList(publicId), ObjectUtils.emptyMap());
 			if (apiResponse.containsKey("resources")) {
@@ -91,33 +91,33 @@ public class ImageService {
 				if (!listFromApi.isEmpty()) {
 					HashMap firstElement = listFromApi.get(0);
 					if (firstElement.containsKey("public_id") && publicId.equals(firstElement.get("public_id"))) {
-						log.info("Image with publicId: " + publicId + " exists in Cloudinary");
+						log.info("Image with publicId: {} exists in Cloudinary", publicId);
 						return true;
 					}
 				}
 			}
 		} catch (Exception e) {
-			log.error("Error occurred during checking if image exists in Cloudinary publicId: " + publicId + "[MESSAGE]: " + e.getMessage());
+			log.error("Error occurred during checking if image exists in Cloudinary publicId: {} [MESSAGE]: {}", publicId, e.getMessage());
 			e.printStackTrace();
 		}
-		log.info("Image with publicId: " + publicId + " not exists in Cloudinary");
+		log.info("Image with publicId: {} not exists in Cloudinary", publicId);
 		return false;
 	}
 
 	private boolean checkDeleteFromCloudinaryResult(Image image, ApiResponse deleteApiResponse) {
 		String publicId = image.getPublicId();
-		log.info("Checking delete from Cloudinary result for publicId: " + publicId);
+		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
 		if (deleteApiResponse.containsKey("deleted")) {
 			Map deletedMap = (Map) deleteApiResponse.get("deleted");
 			if (deletedMap.containsKey(publicId)) {
 				String deleteImageResult = (String) deletedMap.get(publicId);
 				if ("deleted".equals(deleteImageResult)) {
-					log.info("Successfully deleted from Cloudinary image with publicId: " + publicId);
+					log.info("Successfully deleted from Cloudinary image with publicId: {}", publicId);
 					return true;
 				}
 			}
 		}
-		log.error("Image with publicId: " + publicId + " has not been deleted");
+		log.error("Image with publicId: {} has not been deleted", publicId);
 		return false;
 	}
 

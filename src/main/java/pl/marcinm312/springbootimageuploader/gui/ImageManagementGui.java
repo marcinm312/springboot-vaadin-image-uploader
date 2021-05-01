@@ -34,12 +34,12 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public ImageManagementGui(ImageService imageService) {
 
-		log.info("authentication.getName()=" + getAuthenticationName());
+		log.info("authentication.getName()={}", getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
@@ -51,7 +51,7 @@ public class ImageManagementGui extends VerticalLayout {
 
 		log.info("Loading all images from DB");
 		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
-		log.info("allImagesFromDB.size()=" + allImagesFromDB.size());
+		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
 		int pageSize = 5;
 		grid.setItems(allImagesFromDB);
@@ -64,35 +64,7 @@ public class ImageManagementGui extends VerticalLayout {
 		})).setHeader("Miniature");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Button deleteButton = new Button("Delete");
-			deleteButton.addClickListener(deleteEvent -> {
-				Dialog dialog = new Dialog();
-				Text text = new Text("Are you sure you want to delete this image?");
-				Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
-				image.setHeight("100px");
-				Button confirmButton = new Button("Confirm", confirmEvent -> {
-					boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
-					if (deleteResult) {
-						int pageNumber = grid.getPage();
-						log.info("Loading all images from DB");
-						List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
-						int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
-						log.info("sizeOfListAfterDeletingOfImage=" + sizeOfListAfterDeletingOfImage);
-						grid.setItems(allImagesFromDBAfterDelete);
-						if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
-							grid.setPage(pageNumber - 1);
-						} else {
-							grid.setPage(pageNumber);
-						}
-						showNotification("Image successfully deleted");
-					} else {
-						showNotification("The image has not been deleted");
-					}
-					dialog.close();
-				});
-				Button cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
-				dialog.add(new VerticalLayout(text, image, new HorizontalLayout(confirmButton, cancelButton)));
-				dialog.open();
-			});
+			deleteButton.addClickListener(openDialogEvent -> openDialogEvent(imageService, pageSize, imageDto));
 			return deleteButton;
 		})).setHeader("Actions");
 		grid.setPageSize(pageSize);
@@ -104,6 +76,38 @@ public class ImageManagementGui extends VerticalLayout {
 		log.info("All images loaded");
 
 		add(horizontalMenu, h1, grid);
+	}
+
+	private void openDialogEvent(ImageService imageService, int pageSize, ImageDto imageDto) {
+		Dialog dialog = new Dialog();
+		Text text = new Text("Are you sure you want to delete this image?");
+		Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
+		image.setHeight("100px");
+		Button confirmButton = new Button("Confirm", deleteEvent -> deleteEvent(imageService, pageSize, imageDto, dialog));
+		Button cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
+		dialog.add(new VerticalLayout(text, image, new HorizontalLayout(confirmButton, cancelButton)));
+		dialog.open();
+	}
+
+	private void deleteEvent(ImageService imageService, int pageSize, ImageDto imageDto, Dialog dialog) {
+		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+		if (deleteResult) {
+			int pageNumber = grid.getPage();
+			log.info("Loading all images from DB");
+			List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
+			int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
+			log.info("sizeOfListAfterDeletingOfImage={}", sizeOfListAfterDeletingOfImage);
+			grid.setItems(allImagesFromDBAfterDelete);
+			if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
+				grid.setPage(pageNumber - 1);
+			} else {
+				grid.setPage(pageNumber);
+			}
+			showNotification("Image successfully deleted");
+		} else {
+			showNotification("The image has not been deleted");
+		}
+		dialog.close();
 	}
 
 	protected String getAuthenticationName() {
