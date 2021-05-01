@@ -78,7 +78,11 @@ public class ImageManagementGui extends VerticalLayout {
 						int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
 						log.info("sizeOfListAfterDeletingOfImage=" + sizeOfListAfterDeletingOfImage);
 						grid.setItems(allImagesFromDBAfterDelete);
-						grid.setPage(pageNumber);
+						if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
+							grid.setPage(pageNumber - 1);
+						} else {
+							grid.setPage(pageNumber);
+						}
 						showNotification("Image successfully deleted");
 					} else {
 						showNotification("The image has not been deleted");
