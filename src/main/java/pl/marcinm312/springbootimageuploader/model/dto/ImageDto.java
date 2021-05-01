@@ -56,4 +56,10 @@ public class ImageDto {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
+	public String getCompressedImageAddress(int imageHeight) {
+		String[] splittedAddress = getImageAddress().split("/");
+		String target = splittedAddress[splittedAddress.length - 2];
+		return getImageAddress().replace(target, "h_" + imageHeight + ",f_auto/q_100");
+	}
 }

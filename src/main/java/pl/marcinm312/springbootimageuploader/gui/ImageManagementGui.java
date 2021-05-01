@@ -34,6 +34,8 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
+	static final int IMAGE_HEIGHT = 100;
+
 	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
@@ -58,8 +60,8 @@ public class ImageManagementGui extends VerticalLayout {
 		grid.setColumns("id", "publicId", "createdAt", "username");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress()))).setHeader("Image link");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
-			Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
-			image.setHeight("100px");
+			Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
+			image.setHeight(IMAGE_HEIGHT + "px");
 			return image;
 		})).setHeader("Miniature");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
@@ -81,7 +83,7 @@ public class ImageManagementGui extends VerticalLayout {
 	private void openDialogEvent(ImageService imageService, int pageSize, ImageDto imageDto) {
 		Dialog dialog = new Dialog();
 		Text text = new Text("Are you sure you want to delete this image?");
-		Image image = new Image(imageDto.getImageAddress(), imageDto.getImageAddress());
+		Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
 		image.setHeight("100px");
 		Button confirmButton = new Button("Confirm", deleteEvent -> deleteEvent(imageService, pageSize, imageDto, dialog));
 		Button cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
