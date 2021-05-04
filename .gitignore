@@ -39,3 +39,6 @@ build/
 node_modules/
 
 webpack.generated.js
+
+/logs/
+/node/
