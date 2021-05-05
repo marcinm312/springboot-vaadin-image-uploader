@@ -7,7 +7,7 @@ import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;
 class ImageTest {
 
 	@Test
-	void getPublicId() {
+	void getPublicId_simpleCase_extractedPublicIdFromUrl() {
 		Image image = ImageDataProvider.prepareExampleImage();
 		String receivedPublicId = image.getPublicId();
 		String expectedPublicId = "test123";

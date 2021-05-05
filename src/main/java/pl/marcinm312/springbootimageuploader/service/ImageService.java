@@ -11,6 +11,7 @@ import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
+import pl.marcinm312.springbootimageuploader.utils.ConvertUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +38,7 @@ public class ImageService {
 		List<ImageDto> imagesDtoList = new ArrayList<>();
 		List<Image> imagesList = imageRepo.findAllByOrderByIdDesc();
 		for (Image image : imagesList) {
-			imagesDtoList.add(convertImageToImageDto(image));
+			imagesDtoList.add(ConvertUtils.convertImageToImageDto(image));
 		}
 		return imagesDtoList;
 	}
@@ -119,16 +120,5 @@ public class ImageService {
 		}
 		log.error("Image with publicId: {} has not been deleted", publicId);
 		return false;
-	}
-
-	private ImageDto convertImageToImageDto(Image image) {
-		ImageDto imageDto = new ImageDto();
-		imageDto.setId(image.getId());
-		imageDto.setImageAddress(image.getImageAddress());
-		imageDto.setPublicId(image.getPublicId());
-		imageDto.setUsername(image.getUser().getUsername());
-		imageDto.setCreatedAt(image.getCreatedAtAsString());
-		imageDto.setUpdatedAt(image.getUpdatedAtAsString());
-		return imageDto;
 	}
 }
