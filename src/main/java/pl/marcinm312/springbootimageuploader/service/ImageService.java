@@ -106,13 +106,14 @@ public class ImageService {
 	}
 
 	private boolean checkDeleteFromCloudinaryResult(Image image, ApiResponse deleteApiResponse) {
+		String deleted = "deleted";
 		String publicId = image.getPublicId();
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
-		if (deleteApiResponse.containsKey("deleted")) {
-			Map deletedMap = (Map) deleteApiResponse.get("deleted");
+		if (deleteApiResponse.containsKey(deleted)) {
+			Map deletedMap = (Map) deleteApiResponse.get(deleted);
 			if (deletedMap.containsKey(publicId)) {
 				String deleteImageResult = (String) deletedMap.get(publicId);
-				if ("deleted".equals(deleteImageResult)) {
+				if (deleted.equals(deleteImageResult)) {
 					log.info("Successfully deleted from Cloudinary image with publicId: {}", publicId);
 					return true;
 				}
