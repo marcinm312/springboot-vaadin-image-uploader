@@ -23,7 +23,7 @@ public class ForbiddenGui extends VerticalLayout {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()=" + authentication.getName());
 
-		h1 = new H1("No permission. Only the administrator can add new photos");
+		h1 = new H1("No permission. This functionality is only available to the system administrator");
 		mainPageAnchor = new Anchor("..", "Back to main page");
 
 		add(h1, mainPageAnchor);
