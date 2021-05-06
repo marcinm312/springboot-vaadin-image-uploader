@@ -1,7 +1,6 @@
 package pl.marcinm312.springbootimageuploader.service;
 
 import com.cloudinary.api.ApiResponse;
-import com.cloudinary.utils.ObjectUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,10 @@ import pl.marcinm312.springbootimageuploader.utils.ConvertUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -40,7 +42,7 @@ public class ImageService {
 
 	public Image uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
 		log.info("Starting uploading a file");
-		Map uploadResult = cloudinaryService.getCloudinary().uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
+		Map uploadResult = cloudinaryService.uploadImageToCloudinary(inputStream);
 		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
 			String uploadedImageUrl = uploadResult.get("secure_url").toString();
 			log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
@@ -59,7 +61,7 @@ public class ImageService {
 				Image image = optionalImage.get();
 				boolean imageExists = cloudinaryService.checkIfImageExistsInCloudinary(image);
 				if (imageExists) {
-					ApiResponse deleteApiResponse = cloudinaryService.getCloudinary().api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+					ApiResponse deleteApiResponse = cloudinaryService.deleteImageFromCloudinary(image);
 					boolean deleteResult = cloudinaryService.checkDeleteFromCloudinaryResult(image, deleteApiResponse);
 					if (deleteResult) {
 						imageRepo.delete(image);

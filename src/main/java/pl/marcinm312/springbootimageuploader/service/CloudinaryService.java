@@ -9,6 +9,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pl.marcinm312.springbootimageuploader.model.Image;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 @Service
@@ -28,6 +30,14 @@ public class CloudinaryService {
 
 	public Cloudinary getCloudinary() {
 		return cloudinary;
+	}
+
+	public Map uploadImageToCloudinary(InputStream inputStream) throws IOException {
+		return cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
+	}
+
+	public ApiResponse deleteImageFromCloudinary(Image image) throws Exception {
+		return cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
 	}
 
 	public boolean checkIfImageExistsInCloudinary(Image image) {
