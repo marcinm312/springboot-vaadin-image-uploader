@@ -14,16 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Route("upload")
 @StyleSheet("/css/style.css")
-@Component
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;

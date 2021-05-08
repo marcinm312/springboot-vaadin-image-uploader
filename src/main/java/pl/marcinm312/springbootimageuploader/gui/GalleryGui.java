@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
@@ -22,7 +21,6 @@ import java.util.List;
 
 @Route("gallery")
 @StyleSheet("/css/style.css")
-@Component
 public class GalleryGui extends VerticalLayout {
 
 	HorizontalLayout horizontalMenu;
