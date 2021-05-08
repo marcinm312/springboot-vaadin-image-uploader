@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
@@ -22,6 +23,7 @@ import java.io.*;
 
 @Route("upload")
 @StyleSheet("/css/style.css")
+@Component
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;
@@ -31,13 +33,13 @@ public class UploadGui extends VerticalLayout {
 	Upload upload;
 	Image image;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UploadGui(ImageService imageService, UserService userService) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()=" + authentication.getName());
+		log.info("authentication.getName()={}", authentication.getName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		managementAnchor = new Anchor("../management", "Back to image management");
@@ -66,12 +68,12 @@ public class UploadGui extends VerticalLayout {
 				pl.marcinm312.springbootimageuploader.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
-					log.info("Image saved in DB: " + uploadedImageUrl);
-					log.info("Loading uploaded image:" + uploadedImageUrl);
+					log.info("Image saved in DB: {}", uploadedImageUrl);
+					log.info("Loading uploaded image: {}", uploadedImageUrl);
 					image.setSrc(uploadedImageUrl);
 					image.setAlt(uploadedImageUrl);
 					image.setMaxHeight("500px");
-					log.info("Image loaded: " + uploadedImageUrl);
+					log.info("Image loaded: {}", uploadedImageUrl);
 					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
 				} else {
 					Notification.show("Error uploading and saving the image", 5000, Notification.Position.MIDDLE);
@@ -82,7 +84,7 @@ public class UploadGui extends VerticalLayout {
 			}
 		} else {
 			log.info("Invalid file type");
-			log.info("fileType=" + fileType);
+			log.info("fileType={}", fileType);
 			Notification.show("Error: Invalid file type", 5000, Notification.Position.MIDDLE);
 		}
 	}

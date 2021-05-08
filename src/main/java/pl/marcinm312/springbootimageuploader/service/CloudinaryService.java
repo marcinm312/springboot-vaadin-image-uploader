@@ -28,10 +28,6 @@ public class CloudinaryService {
 				"api_secret", environment.getProperty("cloudinary.apiSecretValue")));
 	}
 
-	public Cloudinary getCloudinary() {
-		return cloudinary;
-	}
-
 	public Map uploadImageToCloudinary(InputStream inputStream) throws IOException {
 		return cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 	}

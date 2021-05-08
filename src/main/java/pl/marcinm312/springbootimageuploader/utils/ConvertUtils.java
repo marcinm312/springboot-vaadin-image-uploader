@@ -5,6 +5,10 @@ import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 
 public class ConvertUtils {
 
+	private ConvertUtils() {
+
+	}
+
 	public static ImageDto convertImageToImageDto(Image image) {
 		ImageDto imageDto = new ImageDto();
 		imageDto.setId(image.getId());
