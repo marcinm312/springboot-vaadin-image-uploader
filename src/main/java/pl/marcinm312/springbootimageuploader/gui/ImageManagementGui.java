@@ -58,7 +58,8 @@ public class ImageManagementGui extends VerticalLayout {
 		int pageSize = 5;
 		grid.setItems(allImagesFromDB);
 		grid.setColumns("id", "publicId", "createdAt", "username");
-		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress()))).setHeader("Image link");
+		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress())))
+				.setHeader("Image link").setKey("image_link");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
 			image.setHeight(IMAGE_HEIGHT + "px");
@@ -69,6 +70,12 @@ public class ImageManagementGui extends VerticalLayout {
 			deleteButton.addClickListener(openDialogEvent -> openDialogEvent(imageService, pageSize, imageDto));
 			return deleteButton;
 		})).setHeader("Actions");
+		List<Grid.Column<ImageDto>> gridColumns = grid.getColumns();
+		for (Grid.Column<ImageDto> column : gridColumns) {
+			if (!"image_link".equals(column.getKey())) {
+				column.setAutoWidth(true);
+			}
+		}
 		grid.setPageSize(pageSize);
 		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
 		grid.setPaginatorSize(3);
@@ -100,6 +107,7 @@ public class ImageManagementGui extends VerticalLayout {
 			int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
 			log.info("sizeOfListAfterDeletingOfImage={}", sizeOfListAfterDeletingOfImage);
 			grid.setItems(allImagesFromDBAfterDelete);
+			grid.refreshPaginator();
 			if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
 				grid.setPage(pageNumber - 1);
 			} else {
