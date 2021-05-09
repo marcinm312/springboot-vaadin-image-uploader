@@ -63,6 +63,7 @@ public class ImageManagementGui extends VerticalLayout {
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
 			image.setHeight(IMAGE_HEIGHT + "px");
+			image.setMaxWidth((IMAGE_HEIGHT * 2) + "px");
 			return image;
 		})).setHeader("Miniature");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
@@ -76,7 +77,7 @@ public class ImageManagementGui extends VerticalLayout {
 		}
 		grid.setPageSize(pageSize);
 		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
-		grid.setPaginatorSize(3);
+		grid.setPaginatorSize(2);
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
 		grid.setHeightByRows(true);
 		grid.setPaginatorTexts("Page", "of");
