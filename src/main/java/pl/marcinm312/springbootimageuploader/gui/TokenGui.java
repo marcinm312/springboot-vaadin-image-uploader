@@ -18,7 +18,7 @@ public class TokenGui extends VerticalLayout {
 	H1 h1;
 	Anchor anchor;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public TokenGui(UserService userService) {
@@ -27,7 +27,7 @@ public class TokenGui extends VerticalLayout {
 		try {
 			tokenValue = UI.getCurrent().getInternals().getLastHandledLocation().getQueryParameters().getParameters().get("value").get(0);
 		} catch (Exception exc) {
-			log.error("Error retrieving the value of the token: " + exc.getMessage());
+			log.error("Error retrieving the value of the token: {}", exc.getMessage());
 		}
 
 		if(tokenValue != null) {

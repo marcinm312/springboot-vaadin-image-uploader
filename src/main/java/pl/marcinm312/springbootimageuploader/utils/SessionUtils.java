@@ -46,6 +46,6 @@ public class SessionUtils {
 	private void expireSession(String username, SessionInformation sessionInformation) {
 		sessionInformation.expireNow();
 		UI.getCurrent().getPage().reload();
-		log.info("Session " + sessionInformation.getSessionId() + " of user " + username + " has expired");
+		log.info("Session {} of user {} has expired", sessionInformation.getSessionId(), username);
 	}
 }

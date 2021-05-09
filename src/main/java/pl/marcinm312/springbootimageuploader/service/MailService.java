@@ -33,10 +33,10 @@ public class MailService {
 		mimeMessageHelper.setTo(to);
 		mimeMessageHelper.setSubject(subject);
 		mimeMessageHelper.setText(text, isHtmlContent);
-		log.info("mail to = " + to);
-		log.info("mail subject = " + subject);
-		log.info("mail text = " + text);
-		log.info("mail isHtmlContent = " + isHtmlContent);
+		log.info("mail to = {}", to);
+		log.info("mail subject = {}", subject);
+		log.info("mail text = {}", text);
+		log.info("mail isHtmlContent = {}", isHtmlContent);
 		log.info("Starting sending an email");
 		javaMailSender.send(mimeMessage);
 		log.info("The mail has been sent");

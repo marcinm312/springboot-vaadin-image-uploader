@@ -31,13 +31,13 @@ public class MyProfileGui extends VerticalLayout {
 
 	static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public MyProfileGui(UserService userService) {
 
 		AppUser appUser = getAuthenticatedUser(userService);
-		log.info("Old user = " + appUser.toString());
+		log.info("Old user = {}", appUser.toString());
 		String oldLogin = appUser.getUsername();
 
 		binder = new BeanValidationBinder<>(AppUser.class);

@@ -56,7 +56,7 @@ public class GalleryGui extends VerticalLayout {
 
 		log.info("Loading all images from DB");
 		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
-		log.info("allImagesFromDB.size()=" + allImagesFromDB.size());
+		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
 		grid.setItems(allImagesFromDB);
 		grid.removeAllColumns();

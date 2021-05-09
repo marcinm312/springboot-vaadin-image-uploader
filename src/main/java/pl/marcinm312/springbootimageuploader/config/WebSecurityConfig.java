@@ -21,6 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsServiceImpl userDetailsServiceImpl;
 
+	private static final String ADMIN_ROLE = "ADMIN";
+	private static final String USER_ROLE = "USER";
+
 	@Autowired
 	public WebSecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl) {
 		this.userDetailsServiceImpl = userDetailsServiceImpl;
@@ -34,10 +37,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.antMatchers("/upload").hasRole("ADMIN")
-				.antMatchers("/management").hasRole("ADMIN")
-				.antMatchers("/gallery").hasAnyRole("ADMIN", "USER")
-				.antMatchers("/myprofile/**").hasAnyRole("ADMIN", "USER")
+				.antMatchers("/upload").hasRole(ADMIN_ROLE)
+				.antMatchers("/management").hasRole(ADMIN_ROLE)
+				.antMatchers("/gallery").hasAnyRole(ADMIN_ROLE, USER_ROLE)
+				.antMatchers("/myprofile/**").hasAnyRole(ADMIN_ROLE, USER_ROLE)
 
 				.and().formLogin().permitAll()
 				.and().logout().permitAll().logoutSuccessUrl("/")

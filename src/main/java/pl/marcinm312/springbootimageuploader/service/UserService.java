@@ -91,7 +91,7 @@ public class UserService {
 	public AppUser updateUserPassword(AppUser newUser) {
 		log.info("Updating user password");
 		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-		log.info("New user = " + newUser.toString());
+		log.info("New user = " + newUser);
 		AppUser savedUser = appUserRepo.save(newUser);
 		sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		log.info("User updated");
@@ -100,7 +100,7 @@ public class UserService {
 
 	public AppUser getUserByAuthentication(Authentication authentication) {
 		String userName = authentication.getName();
-		log.info("Loading user by authentication name = " + userName);
+		log.info("Loading user by authentication name = {}", userName);
 		Optional<AppUser> optionalUser = appUserRepo.findByUsername(userName);
 		return optionalUser.orElse(null);
 	}

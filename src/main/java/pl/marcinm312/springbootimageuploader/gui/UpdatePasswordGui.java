@@ -33,7 +33,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UpdatePasswordGui(UserService userService, PasswordEncoder passwordEncoder) {
@@ -73,7 +73,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private void updateUserPassword(UserService userService, PasswordEncoder passwordEncoder) {
 		AppUser appUser = getAuthenticatedUser(userService);
-		log.info("Old user = " + appUser.toString());
+		log.info("Old user = {}", appUser.toString());
 		if (passwordEncoder.matches(currentPasswordField.getValue(), appUser.getPassword())) {
 			appUser.setPassword(passwordField.getValue());
 			binder.setBean(appUser);
