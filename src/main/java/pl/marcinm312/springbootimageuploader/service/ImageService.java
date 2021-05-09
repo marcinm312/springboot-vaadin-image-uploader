@@ -1,6 +1,5 @@
 package pl.marcinm312.springbootimageuploader.service;
 
-import com.cloudinary.api.ApiResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,8 +60,7 @@ public class ImageService {
 				Image image = optionalImage.get();
 				boolean imageExists = cloudinaryService.checkIfImageExistsInCloudinary(image);
 				if (imageExists) {
-					ApiResponse deleteApiResponse = cloudinaryService.deleteImageFromCloudinary(image);
-					boolean deleteResult = cloudinaryService.checkDeleteFromCloudinaryResult(image, deleteApiResponse);
+					boolean deleteResult = cloudinaryService.deleteImageFromCloudinary(image);
 					if (deleteResult) {
 						imageRepo.delete(image);
 						return true;

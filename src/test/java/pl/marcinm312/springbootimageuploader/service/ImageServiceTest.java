@@ -28,14 +28,13 @@ class ImageServiceTest {
 	ImageService imageService;
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
 
 		Image image = ImageDataProvider.prepareExampleImage();
 
-		given(imageRepo.save(any(Image.class))).willReturn(ImageDataProvider.prepareExampleImage());
+		given(imageRepo.save(any(Image.class))).willReturn(image);
 		doNothing().when(imageRepo).delete(isA(Image.class));
-		given(cloudinaryService.deleteImageFromCloudinary(image)).willReturn(null);
 	}
 
 	@Test
@@ -44,7 +43,7 @@ class ImageServiceTest {
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
-		given(cloudinaryService.checkDeleteFromCloudinaryResult(eq(image), isNull())).willReturn(true);
+		given(cloudinaryService.deleteImageFromCloudinary(image)).willReturn(true);
 
 		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 
@@ -86,7 +85,7 @@ class ImageServiceTest {
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
-		given(cloudinaryService.checkDeleteFromCloudinaryResult(eq(image), isNull())).willReturn(false);
+		given(cloudinaryService.deleteImageFromCloudinary(image)).willReturn(false);
 
 		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 

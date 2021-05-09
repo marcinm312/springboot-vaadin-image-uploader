@@ -32,8 +32,9 @@ public class CloudinaryService {
 		return cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 	}
 
-	public ApiResponse deleteImageFromCloudinary(Image image) throws Exception {
-		return cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+	public boolean deleteImageFromCloudinary(Image image) throws Exception {
+		ApiResponse apiResponse = cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
+		return checkDeleteFromCloudinaryResult(image, apiResponse);
 	}
 
 	public boolean checkIfImageExistsInCloudinary(Image image) {
@@ -59,7 +60,7 @@ public class CloudinaryService {
 		return false;
 	}
 
-	public boolean checkDeleteFromCloudinaryResult(Image image, ApiResponse deleteApiResponse) {
+	private boolean checkDeleteFromCloudinaryResult(Image image, ApiResponse deleteApiResponse) {
 		String deleted = "deleted";
 		String publicId = image.getPublicId();
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
