@@ -58,8 +58,8 @@ public class ImageManagementGui extends VerticalLayout {
 		int pageSize = 5;
 		grid.setItems(allImagesFromDB);
 		grid.setColumns("id", "publicId", "createdAt", "username");
-		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), imageDto.getImageAddress())))
-				.setHeader("Image link").setKey("image_link");
+		grid.addColumn(new ComponentRenderer<>(imageDto -> new Anchor(imageDto.getImageAddress(), "Image link")))
+				.setHeader("Image link");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
 			image.setHeight(IMAGE_HEIGHT + "px");
@@ -72,9 +72,7 @@ public class ImageManagementGui extends VerticalLayout {
 		})).setHeader("Actions");
 		List<Grid.Column<ImageDto>> gridColumns = grid.getColumns();
 		for (Grid.Column<ImageDto> column : gridColumns) {
-			if (!"image_link".equals(column.getKey())) {
-				column.setAutoWidth(true);
-			}
+			column.setAutoWidth(true);
 		}
 		grid.setPageSize(pageSize);
 		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
