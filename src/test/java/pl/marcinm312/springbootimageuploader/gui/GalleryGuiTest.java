@@ -12,6 +12,7 @@ import org.mockito.Spy;
 import org.springframework.core.env.Environment;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;
@@ -42,7 +43,7 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
 
-		PaginatedGrid<Image> grid = galleryGui.grid;
+		PaginatedGrid<ImageDto> grid = galleryGui.grid;
 		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
 		Assertions.assertEquals(1, receivedNormalSize);
 
@@ -51,7 +52,7 @@ class GalleryGuiTest {
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Upload image")));
+				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
 	@Test
@@ -64,7 +65,7 @@ class GalleryGuiTest {
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Upload image")));
+				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
 	@Test
@@ -73,7 +74,7 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryAdminGuiWithModifiedMethod();
 
-		PaginatedGrid<Image> grid = galleryGui.grid;
+		PaginatedGrid<ImageDto> grid = galleryGui.grid;
 		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
 		Assertions.assertEquals(1, receivedNormalSize);
 
@@ -82,7 +83,7 @@ class GalleryGuiTest {
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Upload image")));
+				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
 	@Test
@@ -95,7 +96,7 @@ class GalleryGuiTest {
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Upload image")));
+				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
 	private GalleryGui getGalleryGuiWithModifiedMethod() {

@@ -14,19 +14,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class ForbiddenGui extends VerticalLayout {
 
 	H1 h1;
-	Anchor mainPageAnchor;
+	Anchor galleryAnchor;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	public ForbiddenGui() {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()=" + authentication.getName());
+		log.info("authentication.getName()={}", authentication.getName());
 
-		h1 = new H1("No permission. Only the administrator can add new photos");
-		mainPageAnchor = new Anchor("..", "Back to main page");
+		h1 = new H1("No permission. This functionality is only available to the system administrator");
+		galleryAnchor = new Anchor("../gallery", "Back to gallery");
 
-		add(h1, mainPageAnchor);
+		add(h1, galleryAnchor);
 	}
 
 }

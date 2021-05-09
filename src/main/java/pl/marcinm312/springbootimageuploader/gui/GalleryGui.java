@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
-import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
 import java.util.List;
@@ -25,35 +25,35 @@ public class GalleryGui extends VerticalLayout {
 
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
-	Anchor uploadAnchor;
+	Anchor managementAnchor;
 	Anchor myProfileAnchor;
 	Anchor updatePasswordAnchor;
 	H1 h1;
-	PaginatedGrid<Image> grid;
+	PaginatedGrid<ImageDto> grid;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public GalleryGui(ImageService imageService) {
 
-		log.info("authentication.getName()=" + getAuthenticationName());
+		log.info("authentication.getName()={}", getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		uploadAnchor = new Anchor("../upload", "Upload image");
+		managementAnchor = new Anchor("../management", "Image management");
 		myProfileAnchor = new Anchor("../myprofile/update", "Update my profile");
 		updatePasswordAnchor = new Anchor("../myprofile/updatePassword", "Update my password");
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, myProfileAnchor, updatePasswordAnchor);
 		if (isUserAdmin()) {
-			horizontalMenu.add(uploadAnchor);
+			horizontalMenu.add(managementAnchor);
 		}
 
 		h1 = new H1("Image gallery");
 
 		log.info("Loading all images from DB");
-		List<Image> allImagesFromDB = imageService.getAllImagesFromDB();
+		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()=" + allImagesFromDB.size());
-		grid = new PaginatedGrid<>(Image.class);
+		grid = new PaginatedGrid<>(ImageDto.class);
 		grid.setItems(allImagesFromDB);
 		grid.removeAllColumns();
 		grid.addColumn(new ComponentRenderer<>(image -> {
