@@ -25,6 +25,7 @@ public class ForbiddenGui extends VerticalLayout {
 
 		h1 = new H1("No permission. This functionality is only available to the system administrator");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
+		galleryAnchor.setTarget("_top");
 
 		add(h1, galleryAnchor);
 	}

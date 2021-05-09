@@ -43,6 +43,7 @@ public class MyProfileGui extends VerticalLayout {
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
+		galleryAnchor.setTarget("_top");
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
