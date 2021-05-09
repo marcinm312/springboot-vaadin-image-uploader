@@ -35,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/upload").hasRole("ADMIN")
+				.antMatchers("/management").hasRole("ADMIN")
 				.antMatchers("/gallery").hasAnyRole("ADMIN", "USER")
 				.antMatchers("/myprofile/**").hasAnyRole("ADMIN", "USER")
 

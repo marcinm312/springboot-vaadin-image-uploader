@@ -18,31 +18,32 @@ import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Route("upload")
 @StyleSheet("/css/style.css")
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;
-	Anchor galleryAnchor;
+	Anchor managementAnchor;
 	HorizontalLayout horizontalMenu;
 	H1 h1;
 	Upload upload;
 	Image image;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UploadGui(ImageService imageService, UserService userService) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()=" + authentication.getName());
+		log.info("authentication.getName()={}", authentication.getName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		galleryAnchor = new Anchor("../gallery", "Back to gallery");
+		managementAnchor = new Anchor("../management", "Back to image management");
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, galleryAnchor);
+		horizontalMenu.add(logoutAnchor, managementAnchor);
 
 		h1 = new H1("Upload image");
 
@@ -66,12 +67,12 @@ public class UploadGui extends VerticalLayout {
 				pl.marcinm312.springbootimageuploader.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
-					log.info("Image saved in DB: " + uploadedImageUrl);
-					log.info("Loading uploaded image:" + uploadedImageUrl);
+					log.info("Image saved in DB: {}", uploadedImageUrl);
+					log.info("Loading uploaded image: {}", uploadedImageUrl);
 					image.setSrc(uploadedImageUrl);
 					image.setAlt(uploadedImageUrl);
 					image.setMaxHeight("500px");
-					log.info("Image loaded: " + uploadedImageUrl);
+					log.info("Image loaded: {}", uploadedImageUrl);
 					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
 				} else {
 					Notification.show("Error uploading and saving the image", 5000, Notification.Position.MIDDLE);
@@ -82,7 +83,7 @@ public class UploadGui extends VerticalLayout {
 			}
 		} else {
 			log.info("Invalid file type");
-			log.info("fileType=" + fileType);
+			log.info("fileType={}", fileType);
 			Notification.show("Error: Invalid file type", 5000, Notification.Position.MIDDLE);
 		}
 	}
