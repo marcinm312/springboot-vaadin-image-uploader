@@ -41,7 +41,9 @@ public class UploadGui extends VerticalLayout {
 		log.info("authentication.getName()={}", authentication.getName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
+		logoutAnchor.setTarget("_top");
 		managementAnchor = new Anchor("../management", "Back to image management");
+		managementAnchor.setTarget("_top");
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, managementAnchor);
 

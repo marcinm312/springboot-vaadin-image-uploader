@@ -16,6 +16,7 @@ public class MainGui extends VerticalLayout {
 
 		registerAnchor = new Anchor("/register", "Create new account");
 		galleryAnchor = new Anchor("/gallery", "Gallery");
+		galleryAnchor.setTarget("_top");
 
 		add(registerAnchor, galleryAnchor);
 	}
