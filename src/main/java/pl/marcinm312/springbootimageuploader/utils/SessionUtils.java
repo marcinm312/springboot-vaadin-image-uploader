@@ -28,19 +28,23 @@ public class SessionUtils {
 				UserDetails userDetails = (UserDetails) principal;
 				if (userDetails.getUsername().equals(username)) {
 					for (SessionInformation sessionInformation : sessionRegistry.getAllSessions(userDetails, true)) {
-						if (expireCurrentSession) {
-							expireSession(username, sessionInformation);
-						} else {
-							String currentSessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-							if (!sessionInformation.getSessionId().equals(currentSessionId)) {
-								expireSession(username, sessionInformation);
-							}
-						}
+						processSession(username, expireCurrentSession, sessionInformation);
 					}
 				}
 			}
 		}
 		log.info("User sessions expired");
+	}
+
+	private void processSession(String username, boolean expireCurrentSession, SessionInformation sessionInformation) {
+		if (expireCurrentSession) {
+			expireSession(username, sessionInformation);
+		} else {
+			String currentSessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+			if (!sessionInformation.getSessionId().equals(currentSessionId)) {
+				expireSession(username, sessionInformation);
+			}
+		}
 	}
 
 	private void expireSession(String username, SessionInformation sessionInformation) {

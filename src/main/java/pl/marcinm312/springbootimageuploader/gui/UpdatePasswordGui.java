@@ -73,7 +73,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private void updateUserPassword(UserService userService, PasswordEncoder passwordEncoder) {
 		AppUser appUser = getAuthenticatedUser(userService);
-		log.info("Old user = {}", appUser.toString());
+		log.info("Old user = {}", appUser);
 		if (passwordEncoder.matches(currentPasswordField.getValue(), appUser.getPassword())) {
 			appUser.setPassword(passwordField.getValue());
 			binder.setBean(appUser);

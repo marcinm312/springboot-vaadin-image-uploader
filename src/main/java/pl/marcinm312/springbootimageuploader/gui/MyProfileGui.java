@@ -37,7 +37,7 @@ public class MyProfileGui extends VerticalLayout {
 	public MyProfileGui(UserService userService) {
 
 		AppUser appUser = getAuthenticatedUser(userService);
-		log.info("Old user = {}", appUser.toString());
+		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
 		binder = new BeanValidationBinder<>(AppUser.class);

@@ -35,7 +35,7 @@ public class TokenGui extends VerticalLayout {
 				userService.activateUser(tokenValue);
 				h1 = new H1("User activated");
 			} catch (TokenNotFoundException exc) {
-				log.error("Error while activating the user: " + exc.getMessage());
+				log.error("Error while activating the user: {}", exc.getMessage());
 				h1 = new H1(exc.getMessage());
 			}
 		} else {

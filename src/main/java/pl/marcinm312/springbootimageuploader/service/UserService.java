@@ -61,7 +61,7 @@ public class UserService {
 	}
 
 	public AppUser createUser(AppUser appUser, boolean isFirstUser, String appURL) {
-		log.info("Creating user: " + appUser.toString());
+		log.info("Creating user: {}", appUser);
 		AppUser savedUser;
 		appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
 		if (isFirstUser) {
@@ -72,13 +72,13 @@ public class UserService {
 			savedUser = appUserRepo.save(appUser);
 			sendToken(appUser, appURL);
 		}
-		log.info("User: " + appUser.getUsername() + " created");
+		log.info("User: {} created", appUser.getUsername());
 		return savedUser;
 	}
 
 	public AppUser updateUserData(String oldLogin, AppUser newUser) {
 		log.info("Updating user data");
-		log.info("New user = " + newUser.toString());
+		log.info("New user = {}", newUser);
 		AppUser savedUser = appUserRepo.save(newUser);
 		if (!oldLogin.equals(newUser.getUsername())) {
 			sessionUtils.expireUserSessions(oldLogin, true);
@@ -91,7 +91,7 @@ public class UserService {
 	public AppUser updateUserPassword(AppUser newUser) {
 		log.info("Updating user password");
 		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-		log.info("New user = " + newUser);
+		log.info("New user = {}", newUser);
 		AppUser savedUser = appUserRepo.save(newUser);
 		sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		log.info("User updated");
@@ -125,11 +125,11 @@ public class UserService {
 		if (optionalToken.isPresent()) {
 			Token token = optionalToken.get();
 			AppUser appUser = token.getUser();
-			log.info("Activating user = " + appUser.getUsername());
+			log.info("Activating user = {}", appUser.getUsername());
 			appUser.setEnabled(true);
 			AppUser savedAppUser = appUserRepo.save(appUser);
 			tokenRepo.delete(token);
-			log.info("User " + appUser.getUsername() + " activated");
+			log.info("User {} activated", appUser.getUsername());
 			return savedAppUser;
 		} else {
 			throw new TokenNotFoundException();
