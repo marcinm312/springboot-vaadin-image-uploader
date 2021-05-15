@@ -115,8 +115,7 @@ public class UserService {
 		try {
 			mailService.sendMail(appUser.getEmail(), "Confirm your email address", emailContent, true);
 		} catch (MessagingException e) {
-			log.error("An error occurred while sending the email");
-			e.printStackTrace();
+			log.error("An error occurred while sending the email. [MESSAGE]: {}", e.getMessage());
 		}
 	}
 

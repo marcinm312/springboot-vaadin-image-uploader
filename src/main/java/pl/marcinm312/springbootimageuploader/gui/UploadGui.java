@@ -80,7 +80,7 @@ public class UploadGui extends VerticalLayout {
 					Notification.show("Error uploading and saving the image", 5000, Notification.Position.MIDDLE);
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
 				Notification.show("Error occurred: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
 			}
 		} else {

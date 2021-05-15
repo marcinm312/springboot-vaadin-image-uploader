@@ -72,7 +72,6 @@ public class ImageService {
 			}
 		} catch (Exception e) {
 			log.error("Error occurred during deleting imageId: {} [MESSAGE]: {}", imageId, e.getMessage());
-			e.printStackTrace();
 		}
 		return false;
 	}

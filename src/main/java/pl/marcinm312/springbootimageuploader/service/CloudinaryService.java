@@ -54,7 +54,6 @@ public class CloudinaryService {
 			}
 		} catch (Exception e) {
 			log.error("Error occurred during checking if image exists in Cloudinary publicId: {} [MESSAGE]: {}", publicId, e.getMessage());
-			e.printStackTrace();
 		}
 		log.info("Image with publicId: {} not exists in Cloudinary", publicId);
 		return false;
