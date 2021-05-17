@@ -13,6 +13,7 @@ import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.service.MailService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.validator.UserRegistrationValidator;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -51,7 +52,8 @@ class RegisterGuiTest {
 	void registerGuiTest_simpleCase_success() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
-		RegisterGui registerGui = new RegisterGui(userService) {
+		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully registered", notificationText);
@@ -75,7 +77,8 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() throws MessagingException {
-		RegisterGui registerGui = new RegisterGui(userService) {
+		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
@@ -95,7 +98,8 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new AppUser()));
-		RegisterGui registerGui = new RegisterGui(userService) {
+		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: This user already exists!", notificationText);
@@ -115,7 +119,8 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		RegisterGui registerGui = new RegisterGui(userService) {
+		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
@@ -136,7 +141,8 @@ class RegisterGuiTest {
 	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
-		RegisterGui registerGui = new RegisterGui(userService) {
+		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);

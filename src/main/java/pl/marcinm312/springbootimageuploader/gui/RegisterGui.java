@@ -16,6 +16,7 @@ import com.vaadin.flow.server.VaadinServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.validator.UserRegistrationValidator;
 
 @Route("register")
 @StyleSheet("/css/style.css")
@@ -34,7 +35,7 @@ public class RegisterGui extends VerticalLayout {
 	static final String PARAGRAPH_VALUE = "After registration, you will receive an email that will enable you to activate your account. It is not possible to log in without activating the account. ";
 
 	@Autowired
-	public RegisterGui(UserService userService) {
+	public RegisterGui(UserService userService, UserRegistrationValidator validator) {
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		mainPageAnchor = new Anchor("..", "Back to main page");
@@ -61,11 +62,11 @@ public class RegisterGui extends VerticalLayout {
 		binder.forField(emailTextField).bind("email");
 
 		button = new Button("Register!");
-		button.addClickListener(event -> createUser(userService));
+		button.addClickListener(event -> createUser(userService, validator));
 		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, button);
 	}
 
-	private void createUser(UserService userService) {
+	private void createUser(UserService userService, UserRegistrationValidator validator) {
 		String username = loginTextField.getValue();
 		String password = passwordField.getValue();
 		String email = emailTextField.getValue();
@@ -73,16 +74,13 @@ public class RegisterGui extends VerticalLayout {
 		binder.setBean(appUser);
 		binder.validate();
 		if (binder.isValid()) {
-			if (!userService.getUserByUsername(username).isPresent()) {
-				if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
-					String uriString = getUriString();
-					userService.createUser(appUser, false, uriString);
-					showNotification("User successfully registered");
-				} else {
-					showNotification("Error: The passwords in both fields must be the same!");
-				}
+			String validationError = validator.validate(appUser, confirmPasswordField.getValue());
+			if (validationError == null) {
+				String uriString = getUriString();
+				userService.createUser(appUser, false, uriString);
+				showNotification("User successfully registered");
 			} else {
-				showNotification("Error: This user already exists!");
+				showNotification(validationError);
 			}
 		} else {
 			showNotification("Error: Check the validation messages on the form");
