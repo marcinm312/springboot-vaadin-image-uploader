@@ -8,16 +8,16 @@ import pl.marcinm312.springbootimageuploader.service.UserService;
 import java.util.Optional;
 
 @Component
-public class UserRegistrationValidator {
+public class UserValidator {
 
 	private final UserService userService;
 
 	@Autowired
-	public UserRegistrationValidator(UserService userService) {
+	public UserValidator(UserService userService) {
 		this.userService = userService;
 	}
 
-	public String validate(AppUser appUser, String confirmPasswordValue) {
+	public String validateUserRegistration(AppUser appUser, String confirmPasswordValue) {
 
 		String username = appUser.getUsername();
 		Optional<AppUser> optionalUser = userService.getUserByUsername(username);

@@ -13,7 +13,7 @@ import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.service.MailService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
-import pl.marcinm312.springbootimageuploader.validator.UserRegistrationValidator;
+import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -52,7 +52,7 @@ class RegisterGuiTest {
 	void registerGuiTest_simpleCase_success() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
-		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -77,7 +77,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() throws MessagingException {
-		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -98,7 +98,7 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new AppUser()));
-		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -119,7 +119,7 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
@@ -141,7 +141,7 @@ class RegisterGuiTest {
 	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
-		UserRegistrationValidator validator = new UserRegistrationValidator(userService);
+		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
 			protected void showNotification(String notificationText) {
