@@ -29,4 +29,12 @@ public class UserValidator {
 		}
 		return null;
 	}
+
+	public String validateUserDataUpdate(AppUser appUser, String oldLogin) {
+
+		if (!appUser.getUsername().equals(oldLogin) && userService.getUserByUsername(appUser.getUsername()).isPresent()) {
+			return "Error: This user already exists!";
+		}
+		return null;
+	}
 }
