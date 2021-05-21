@@ -135,6 +135,10 @@ public class UserService {
 		}
 	}
 
+	public boolean isPasswordCorrect(AppUser appUser, String currentPassword) {
+		return passwordEncoder.matches(currentPassword, appUser.getPassword());
+	}
+
 	private String generateEmailContent(AppUser appUser, String tokenValue, String appURL) {
 		return "Welcome " + appUser.getUsername() + "," + "<br><br>Confirm your email address by clicking on the link below:"
 				+ "<br><a href=\"" + appURL + "/token?value=" + tokenValue + "\">Activate account</a>";

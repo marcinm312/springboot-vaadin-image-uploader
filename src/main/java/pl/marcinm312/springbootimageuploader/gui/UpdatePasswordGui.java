@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
@@ -36,7 +36,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public UpdatePasswordGui(UserService userService, PasswordEncoder passwordEncoder) {
+	public UpdatePasswordGui(UserService userService, UserValidator userValidator) {
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -62,7 +62,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		confirmPasswordField.setRequired(true);
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUserPassword(userService, passwordEncoder));
+		button.addClickListener(event -> updateUserPassword(userService, userValidator));
 		add(galleryAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
 	}
 
@@ -71,29 +71,22 @@ public class UpdatePasswordGui extends VerticalLayout {
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUserPassword(UserService userService, PasswordEncoder passwordEncoder) {
+	private void updateUserPassword(UserService userService, UserValidator userValidator) {
 		AppUser appUser = getAuthenticatedUser(userService);
 		log.info("Old user = {}", appUser);
-		if (passwordEncoder.matches(currentPasswordField.getValue(), appUser.getPassword())) {
+		String validationError = userValidator.validateUserPasswordUpdate(appUser, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
+		if (validationError == null) {
 			appUser.setPassword(passwordField.getValue());
 			binder.setBean(appUser);
 			binder.validate();
 			if (binder.isValid()) {
-				if (passwordField.getValue().equals(confirmPasswordField.getValue())) {
-					if (!currentPasswordField.getValue().equals(passwordField.getValue())) {
-						userService.updateUserPassword(appUser);
-						showNotification("User password successfully updated");
-					} else {
-						showNotification("Error: The new password must be different from the previous one!");
-					}
-				} else {
-					showNotification("Error: The passwords in both fields must be the same!");
-				}
+				userService.updateUserPassword(appUser);
+				showNotification("User password successfully updated");
 			} else {
 				showNotification("Error: Check the validation messages on the form");
 			}
 		} else {
-			showNotification("Error: The current password is incorrect");
+			showNotification(validationError);
 		}
 	}
 
