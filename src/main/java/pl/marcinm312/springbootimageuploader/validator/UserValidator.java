@@ -30,17 +30,17 @@ public class UserValidator {
 		return null;
 	}
 
-	public String validateUserDataUpdate(AppUser appUser, String oldLogin) {
+	public String validateUserDataUpdate(AppUser newAppUser, String oldLogin) {
 
-		if (!appUser.getUsername().equals(oldLogin) && userService.getUserByUsername(appUser.getUsername()).isPresent()) {
+		if (!newAppUser.getUsername().equals(oldLogin) && userService.getUserByUsername(newAppUser.getUsername()).isPresent()) {
 			return "Error: This user already exists!";
 		}
 		return null;
 	}
 
-	public String validateUserPasswordUpdate(AppUser appUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
+	public String validateUserPasswordUpdate(AppUser oldAppUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
 
-		if (!userService.isPasswordCorrect(appUser, currentPasswordEntered)) {
+		if (currentPasswordEntered.isEmpty() || !userService.isPasswordCorrect(oldAppUser, currentPasswordEntered)) {
 			return "Error: The current password is incorrect";
 		}
 		if (!confirmPasswordValue.equals(newPassword)) {
