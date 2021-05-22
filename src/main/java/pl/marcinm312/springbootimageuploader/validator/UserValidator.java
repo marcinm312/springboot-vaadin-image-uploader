@@ -29,4 +29,26 @@ public class UserValidator {
 		}
 		return null;
 	}
+
+	public String validateUserDataUpdate(AppUser newAppUser, String oldLogin) {
+
+		if (!newAppUser.getUsername().equals(oldLogin) && userService.getUserByUsername(newAppUser.getUsername()).isPresent()) {
+			return "Error: This user already exists!";
+		}
+		return null;
+	}
+
+	public String validateUserPasswordUpdate(AppUser oldAppUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
+
+		if (currentPasswordEntered.isEmpty() || !userService.isPasswordCorrect(oldAppUser, currentPasswordEntered)) {
+			return "Error: The current password is incorrect";
+		}
+		if (!confirmPasswordValue.equals(newPassword)) {
+			return "Error: The passwords in both fields must be the same!";
+		}
+		if (currentPasswordEntered.equals(newPassword)) {
+			return "Error: The new password must be different from the previous one!";
+		}
+		return null;
+	}
 }

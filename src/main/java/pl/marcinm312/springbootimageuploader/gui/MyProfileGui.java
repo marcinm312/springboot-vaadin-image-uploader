@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("myprofile/update")
 @StyleSheet("/css/style.css")
@@ -34,7 +35,7 @@ public class MyProfileGui extends VerticalLayout {
 	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public MyProfileGui(UserService userService) {
+	public MyProfileGui(UserService userService, UserValidator userValidator) {
 
 		AppUser appUser = getAuthenticatedUser(userService);
 		log.info("Old user = {}", appUser);
@@ -64,7 +65,7 @@ public class MyProfileGui extends VerticalLayout {
 		binder.forField(emailTextField).bind("email");
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUser(userService, oldLogin, appUser));
+		button.addClickListener(event -> updateUser(userService, oldLogin, appUser, userValidator));
 		add(galleryAnchor, h1, paragraph, loginTextField, emailTextField, button);
 	}
 
@@ -73,22 +74,18 @@ public class MyProfileGui extends VerticalLayout {
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUser(UserService userService, String oldLogin, AppUser appUser) {
+	private void updateUser(UserService userService, String oldLogin, AppUser appUser, UserValidator userValidator) {
 		appUser.setUsername(loginTextField.getValue());
 		appUser.setEmail(emailTextField.getValue());
 		binder.setBean(appUser);
 		binder.validate();
 		if (binder.isValid()) {
-			if (!appUser.getUsername().equals(oldLogin)) {
-				if (!userService.getUserByUsername(appUser.getUsername()).isPresent()) {
-					userService.updateUserData(oldLogin, appUser);
-					showNotification("User successfully updated");
-				} else {
-					showNotification("Error: This user already exists!");
-				}
-			} else {
+			String validationError = userValidator.validateUserDataUpdate(appUser, oldLogin);
+			if (validationError == null) {
 				userService.updateUserData(oldLogin, appUser);
 				showNotification("User successfully updated");
+			} else {
+				showNotification(validationError);
 			}
 		} else {
 			showNotification("Error: Check the validation messages on the form");

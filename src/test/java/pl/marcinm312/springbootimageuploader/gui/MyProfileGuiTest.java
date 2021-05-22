@@ -11,6 +11,7 @@ import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
+import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 import java.util.Optional;
 
@@ -40,7 +41,8 @@ class MyProfileGuiTest {
 		String newEmail = "aaa@abc.com";
 		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
-		MyProfileGui myProfileGui = new MyProfileGui(userService) {
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
@@ -68,7 +70,9 @@ class MyProfileGuiTest {
 	@Test
 	void myProfileGuiTest_updateUserWithOnlyEmailChange_success() {
 		String newEmail = "aaa@abc.com";
-		MyProfileGui myProfileGui = new MyProfileGui(userService) {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
@@ -94,7 +98,9 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateUserWithTooShortLogin_binderIsNotValid() {
 		String newLogin = "hh";
 		String newEmail = "aaa@abc.com";
-		MyProfileGui myProfileGui = new MyProfileGui(userService) {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
@@ -124,7 +130,9 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newPassword = "aaa@abc.com";
 		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.of(new AppUser()));
-		MyProfileGui myProfileGui = new MyProfileGui(userService) {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: This user already exists!", notificationText);
@@ -153,7 +161,9 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateUserWithInvalidEmail_binderIsNotValid() {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaaaaaaaaaaaaaaaaa";
-		MyProfileGui myProfileGui = new MyProfileGui(userService) {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
 			protected void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
