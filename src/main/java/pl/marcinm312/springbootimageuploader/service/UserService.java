@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.marcinm312.springbootimageuploader.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Token;
@@ -29,7 +30,7 @@ public class UserService {
 	private final MailService mailService;
 	private final SessionUtils sessionUtils;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UserService(AppUserRepo appUserRepo, PasswordEncoder passwordEncoder, Environment environment,
@@ -43,6 +44,7 @@ public class UserService {
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
+	@Transactional
 	public AppUser createFirstUser() {
 		if (!appUserRepo.findByUsername("administrator").isPresent()) {
 			log.info("Creating administrator user");
@@ -60,6 +62,7 @@ public class UserService {
 		return appUserRepo.findByUsername(username);
 	}
 
+	@Transactional
 	public AppUser createUser(AppUser appUser, boolean isFirstUser, String appURL) {
 		log.info("Creating user: {}", appUser);
 		AppUser savedUser;
@@ -119,6 +122,7 @@ public class UserService {
 		}
 	}
 
+	@Transactional
 	public AppUser activateUser(String tokenValue) {
 		Optional<Token> optionalToken = tokenRepo.findByValue(tokenValue);
 		if (optionalToken.isPresent()) {

@@ -51,7 +51,7 @@ class UpdatePasswordGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -65,7 +65,7 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.button.click();
 
 		verify(sessionUtils, times(1))
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class UpdatePasswordGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -96,7 +96,7 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class UpdatePasswordGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -127,7 +127,7 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class UpdatePasswordGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -158,7 +158,7 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
 	}
 
 	@Test
@@ -175,7 +175,7 @@ class UpdatePasswordGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -189,6 +189,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
 	}
 }

@@ -31,12 +31,18 @@ public class UpdatePasswordGui extends VerticalLayout {
 	PasswordField confirmPasswordField;
 	Button button;
 
-	static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
+	private final transient UserService userService;
+	private final transient UserValidator userValidator;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
+
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UpdatePasswordGui(UserService userService, UserValidator userValidator) {
+
+		this.userService = userService;
+		this.userValidator = userValidator;
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -62,17 +68,17 @@ public class UpdatePasswordGui extends VerticalLayout {
 		confirmPasswordField.setRequired(true);
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUserPassword(userService, userValidator));
+		button.addClickListener(event -> updateUserPassword());
 		add(galleryAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
 	}
 
-	protected AppUser getAuthenticatedUser(UserService userService) {
+	AppUser getAuthenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUserPassword(UserService userService, UserValidator userValidator) {
-		AppUser appUser = getAuthenticatedUser(userService);
+	private void updateUserPassword() {
+		AppUser appUser = getAuthenticatedUser();
 		log.info("Old user = {}", appUser);
 		String validationError = userValidator.validateUserPasswordUpdate(appUser, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
 		if (validationError == null) {
@@ -90,7 +96,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		}
 	}
 
-	protected void showNotification(String notificationText) {
+	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

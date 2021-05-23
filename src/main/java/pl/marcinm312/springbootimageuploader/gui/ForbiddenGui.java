@@ -16,7 +16,7 @@ public class ForbiddenGui extends VerticalLayout {
 	H1 h1;
 	Anchor galleryAnchor;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	public ForbiddenGui() {
 

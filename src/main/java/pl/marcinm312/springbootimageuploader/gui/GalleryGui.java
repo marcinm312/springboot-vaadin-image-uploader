@@ -31,7 +31,7 @@ public class GalleryGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public GalleryGui(ImageService imageService) {
@@ -75,12 +75,12 @@ public class GalleryGui extends VerticalLayout {
 		add(horizontalMenu, h1, grid);
 	}
 
-	protected String getAuthenticationName() {
+	String getAuthenticationName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
 	}
 
-	protected boolean isUserAdmin() {
+	boolean isUserAdmin() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return "ROLE_ADMIN".equals(((AppUser) authentication.getPrincipal()).getRole());
 	}

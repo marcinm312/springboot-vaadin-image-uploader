@@ -34,12 +34,16 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
-	static final int IMAGE_HEIGHT = 100;
+	private final transient ImageService imageService;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private static final int IMAGE_HEIGHT = 100;
+
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public ImageManagementGui(ImageService imageService) {
+
+		this.imageService = imageService;
 
 		log.info("authentication.getName()={}", getAuthenticationName());
 
@@ -71,7 +75,7 @@ public class ImageManagementGui extends VerticalLayout {
 		})).setHeader("Miniature");
 		grid.addColumn(new ComponentRenderer<>(imageDto -> {
 			Button deleteButton = new Button("Delete");
-			deleteButton.addClickListener(openDialogEvent -> openDialogEvent(imageService, pageSize, imageDto));
+			deleteButton.addClickListener(openDialogEvent -> openDialogEvent(pageSize, imageDto));
 			return deleteButton;
 		})).setHeader("Actions");
 		List<Grid.Column<ImageDto>> gridColumns = grid.getColumns();
@@ -89,18 +93,18 @@ public class ImageManagementGui extends VerticalLayout {
 		add(horizontalMenu, h1, grid);
 	}
 
-	private void openDialogEvent(ImageService imageService, int pageSize, ImageDto imageDto) {
+	private void openDialogEvent(int pageSize, ImageDto imageDto) {
 		Dialog dialog = new Dialog();
 		Text text = new Text("Are you sure you want to delete this image?");
 		Image image = new Image(imageDto.getCompressedImageAddress(IMAGE_HEIGHT), imageDto.getCompressedImageAddress(IMAGE_HEIGHT));
 		image.setHeight("100px");
-		Button confirmButton = new Button("Confirm", deleteEvent -> deleteEvent(imageService, pageSize, imageDto, dialog));
+		Button confirmButton = new Button("Confirm", deleteEvent -> deleteEvent(pageSize, imageDto, dialog));
 		Button cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
 		dialog.add(new VerticalLayout(text, image, new HorizontalLayout(confirmButton, cancelButton)));
 		dialog.open();
 	}
 
-	private void deleteEvent(ImageService imageService, int pageSize, ImageDto imageDto, Dialog dialog) {
+	private void deleteEvent(int pageSize, ImageDto imageDto, Dialog dialog) {
 		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
 		if (deleteResult) {
 			int pageNumber = grid.getPage();
@@ -122,12 +126,12 @@ public class ImageManagementGui extends VerticalLayout {
 		dialog.close();
 	}
 
-	protected String getAuthenticationName() {
+	String getAuthenticationName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
 	}
 
-	protected void showNotification(String notificationText) {
+	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

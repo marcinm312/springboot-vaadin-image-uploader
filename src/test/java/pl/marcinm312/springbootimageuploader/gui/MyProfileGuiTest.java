@@ -49,7 +49,7 @@ class MyProfileGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -62,7 +62,7 @@ class MyProfileGuiTest {
 		myProfileGui.button.click();
 
 		verify(sessionUtils, times(1))
-				.expireUserSessions(myProfileGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 		verify(sessionUtils, times(1))
 				.expireUserSessions(newLogin, true);
 	}
@@ -79,7 +79,7 @@ class MyProfileGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -91,7 +91,7 @@ class MyProfileGuiTest {
 		myProfileGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class MyProfileGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -120,7 +120,7 @@ class MyProfileGuiTest {
 		myProfileGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 		verify(sessionUtils, never())
 				.expireUserSessions(newLogin, true);
 	}
@@ -139,7 +139,7 @@ class MyProfileGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -152,7 +152,7 @@ class MyProfileGuiTest {
 		myProfileGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 		verify(sessionUtils, never())
 				.expireUserSessions(newLogin, true);
 	}
@@ -170,7 +170,7 @@ class MyProfileGuiTest {
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser(UserService userService) {
+			protected AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -183,7 +183,7 @@ class MyProfileGuiTest {
 		myProfileGui.button.click();
 
 		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser(userService).getUsername(), true);
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 		verify(sessionUtils, never())
 				.expireUserSessions(newLogin, true);
 	}

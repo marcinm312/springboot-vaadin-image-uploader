@@ -3,6 +3,7 @@ package pl.marcinm312.springbootimageuploader.service;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
@@ -22,7 +23,7 @@ public class ImageService {
 	private final ImageRepo imageRepo;
 	private final CloudinaryService cloudinaryService;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public ImageService(ImageRepo imageRepo, CloudinaryService cloudinaryService) {
@@ -39,6 +40,7 @@ public class ImageService {
 		return imagesDtoList;
 	}
 
+	@Transactional
 	public Image uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
 		log.info("Starting uploading a file");
 		Map uploadResult = cloudinaryService.uploadImageToCloudinary(inputStream);
@@ -52,6 +54,7 @@ public class ImageService {
 		}
 	}
 
+	@Transactional
 	public boolean deleteImageFromCloudinaryAndDB(Long imageId) {
 		log.info("Deleting imageId: {}", imageId);
 		try {

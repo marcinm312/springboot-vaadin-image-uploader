@@ -32,10 +32,17 @@ public class RegisterGui extends VerticalLayout {
 	TextField emailTextField;
 	Button button;
 
-	static final String PARAGRAPH_VALUE = "After registration, you will receive an email that will enable you to activate your account. It is not possible to log in without activating the account. ";
+	private final transient UserService userService;
+	private final transient UserValidator userValidator;
+
+	private static final String PARAGRAPH_VALUE = "After registration, you will receive an email that will enable you to activate your account. It is not possible to log in without activating the account. ";
 
 	@Autowired
-	public RegisterGui(UserService userService, UserValidator validator) {
+	public RegisterGui(UserService userService, UserValidator userValidator) {
+
+		this.userService = userService;
+		this.userValidator = userValidator;
+
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		mainPageAnchor = new Anchor("..", "Back to main page");
@@ -62,11 +69,11 @@ public class RegisterGui extends VerticalLayout {
 		binder.forField(emailTextField).bind("email");
 
 		button = new Button("Register!");
-		button.addClickListener(event -> createUser(userService, validator));
+		button.addClickListener(event -> createUser());
 		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, button);
 	}
 
-	private void createUser(UserService userService, UserValidator validator) {
+	private void createUser() {
 		String username = loginTextField.getValue();
 		String password = passwordField.getValue();
 		String email = emailTextField.getValue();
@@ -74,7 +81,7 @@ public class RegisterGui extends VerticalLayout {
 		binder.setBean(appUser);
 		binder.validate();
 		if (binder.isValid()) {
-			String validationError = validator.validateUserRegistration(appUser, confirmPasswordField.getValue());
+			String validationError = userValidator.validateUserRegistration(appUser, confirmPasswordField.getValue());
 			if (validationError == null) {
 				String uriString = getUriString();
 				userService.createUser(appUser, false, uriString);
@@ -87,12 +94,12 @@ public class RegisterGui extends VerticalLayout {
 		}
 	}
 
-	protected String getUriString() {
+	String getUriString() {
 		VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
 		return request.getRequestURL().toString().replace("/register", "");
 	}
 
-	protected void showNotification(String notificationText) {
+	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

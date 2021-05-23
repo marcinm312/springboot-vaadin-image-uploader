@@ -18,7 +18,7 @@ public class TokenGui extends VerticalLayout {
 	H1 h1;
 	Anchor anchor;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public TokenGui(UserService userService) {

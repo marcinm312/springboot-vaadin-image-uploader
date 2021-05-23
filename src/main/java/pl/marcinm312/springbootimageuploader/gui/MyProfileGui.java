@@ -30,14 +30,20 @@ public class MyProfileGui extends VerticalLayout {
 	TextField emailTextField;
 	Button button;
 
-	static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
+	private final transient UserService userService;
+	private final transient UserValidator userValidator;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
+
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public MyProfileGui(UserService userService, UserValidator userValidator) {
 
-		AppUser appUser = getAuthenticatedUser(userService);
+		this.userService = userService;
+		this.userValidator = userValidator;
+
+		AppUser appUser = getAuthenticatedUser();
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
@@ -65,16 +71,16 @@ public class MyProfileGui extends VerticalLayout {
 		binder.forField(emailTextField).bind("email");
 
 		button = new Button("Save");
-		button.addClickListener(event -> updateUser(userService, oldLogin, appUser, userValidator));
+		button.addClickListener(event -> updateUser(oldLogin, appUser));
 		add(galleryAnchor, h1, paragraph, loginTextField, emailTextField, button);
 	}
 
-	protected AppUser getAuthenticatedUser(UserService userService) {
+	AppUser getAuthenticatedUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return userService.getUserByAuthentication(authentication);
 	}
 
-	private void updateUser(UserService userService, String oldLogin, AppUser appUser, UserValidator userValidator) {
+	private void updateUser(String oldLogin, AppUser appUser) {
 		appUser.setUsername(loginTextField.getValue());
 		appUser.setEmail(emailTextField.getValue());
 		binder.setBean(appUser);
@@ -92,7 +98,7 @@ public class MyProfileGui extends VerticalLayout {
 		}
 	}
 
-	protected void showNotification(String notificationText) {
+	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

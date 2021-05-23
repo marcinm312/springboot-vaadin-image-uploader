@@ -7,6 +7,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
@@ -32,10 +33,16 @@ public class UploadGui extends VerticalLayout {
 	Upload upload;
 	Image image;
 
-	protected final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final transient ImageService imageService;
+	private final transient UserService userService;
+
+	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UploadGui(ImageService imageService, UserService userService) {
+
+		this.imageService = imageService;
+		this.userService = userService;
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("authentication.getName()={}", authentication.getName());
@@ -54,11 +61,11 @@ public class UploadGui extends VerticalLayout {
 
 		image = new Image();
 
-		upload.addSucceededListener(event -> uploadImageAction(imageService, userService, authentication, vaadinBuffer, event));
+		upload.addSucceededListener(event -> uploadImageAction(authentication, vaadinBuffer, event));
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void uploadImageAction(ImageService imageService, UserService userService, Authentication authentication, MemoryBuffer vaadinBuffer, com.vaadin.flow.component.upload.SucceededEvent event) {
+	private void uploadImageAction(Authentication authentication, MemoryBuffer vaadinBuffer, SucceededEvent event) {
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
 			log.info("Start uploading an image");
@@ -75,18 +82,22 @@ public class UploadGui extends VerticalLayout {
 					image.setAlt(uploadedImageUrl);
 					image.setMaxHeight("500px");
 					log.info("Image loaded: {}", uploadedImageUrl);
-					Notification.show("Image successfully uploaded", 5000, Notification.Position.MIDDLE);
+					showNotification("Image successfully uploaded");
 				} else {
-					Notification.show("Error uploading and saving the image", 5000, Notification.Position.MIDDLE);
+					showNotification("Error uploading and saving the image");
 				}
 			} catch (IOException e) {
 				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
-				Notification.show("Error occurred: " + e.getMessage(), 5000, Notification.Position.MIDDLE);
+				showNotification("Error occurred: " + e.getMessage());
 			}
 		} else {
 			log.info("Invalid file type");
 			log.info("fileType={}", fileType);
-			Notification.show("Error: Invalid file type", 5000, Notification.Position.MIDDLE);
+			showNotification("Error: Invalid file type");
 		}
+	}
+
+	void showNotification(String notificationText) {
+		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

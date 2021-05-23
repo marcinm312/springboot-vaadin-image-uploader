@@ -16,7 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	private final AppUserRepo appUserRepo;
 
-	protected final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UserDetailsServiceImpl(AppUserRepo appUserRepo) {
