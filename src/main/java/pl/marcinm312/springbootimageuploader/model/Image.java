@@ -17,7 +17,7 @@ public class Image extends AuditModel {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
+	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private AppUser appUser;
 
 	public Image(String imageAddress, AppUser appUser) {
