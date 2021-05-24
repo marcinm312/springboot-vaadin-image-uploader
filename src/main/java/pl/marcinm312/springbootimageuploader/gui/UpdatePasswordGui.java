@@ -23,7 +23,7 @@ import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 public class UpdatePasswordGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;
-	Anchor galleryAnchor;
+	Anchor myProfileAnchor;
 	H1 h1;
 	Paragraph paragraph;
 	PasswordField currentPasswordField;
@@ -46,8 +46,8 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
-		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
-		galleryAnchor.setTarget("_top");
+		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
+		myProfileAnchor.setTarget("_top");
 		h1 = new H1("Update password form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
@@ -69,7 +69,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		button = new Button("Save");
 		button.addClickListener(event -> updateUserPassword());
-		add(galleryAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
+		add(myProfileAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
 	}
 
 	AppUser getAuthenticatedUser() {

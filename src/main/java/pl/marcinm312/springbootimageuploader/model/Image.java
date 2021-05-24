@@ -1,8 +1,6 @@
 package pl.marcinm312.springbootimageuploader.model;
 
 import org.apache.commons.io.FilenameUtils;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,9 +13,8 @@ public class Image extends AuditModel {
 	private Long id;
 	private String imageAddress;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id")
 	private AppUser appUser;
 
 	public Image(String imageAddress, AppUser appUser) {
