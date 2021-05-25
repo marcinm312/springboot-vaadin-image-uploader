@@ -18,3 +18,8 @@ vaadin-grid vaadin-grid-cell-content img {
 p.registration {
     margin-bottom: 0;
 }
+
+a.updatepass {
+    margin-left: 11px;
+    margin-right: 11px;
+}

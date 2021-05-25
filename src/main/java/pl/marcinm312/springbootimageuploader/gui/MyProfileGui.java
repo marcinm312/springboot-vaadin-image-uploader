@@ -1,8 +1,11 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
@@ -27,11 +30,17 @@ public class MyProfileGui extends VerticalLayout {
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;
+	Button deleteMyAccountButton;
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
 	TextField emailTextField;
 	Button button;
+
+	Dialog dialog;
+	Text confirmText;
+	Button confirmButton;
+	Button cancelButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
@@ -46,6 +55,8 @@ public class MyProfileGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
+		dialog = prepareDialog();
+
 		AppUser appUser = getAuthenticatedUser();
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
@@ -54,10 +65,17 @@ public class MyProfileGui extends VerticalLayout {
 
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
 		galleryAnchor.setTarget("_top");
+
 		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
 		updatePasswordAnchor.setTarget("_top");
+		updatePasswordAnchor.setClassName("updatepass");
+
+		deleteMyAccountButton = new Button("Delete my account");
+		deleteMyAccountButton.addClickListener(event -> dialog.open());
+
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(galleryAnchor, updatePasswordAnchor);
+		horizontalMenu.add(new Div(galleryAnchor, updatePasswordAnchor, deleteMyAccountButton));
+
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
@@ -80,6 +98,15 @@ public class MyProfileGui extends VerticalLayout {
 		button = new Button("Save");
 		button.addClickListener(event -> updateUser(oldLogin, appUser));
 		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button);
+	}
+
+	private Dialog prepareDialog() {
+		Dialog dialogWindow = new Dialog();
+		confirmText = new Text("Are you sure you want to delete your user account?");
+		confirmButton = new Button("Confirm");
+		cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
+		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmButton, cancelButton)));
+		return dialogWindow;
 	}
 
 	AppUser getAuthenticatedUser() {
