@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.marcinm312.springbootimageuploader.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
-import pl.marcinm312.springbootimageuploader.model.Image;
 import pl.marcinm312.springbootimageuploader.model.Token;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
@@ -146,10 +145,7 @@ public class UserService {
 	@Transactional
 	public void deleteUser(AppUser appUser) {
 		log.info("Deleting user = {}", appUser.getUsername());
-		for (Image image : appUser.getImages()) {
-			image.setUser(null);
-			imageRepo.save(image);
-		}
+		imageRepo.deleteUserFromImages(appUser);
 		appUserRepo.delete(appUser);
 		log.info("User {} deleted", appUser.getUsername());
 		log.info("Expiring sessions for user: {}", appUser.getUsername());
