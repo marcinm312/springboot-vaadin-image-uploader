@@ -55,11 +55,11 @@ public class MyProfileGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		dialog = prepareDialog();
-
 		AppUser appUser = getAuthenticatedUser();
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
+
+		dialog = prepareDialog(appUser);
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -100,10 +100,10 @@ public class MyProfileGui extends VerticalLayout {
 		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button);
 	}
 
-	private Dialog prepareDialog() {
+	private Dialog prepareDialog(AppUser appUser) {
 		Dialog dialogWindow = new Dialog();
 		confirmText = new Text("Are you sure you want to delete your user account?");
-		confirmButton = new Button("Confirm");
+		confirmButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
 		cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
 		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmButton, cancelButton)));
 		return dialogWindow;
@@ -130,6 +130,10 @@ public class MyProfileGui extends VerticalLayout {
 		} else {
 			showNotification("Error: Check the validation messages on the form");
 		}
+	}
+
+	private void deleteUser(AppUser appUser) {
+		userService.deleteUser(appUser);
 	}
 
 	void showNotification(String notificationText) {
