@@ -19,7 +19,6 @@ p.registration {
     margin-bottom: 0;
 }
 
-a.updatepass {
-    margin-left: 11px;
-    margin-right: 11px;
+vaadin-button.delete {
+    margin-top: 40px;
 }

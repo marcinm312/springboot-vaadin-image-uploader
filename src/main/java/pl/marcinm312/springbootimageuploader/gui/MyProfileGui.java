@@ -2,10 +2,10 @@ package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
@@ -68,13 +68,9 @@ public class MyProfileGui extends VerticalLayout {
 
 		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
 		updatePasswordAnchor.setTarget("_top");
-		updatePasswordAnchor.setClassName("updatepass");
-
-		deleteMyAccountButton = new Button("Delete my account");
-		deleteMyAccountButton.addClickListener(event -> dialog.open());
 
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(new Div(galleryAnchor, updatePasswordAnchor, deleteMyAccountButton));
+		horizontalMenu.add(galleryAnchor, updatePasswordAnchor);
 
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
@@ -97,7 +93,13 @@ public class MyProfileGui extends VerticalLayout {
 
 		button = new Button("Save");
 		button.addClickListener(event -> updateUser(oldLogin, appUser));
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button);
+
+		deleteMyAccountButton = new Button("Delete my account");
+		deleteMyAccountButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		deleteMyAccountButton.setClassName("delete");
+		deleteMyAccountButton.addClickListener(event -> dialog.open());
+
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button, deleteMyAccountButton);
 	}
 
 	private Dialog prepareDialog(AppUser appUser) {
