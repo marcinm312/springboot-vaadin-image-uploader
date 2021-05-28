@@ -13,7 +13,7 @@ public class Image extends AuditModel {
 	private Long id;
 	private String imageAddress;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private AppUser appUser;
 

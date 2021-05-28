@@ -1,7 +1,5 @@
 package pl.marcinm312.springbootimageuploader.model;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 @Entity
 public class AppUser extends AuditModel implements UserDetails {
@@ -35,10 +35,6 @@ public class AppUser extends AuditModel implements UserDetails {
 	@NotBlank(message = "This field must be completed!")
 	@Email(message = "Incorrect email address! ")
 	private String email;
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "appUser")
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	private final List<Image> images = new ArrayList<>();
 
 	public AppUser(String username, String password, String role, String email) {
 		this.username = username;
@@ -128,10 +124,6 @@ public class AppUser extends AuditModel implements UserDetails {
 
 	public void setEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;
-	}
-
-	public List<Image> getImages() {
-		return images;
 	}
 
 	@Override
