@@ -247,7 +247,7 @@ class MyProfileGuiTest {
 		verify(appUserRepo, times(1))
 				.delete(appUser);
 		verify(sessionUtils, times(1))
-				.expireUserSessions(eq(appUser.getUsername()), eq(true));
+				.expireUserSessions(appUser.getUsername(), true);
 		verify(imageRepo, times(1))
 				.deleteUserFromImages(appUser);
 	}
