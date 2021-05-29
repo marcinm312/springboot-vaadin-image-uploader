@@ -13,6 +13,7 @@ import pl.marcinm312.springbootimageuploader.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Token;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
 
@@ -29,18 +30,20 @@ public class UserService {
 	private final TokenRepo tokenRepo;
 	private final MailService mailService;
 	private final SessionUtils sessionUtils;
+	private final ImageRepo imageRepo;
 
 	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	public UserService(AppUserRepo appUserRepo, PasswordEncoder passwordEncoder, Environment environment,
-					   TokenRepo tokenRepo, MailService mailService, SessionUtils sessionUtils) {
+					   TokenRepo tokenRepo, MailService mailService, SessionUtils sessionUtils, ImageRepo imageRepo) {
 		this.appUserRepo = appUserRepo;
 		this.passwordEncoder = passwordEncoder;
 		this.environment = environment;
 		this.tokenRepo = tokenRepo;
 		this.mailService = mailService;
 		this.sessionUtils = sessionUtils;
+		this.imageRepo = imageRepo;
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -137,6 +140,16 @@ public class UserService {
 		} else {
 			throw new TokenNotFoundException();
 		}
+	}
+
+	@Transactional
+	public void deleteUser(AppUser appUser) {
+		log.info("Deleting user = {}", appUser.getUsername());
+		imageRepo.deleteUserFromImages(appUser);
+		appUserRepo.delete(appUser);
+		log.info("User {} deleted", appUser.getUsername());
+		log.info("Expiring sessions for user: {}", appUser.getUsername());
+		sessionUtils.expireUserSessions(appUser.getUsername(), true);
 	}
 
 	public boolean isPasswordCorrect(AppUser appUser, String currentPassword) {

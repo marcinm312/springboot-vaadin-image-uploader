@@ -1,13 +1,18 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.server.VaadinSession;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
@@ -21,8 +26,13 @@ import static org.mockito.Mockito.*;
 
 class MyProfileGuiTest {
 
+	private final UI ui = new UI();
+
 	@Mock
 	AppUserRepo appUserRepo;
+
+	@Mock
+	ImageRepo imageRepo;
 
 	@Mock
 	SessionUtils sessionUtils;
@@ -33,6 +43,16 @@ class MyProfileGuiTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+
+		UI.setCurrent(ui);
+		VaadinSession session = Mockito.mock(VaadinSession.class);
+		Mockito.when(session.hasLock()).thenReturn(true);
+		ui.getInternals().setSession(session);
+	}
+
+	@AfterEach
+	void tearDown() {
+		UI.setCurrent(null);
 	}
 
 	@Test
@@ -186,5 +206,49 @@ class MyProfileGuiTest {
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
 		verify(sessionUtils, never())
 				.expireUserSessions(newLogin, true);
+	}
+
+	@Test
+	void myProfileGuiTest_cancelDeletingUser_userIsNotDeleted() {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			protected AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodUser();
+			}
+		};
+
+		myProfileGui.deleteMyAccountButton.click();
+		myProfileGui.cancelButton.click();
+		verify(appUserRepo, never())
+				.delete(any());
+		verify(sessionUtils, never())
+				.expireUserSessions(any(), eq(true));
+		verify(imageRepo, never())
+				.deleteUserFromImages(any());
+	}
+
+	@Test
+	void myProfileGuiTest_confirmDeletingUser_userIsDeleted() {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			protected AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodUser();
+			}
+		};
+
+		AppUser appUser = myProfileGui.getAuthenticatedUser();
+
+		myProfileGui.deleteMyAccountButton.click();
+		myProfileGui.confirmButton.click();
+		verify(appUserRepo, times(1))
+				.delete(appUser);
+		verify(sessionUtils, times(1))
+				.expireUserSessions(appUser.getUsername(), true);
+		verify(imageRepo, times(1))
+				.deleteUserFromImages(appUser);
 	}
 }

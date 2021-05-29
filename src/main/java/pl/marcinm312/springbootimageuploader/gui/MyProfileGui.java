@@ -1,11 +1,15 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -23,12 +27,20 @@ import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 public class MyProfileGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;
+	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
+	Anchor updatePasswordAnchor;
+	Button deleteMyAccountButton;
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
 	TextField emailTextField;
 	Button button;
+
+	Dialog dialog;
+	Text confirmText;
+	Button confirmButton;
+	Button cancelButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
@@ -47,10 +59,19 @@ public class MyProfileGui extends VerticalLayout {
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
+		dialog = prepareDialog(appUser);
+
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
 		galleryAnchor.setTarget("_top");
+
+		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
+		updatePasswordAnchor.setTarget("_top");
+
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(galleryAnchor, updatePasswordAnchor);
+
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
@@ -72,7 +93,22 @@ public class MyProfileGui extends VerticalLayout {
 
 		button = new Button("Save");
 		button.addClickListener(event -> updateUser(oldLogin, appUser));
-		add(galleryAnchor, h1, paragraph, loginTextField, emailTextField, button);
+
+		deleteMyAccountButton = new Button("Delete my account");
+		deleteMyAccountButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		deleteMyAccountButton.setClassName("delete");
+		deleteMyAccountButton.addClickListener(event -> dialog.open());
+
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button, deleteMyAccountButton);
+	}
+
+	private Dialog prepareDialog(AppUser appUser) {
+		Dialog dialogWindow = new Dialog();
+		confirmText = new Text("Are you sure you want to delete your user account?");
+		confirmButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
+		cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
+		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmButton, cancelButton)));
+		return dialogWindow;
 	}
 
 	AppUser getAuthenticatedUser() {
@@ -96,6 +132,10 @@ public class MyProfileGui extends VerticalLayout {
 		} else {
 			showNotification("Error: Check the validation messages on the form");
 		}
+	}
+
+	private void deleteUser(AppUser appUser) {
+		userService.deleteUser(appUser);
 	}
 
 	void showNotification(String notificationText) {

@@ -18,3 +18,7 @@ vaadin-grid vaadin-grid-cell-content img {
 p.registration {
     margin-bottom: 0;
 }
+
+vaadin-button.delete {
+    margin-top: 40px;
+}
