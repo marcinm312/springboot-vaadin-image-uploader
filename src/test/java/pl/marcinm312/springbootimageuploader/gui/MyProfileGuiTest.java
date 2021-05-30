@@ -79,7 +79,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, times(1))
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -108,7 +108,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -137,7 +137,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertFalse(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -169,7 +169,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -200,7 +200,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertFalse(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -219,8 +219,8 @@ class MyProfileGuiTest {
 			}
 		};
 
-		myProfileGui.deleteMyAccountButton.click();
-		myProfileGui.cancelButton.click();
+		myProfileGui.deleteUserButton.click();
+		myProfileGui.cancelDeleteButton.click();
 		verify(appUserRepo, never())
 				.delete(any());
 		verify(sessionUtils, never())
@@ -242,8 +242,8 @@ class MyProfileGuiTest {
 
 		AppUser appUser = myProfileGui.getAuthenticatedUser();
 
-		myProfileGui.deleteMyAccountButton.click();
-		myProfileGui.confirmButton.click();
+		myProfileGui.deleteUserButton.click();
+		myProfileGui.confirmDeleteButton.click();
 		verify(appUserRepo, times(1))
 				.delete(appUser);
 		verify(sessionUtils, times(1))

@@ -30,17 +30,16 @@ public class MyProfileGui extends VerticalLayout {
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;
-	Button deleteMyAccountButton;
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
 	TextField emailTextField;
-	Button button;
+	Button saveUserButton;
+	Button deleteUserButton;
 
-	Dialog dialog;
-	Text confirmText;
-	Button confirmButton;
-	Button cancelButton;
+	Dialog deleteDialog;
+	Button confirmDeleteButton;
+	Button cancelDeleteButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
@@ -59,7 +58,7 @@ public class MyProfileGui extends VerticalLayout {
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
-		dialog = prepareDialog(appUser);
+		deleteDialog = prepareDialog(appUser);
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -91,23 +90,23 @@ public class MyProfileGui extends VerticalLayout {
 		}
 		binder.forField(emailTextField).bind("email");
 
-		button = new Button("Save");
-		button.setClassName("updateprofile");
-		button.addClickListener(event -> updateUser(oldLogin, appUser));
+		saveUserButton = new Button("Save");
+		saveUserButton.setClassName("updateprofile");
+		saveUserButton.addClickListener(event -> updateUser(oldLogin, appUser));
 
-		deleteMyAccountButton = new Button("Delete my account");
-		deleteMyAccountButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
-		deleteMyAccountButton.addClickListener(event -> dialog.open());
+		deleteUserButton = new Button("Delete my account");
+		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		deleteUserButton.addClickListener(event -> deleteDialog.open());
 
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button, deleteMyAccountButton);
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, deleteUserButton);
 	}
 
 	private Dialog prepareDialog(AppUser appUser) {
 		Dialog dialogWindow = new Dialog();
-		confirmText = new Text("Are you sure you want to delete your user account?");
-		confirmButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
-		cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
-		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmButton, cancelButton)));
+		Text confirmText = new Text("Are you sure you want to delete your user account?");
+		confirmDeleteButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
+		cancelDeleteButton = new Button("Cancel", cancelEvent -> deleteDialog.close());
+		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmDeleteButton, cancelDeleteButton)));
 		return dialogWindow;
 	}
 
