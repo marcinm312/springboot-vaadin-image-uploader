@@ -30,6 +30,7 @@ public class MyProfileGui extends VerticalLayout {
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;
+	Anchor logoutAnchor;
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
@@ -62,6 +63,9 @@ public class MyProfileGui extends VerticalLayout {
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
+		logoutAnchor = new Anchor("../../logout", "Log out");
+		logoutAnchor.setTarget("_top");
+
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
 		galleryAnchor.setTarget("_top");
 
@@ -69,7 +73,7 @@ public class MyProfileGui extends VerticalLayout {
 		updatePasswordAnchor.setTarget("_top");
 
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(galleryAnchor, updatePasswordAnchor);
+		horizontalMenu.add(logoutAnchor, galleryAnchor, updatePasswordAnchor);
 
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);

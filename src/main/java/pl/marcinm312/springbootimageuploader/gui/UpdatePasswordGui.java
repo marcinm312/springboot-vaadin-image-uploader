@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -23,6 +24,8 @@ import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 public class UpdatePasswordGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;
+	HorizontalLayout horizontalMenu;
+	Anchor logoutAnchor;
 	Anchor myProfileAnchor;
 	H1 h1;
 	Paragraph paragraph;
@@ -48,6 +51,13 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
 		myProfileAnchor.setTarget("_top");
+
+		logoutAnchor = new Anchor("../../logout", "Log out");
+		logoutAnchor.setTarget("_top");
+
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(logoutAnchor, myProfileAnchor);
+
 		h1 = new H1("Update password form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
@@ -69,7 +79,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		button = new Button("Save");
 		button.addClickListener(event -> updateUserPassword());
-		add(myProfileAnchor, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
+		add(horizontalMenu, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, button);
 	}
 
 	AppUser getAuthenticatedUser() {
