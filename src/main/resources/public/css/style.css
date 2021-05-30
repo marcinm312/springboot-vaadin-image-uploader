@@ -4,7 +4,7 @@ h1 {
 }
 
 vaadin-grid vaadin-grid-cell-content:nth-child(2) {
-     overflow-x: scroll !important;
+    overflow-x: scroll !important;
 }
 
 vaadin-grid vaadin-grid-cell-content img {
@@ -19,6 +19,6 @@ p.registration {
     margin-bottom: 0;
 }
 
-vaadin-button.delete {
-    margin-top: 40px;
+vaadin-button.updateprofile {
+    margin-bottom: 40px;
 }

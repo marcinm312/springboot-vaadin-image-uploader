@@ -92,11 +92,11 @@ public class MyProfileGui extends VerticalLayout {
 		binder.forField(emailTextField).bind("email");
 
 		button = new Button("Save");
+		button.setClassName("updateprofile");
 		button.addClickListener(event -> updateUser(oldLogin, appUser));
 
 		deleteMyAccountButton = new Button("Delete my account");
 		deleteMyAccountButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
-		deleteMyAccountButton.setClassName("delete");
 		deleteMyAccountButton.addClickListener(event -> dialog.open());
 
 		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button, deleteMyAccountButton);
