@@ -18,6 +18,14 @@ public class ImageDataProvider {
 		return images;
 	}
 
+	public static List<Image> prepareImageListWithEmptyUser() {
+		List<Image> images = new ArrayList<>();
+		images.add(new Image(1L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(2L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(3L, IMAGE_URL, null, new Date(), new Date()));
+		return images;
+	}
+
 	public static List<Image> prepareEmptyImageList() {
 		return new ArrayList<>();
 	}

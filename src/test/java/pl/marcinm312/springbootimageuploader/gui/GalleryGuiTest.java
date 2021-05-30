@@ -56,6 +56,24 @@ class GalleryGuiTest {
 	}
 
 	@Test
+	void galleryGuiTest_imageListWithEmptyUser_success() {
+		List<Image> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
+		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
+
+		PaginatedGrid<ImageDto> grid = galleryGui.grid;
+		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(1, receivedNormalSize);
+
+		grid.setPageSize(expectedImageList.size() + 5);
+		int receivedSize = grid.getDataProvider().size(new Query<>());
+		Assertions.assertEquals(expectedImageList.size(), receivedSize);
+
+		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
+				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
+	}
+
+	@Test
 	void galleryGuiTest_emptyImageList_success() {
 		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
