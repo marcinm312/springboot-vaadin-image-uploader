@@ -46,12 +46,12 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User password successfully updated", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -77,12 +77,12 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -108,12 +108,12 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -139,12 +139,12 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The new password must be different from the previous one!", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};
@@ -170,12 +170,12 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The current password is incorrect", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 			}
 		};

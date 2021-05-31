@@ -42,6 +42,8 @@ public class MyProfileGui extends VerticalLayout {
 	Button confirmDeleteButton;
 	Button cancelDeleteButton;
 
+	Button expireSessionsButton;
+
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
 
@@ -59,7 +61,7 @@ public class MyProfileGui extends VerticalLayout {
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
-		deleteDialog = prepareDialog(appUser);
+		deleteDialog = prepareDeleteDialog(appUser);
 
 		binder = new BeanValidationBinder<>(AppUser.class);
 
@@ -98,20 +100,28 @@ public class MyProfileGui extends VerticalLayout {
 		saveUserButton.setClassName("updateprofile");
 		saveUserButton.addClickListener(event -> updateUser(oldLogin, appUser));
 
+		expireSessionsButton = new Button("Log me out from other devices");
+		expireSessionsButton.addClickListener(event -> expireSessions(appUser));
+
 		deleteUserButton = new Button("Delete my account");
 		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
 		deleteUserButton.addClickListener(event -> deleteDialog.open());
 
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, deleteUserButton);
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
 	}
 
-	private Dialog prepareDialog(AppUser appUser) {
+	private Dialog prepareDeleteDialog(AppUser appUser) {
 		Dialog dialogWindow = new Dialog();
 		Text confirmText = new Text("Are you sure you want to delete your user account?");
 		confirmDeleteButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
 		cancelDeleteButton = new Button("Cancel", cancelEvent -> deleteDialog.close());
 		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmDeleteButton, cancelDeleteButton)));
 		return dialogWindow;
+	}
+
+	private void expireSessions(AppUser appUser) {
+		userService.expireOtherUserSessions(appUser);
+		showNotification("You have been successfully logged out from other devices");
 	}
 
 	AppUser getAuthenticatedUser() {

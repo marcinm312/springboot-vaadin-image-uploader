@@ -38,18 +38,20 @@ public class SessionUtils {
 
 	private void processSession(String username, boolean expireCurrentSession, SessionInformation sessionInformation) {
 		if (expireCurrentSession) {
-			expireSession(username, sessionInformation);
+			expireSession(username, true, sessionInformation);
 		} else {
 			String currentSessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
 			if (!sessionInformation.getSessionId().equals(currentSessionId)) {
-				expireSession(username, sessionInformation);
+				expireSession(username, false, sessionInformation);
 			}
 		}
 	}
 
-	private void expireSession(String username, SessionInformation sessionInformation) {
+	private void expireSession(String username, boolean expireCurrentSession, SessionInformation sessionInformation) {
 		sessionInformation.expireNow();
-		UI.getCurrent().getPage().reload();
+		if (expireCurrentSession) {
+			UI.getCurrent().getPage().reload();
+		}
 		log.info("Session {} of user {} has expired", sessionInformation.getSessionId(), username);
 	}
 }

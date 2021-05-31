@@ -120,12 +120,12 @@ class GalleryGuiTest {
 	private GalleryGui getGalleryGuiWithModifiedMethod() {
 		return new GalleryGui(imageService) {
 			@Override
-			protected String getAuthenticationName() {
+			String getAuthenticationName() {
 				return "user";
 			}
 
 			@Override
-			protected boolean isUserAdmin() {
+			boolean isUserAdmin() {
 				return false;
 			}
 		};
@@ -134,12 +134,12 @@ class GalleryGuiTest {
 	private GalleryGui getGalleryAdminGuiWithModifiedMethod() {
 		return new GalleryGui(imageService) {
 			@Override
-			protected String getAuthenticationName() {
+			String getAuthenticationName() {
 				return "administrator";
 			}
 
 			@Override
-			protected boolean isUserAdmin() {
+			boolean isUserAdmin() {
 				return true;
 			}
 		};

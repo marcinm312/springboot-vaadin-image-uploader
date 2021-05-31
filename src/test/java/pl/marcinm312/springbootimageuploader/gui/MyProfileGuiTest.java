@@ -64,12 +64,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -94,12 +94,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -122,12 +122,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -154,12 +154,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: This user already exists!", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -185,12 +185,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -214,7 +214,7 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -235,7 +235,7 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -250,5 +250,29 @@ class MyProfileGuiTest {
 				.expireUserSessions(appUser.getUsername(), true);
 		verify(imageRepo, times(1))
 				.deleteUserFromImages(appUser);
+	}
+
+	@Test
+	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("You have been successfully logged out from other devices", notificationText);
+			}
+
+			@Override
+			AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodUser();
+			}
+		};
+
+		AppUser appUser = myProfileGui.getAuthenticatedUser();
+
+		myProfileGui.expireSessionsButton.click();
+
+		verify(sessionUtils, times(1))
+				.expireUserSessions(appUser.getUsername(), false);
 	}
 }
