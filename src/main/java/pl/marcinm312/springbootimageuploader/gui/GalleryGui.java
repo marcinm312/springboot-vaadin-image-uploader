@@ -41,7 +41,7 @@ public class GalleryGui extends VerticalLayout {
 		logoutAnchor.setTarget("_top");
 		managementAnchor = new Anchor("../management", "Image management");
 		managementAnchor.setTarget("_top");
-		myProfileAnchor = new Anchor("../myprofile/update", "Update my profile");
+		myProfileAnchor = new Anchor("../myprofile/update", "My profile");
 		myProfileAnchor.setTarget("_top");
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, myProfileAnchor);

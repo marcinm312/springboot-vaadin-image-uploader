@@ -152,6 +152,11 @@ public class UserService {
 		sessionUtils.expireUserSessions(appUser.getUsername(), true);
 	}
 
+	public void expireOtherUserSessions(AppUser appUser) {
+		log.info("Expiring other sessions for user: {}", appUser.getUsername());
+		sessionUtils.expireUserSessions(appUser.getUsername(), false);
+	}
+
 	public boolean isPasswordCorrect(AppUser appUser, String currentPassword) {
 		return passwordEncoder.matches(currentPassword, appUser.getPassword());
 	}

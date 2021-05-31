@@ -64,12 +64,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -79,7 +79,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, times(1))
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -94,12 +94,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully updated", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -108,7 +108,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -122,12 +122,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -137,7 +137,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertFalse(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -154,12 +154,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: This user already exists!", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -169,7 +169,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -185,12 +185,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
@@ -200,7 +200,7 @@ class MyProfileGuiTest {
 
 		Assertions.assertFalse(binderResult);
 
-		myProfileGui.button.click();
+		myProfileGui.saveUserButton.click();
 
 		verify(sessionUtils, never())
 				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
@@ -214,13 +214,13 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
 
-		myProfileGui.deleteMyAccountButton.click();
-		myProfileGui.cancelButton.click();
+		myProfileGui.deleteUserButton.click();
+		myProfileGui.cancelDeleteButton.click();
 		verify(appUserRepo, never())
 				.delete(any());
 		verify(sessionUtils, never())
@@ -235,20 +235,44 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
 			@Override
-			protected AppUser getAuthenticatedUser() {
+			AppUser getAuthenticatedUser() {
 				return UserDataProvider.prepareExampleGoodUser();
 			}
 		};
 
 		AppUser appUser = myProfileGui.getAuthenticatedUser();
 
-		myProfileGui.deleteMyAccountButton.click();
-		myProfileGui.confirmButton.click();
+		myProfileGui.deleteUserButton.click();
+		myProfileGui.confirmDeleteButton.click();
 		verify(appUserRepo, times(1))
 				.delete(appUser);
 		verify(sessionUtils, times(1))
 				.expireUserSessions(appUser.getUsername(), true);
 		verify(imageRepo, times(1))
 				.deleteUserFromImages(appUser);
+	}
+
+	@Test
+	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("You have been successfully logged out from other devices", notificationText);
+			}
+
+			@Override
+			AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodUser();
+			}
+		};
+
+		AppUser appUser = myProfileGui.getAuthenticatedUser();
+
+		myProfileGui.expireSessionsButton.click();
+
+		verify(sessionUtils, times(1))
+				.expireUserSessions(appUser.getUsername(), false);
 	}
 }

@@ -55,12 +55,12 @@ class RegisterGuiTest {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully registered", notificationText);
 			}
 
 			@Override
-			protected String getUriString() {
+			String getUriString() {
 				return "http://localhost:8080";
 			}
 		};
@@ -80,7 +80,7 @@ class RegisterGuiTest {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 		};
@@ -101,7 +101,7 @@ class RegisterGuiTest {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: This user already exists!", notificationText);
 			}
 		};
@@ -122,7 +122,7 @@ class RegisterGuiTest {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
 			}
 		};
@@ -144,12 +144,12 @@ class RegisterGuiTest {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator) {
 			@Override
-			protected void showNotification(String notificationText) {
+			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
 			}
 
 			@Override
-			protected String getUriString() {
+			String getUriString() {
 				return "http://localhost:8080";
 			}
 		};

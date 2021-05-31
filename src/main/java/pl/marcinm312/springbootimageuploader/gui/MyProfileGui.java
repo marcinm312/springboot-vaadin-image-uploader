@@ -30,17 +30,19 @@ public class MyProfileGui extends VerticalLayout {
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;
-	Button deleteMyAccountButton;
+	Anchor logoutAnchor;
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
 	TextField emailTextField;
-	Button button;
+	Button saveUserButton;
+	Button deleteUserButton;
 
-	Dialog dialog;
-	Text confirmText;
-	Button confirmButton;
-	Button cancelButton;
+	Dialog deleteDialog;
+	Button confirmDeleteButton;
+	Button cancelDeleteButton;
+
+	Button expireSessionsButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
@@ -59,9 +61,12 @@ public class MyProfileGui extends VerticalLayout {
 		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
-		dialog = prepareDialog(appUser);
+		deleteDialog = prepareDeleteDialog(appUser);
 
 		binder = new BeanValidationBinder<>(AppUser.class);
+
+		logoutAnchor = new Anchor("../../logout", "Log out");
+		logoutAnchor.setTarget("_top");
 
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
 		galleryAnchor.setTarget("_top");
@@ -70,7 +75,7 @@ public class MyProfileGui extends VerticalLayout {
 		updatePasswordAnchor.setTarget("_top");
 
 		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(galleryAnchor, updatePasswordAnchor);
+		horizontalMenu.add(logoutAnchor, galleryAnchor, updatePasswordAnchor);
 
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
@@ -91,24 +96,32 @@ public class MyProfileGui extends VerticalLayout {
 		}
 		binder.forField(emailTextField).bind("email");
 
-		button = new Button("Save");
-		button.setClassName("updateprofile");
-		button.addClickListener(event -> updateUser(oldLogin, appUser));
+		saveUserButton = new Button("Save");
+		saveUserButton.setClassName("updateprofile");
+		saveUserButton.addClickListener(event -> updateUser(oldLogin, appUser));
 
-		deleteMyAccountButton = new Button("Delete my account");
-		deleteMyAccountButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
-		deleteMyAccountButton.addClickListener(event -> dialog.open());
+		expireSessionsButton = new Button("Log me out from other devices");
+		expireSessionsButton.addClickListener(event -> expireSessions(appUser));
 
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, button, deleteMyAccountButton);
+		deleteUserButton = new Button("Delete my account");
+		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		deleteUserButton.addClickListener(event -> deleteDialog.open());
+
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
 	}
 
-	private Dialog prepareDialog(AppUser appUser) {
+	private Dialog prepareDeleteDialog(AppUser appUser) {
 		Dialog dialogWindow = new Dialog();
-		confirmText = new Text("Are you sure you want to delete your user account?");
-		confirmButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
-		cancelButton = new Button("Cancel", cancelEvent -> dialog.close());
-		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmButton, cancelButton)));
+		Text confirmText = new Text("Are you sure you want to delete your user account?");
+		confirmDeleteButton = new Button("Confirm", deleteEvent -> deleteUser(appUser));
+		cancelDeleteButton = new Button("Cancel", cancelEvent -> deleteDialog.close());
+		dialogWindow.add(new VerticalLayout(confirmText, new HorizontalLayout(confirmDeleteButton, cancelDeleteButton)));
 		return dialogWindow;
+	}
+
+	private void expireSessions(AppUser appUser) {
+		userService.expireOtherUserSessions(appUser);
+		showNotification("You have been successfully logged out from other devices");
 	}
 
 	AppUser getAuthenticatedUser() {
