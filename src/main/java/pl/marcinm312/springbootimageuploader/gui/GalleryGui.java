@@ -1,22 +1,24 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.flowingcode.vaadin.addons.carousel.Carousel;
+import com.flowingcode.vaadin.addons.carousel.Slide;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Route("gallery")
@@ -28,7 +30,14 @@ public class GalleryGui extends VerticalLayout {
 	Anchor managementAnchor;
 	Anchor myProfileAnchor;
 	H1 h1;
-	PaginatedGrid<ImageDto> grid;
+
+	Carousel carousel;
+
+	HorizontalLayout navigationButtons;
+	Button nextImageButton;
+	Button prevImageButton;
+	Button lastImageButton;
+	Button firstImageButton;
 
 	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
@@ -54,22 +63,49 @@ public class GalleryGui extends VerticalLayout {
 		log.info("Loading all images from DB");
 		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
-		grid = new PaginatedGrid<>(ImageDto.class);
-		grid.setItems(allImagesFromDB);
-		grid.removeAllColumns();
-		grid.addColumn(new ComponentRenderer<>(image -> {
-			com.vaadin.flow.component.html.Image vaadinImage = new com.vaadin.flow.component.html.Image(image.getImageAddress(), image.getImageAddress());
-			vaadinImage.setMaxHeight("500px");
-			return vaadinImage;
-		})).setHeader("Image").getElement().setProperty("min-width", "820px");
-		grid.setPageSize(1);
-		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.TOP);
-		grid.setPaginatorSize(0);
-		grid.setSelectionMode(Grid.SelectionMode.NONE);
-		grid.setPaginatorTexts("Image", "of");
-		log.info("All images loaded");
 
-		add(horizontalMenu, h1, grid);
+		prepareImageCarousel(allImagesFromDB);
+		prepareNavigationButtons(allImagesFromDB);
+
+		add(horizontalMenu, h1, carousel, navigationButtons);
+	}
+
+	private void prepareNavigationButtons(List<ImageDto> allImagesFromDB) {
+		nextImageButton = new Button(">>");
+		prevImageButton = new Button("<<");
+		lastImageButton = new Button(">|");
+		firstImageButton = new Button("|<");
+		nextImageButton.addClickListener(e -> carousel.moveNext());
+		prevImageButton.addClickListener(e -> carousel.movePrev());
+		lastImageButton.addClickListener(e -> carousel.movePos(allImagesFromDB.size() - 1));
+		firstImageButton.addClickListener(e -> carousel.movePos(0));
+		navigationButtons = new HorizontalLayout(firstImageButton, prevImageButton, nextImageButton, lastImageButton);
+		navigationButtons.setAlignItems(Alignment.CENTER);
+		navigationButtons.setJustifyContentMode(JustifyContentMode.CENTER);
+		navigationButtons.setWidthFull();
+		navigationButtons.setMargin(false);
+	}
+
+	private void prepareImageCarousel(List<ImageDto> allImagesFromDB) {
+		carousel = new Carousel().withoutNavigation();
+		List<Slide> slidesList = new ArrayList<>();
+		for (ImageDto imageDto : allImagesFromDB) {
+			Image vaadinImage = new Image(imageDto.getAutoCompressedImageAddress(), imageDto.getAutoCompressedImageAddress());
+			vaadinImage.setMaxHeight("65vh");
+			vaadinImage.setMaxWidth("90vw");
+			vaadinImage.getStyle().set("margin", "0");
+			VerticalLayout d = new VerticalLayout(vaadinImage);
+			d.setAlignItems(Alignment.CENTER);
+			d.setJustifyContentMode(JustifyContentMode.CENTER);
+			d.setMargin(false);
+			slidesList.add(new Slide(d));
+		}
+		Slide[] slidesArray = new Slide[slidesList.size()];
+		slidesList.toArray(slidesArray);
+		carousel.setSlides(slidesArray);
+		carousel.setSizeFull();
+
+		log.info("All images loaded");
 	}
 
 	String getAuthenticationName() {

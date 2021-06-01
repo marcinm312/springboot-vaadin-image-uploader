@@ -1,7 +1,7 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
+import com.flowingcode.vaadin.addons.carousel.Carousel;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.data.provider.Query;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,9 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.core.env.Environment;
-import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.Image;
-import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;
@@ -43,12 +41,8 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
 
-		PaginatedGrid<ImageDto> grid = galleryGui.grid;
-		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(1, receivedNormalSize);
-
-		grid.setPageSize(expectedImageList.size() + 5);
-		int receivedSize = grid.getDataProvider().size(new Query<>());
+		Carousel carousel = galleryGui.carousel;
+		int receivedSize = carousel.getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
@@ -61,12 +55,8 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
 
-		PaginatedGrid<ImageDto> grid = galleryGui.grid;
-		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(1, receivedNormalSize);
-
-		grid.setPageSize(expectedImageList.size() + 5);
-		int receivedSize = grid.getDataProvider().size(new Query<>());
+		Carousel carousel = galleryGui.carousel;
+		int receivedSize = carousel.getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
@@ -79,7 +69,8 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
 
-		int receivedSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Carousel carousel = galleryGui.carousel;
+		int receivedSize = carousel.getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
@@ -92,12 +83,8 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryAdminGuiWithModifiedMethod();
 
-		PaginatedGrid<ImageDto> grid = galleryGui.grid;
-		int receivedNormalSize = galleryGui.grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(1, receivedNormalSize);
-
-		grid.setPageSize(expectedImageList.size() + 5);
-		int receivedSize = grid.getDataProvider().size(new Query<>());
+		Carousel carousel = galleryGui.carousel;
+		int receivedSize = carousel.getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
@@ -110,7 +97,8 @@ class GalleryGuiTest {
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		GalleryGui galleryGui = getGalleryAdminGuiWithModifiedMethod();
 
-		int receivedSize = galleryGui.grid.getDataProvider().size(new Query<>());
+		Carousel carousel = galleryGui.carousel;
+		int receivedSize = carousel.getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 
 		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
