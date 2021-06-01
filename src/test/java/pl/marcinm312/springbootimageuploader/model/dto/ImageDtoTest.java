@@ -16,4 +16,13 @@ class ImageDtoTest {
 		String expectedCompressedImageAddress = "https://res.cloudinary.com/test/image/upload/h_100,f_auto/q_100/test123.jpg";
 		Assertions.assertEquals(expectedCompressedImageAddress, receivedCompressedImageAddress);
 	}
+
+	@Test
+	void getAutoCompressedImageAddress() {
+		Image image = ImageDataProvider.prepareExampleImage();
+		ImageDto imageDto = ConvertUtils.convertImageToImageDto(image);
+		String receivedCompressedImageAddress = imageDto.getAutoCompressedImageAddress();
+		String expectedCompressedImageAddress = "https://res.cloudinary.com/test/image/upload/h_700,f_auto/q_auto:best/test123.jpg";
+		Assertions.assertEquals(expectedCompressedImageAddress, receivedCompressedImageAddress);
+	}
 }

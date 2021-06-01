@@ -51,7 +51,8 @@
       "@vaadin/vaadin-confirm-dialog": "2.0.0",
       "@vaadin/vaadin-rich-text-editor": "2.0.0",
       "@vaadin/router": "1.7.2",
-      "@vaadin/vaadin-avatar": "2.0.2"
+      "@vaadin/vaadin-avatar": "2.0.2",
+      "@xpertsea/paper-slider": "3.0.0"
     },
     "devDependencies": {
       "compression-webpack-plugin": "4.0.1",
@@ -81,7 +82,7 @@
       "webpack-manifest-plugin": "3.0.0",
       "extract-loader": "5.1.0"
     },
-    "hash": "ec38db7fe47d04b2fcb2d5f2c3fca9abc3ccd2d98c049cf80104bc0882fec994"
+    "hash": "bf2c613e1dc61a80c7eefcb518134be8166d7e48c69afa4b60690d0e571d0fdd"
   },
   "dependencies": {
     "@polymer/iron-icon": "3.0.1",
@@ -134,7 +135,8 @@
     "@vaadin/router": "1.7.2",
     "@vaadin/flow-frontend": "./target/flow-frontend",
     "@vaadin/form": "./target/flow-frontend/form",
-    "@vaadin/vaadin-avatar": "2.0.2"
+    "@vaadin/vaadin-avatar": "2.0.2",
+    "@xpertsea/paper-slider": "3.0.0"
   },
   "devDependencies": {
     "compression-webpack-plugin": "4.0.1",

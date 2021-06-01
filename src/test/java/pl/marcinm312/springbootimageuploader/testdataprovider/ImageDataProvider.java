@@ -15,6 +15,12 @@ public class ImageDataProvider {
 		images.add(new Image(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
 		images.add(new Image(2L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
 		images.add(new Image(3L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(4L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(5L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(6L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(7L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(8L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
+		images.add(new Image(9L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), new Date(), new Date()));
 		return images;
 	}
 
@@ -23,6 +29,12 @@ public class ImageDataProvider {
 		images.add(new Image(1L, IMAGE_URL, null, new Date(), new Date()));
 		images.add(new Image(2L, IMAGE_URL, null, new Date(), new Date()));
 		images.add(new Image(3L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(4L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(5L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(6L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(7L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(8L, IMAGE_URL, null, new Date(), new Date()));
+		images.add(new Image(9L, IMAGE_URL, null, new Date(), new Date()));
 		return images;
 	}
 

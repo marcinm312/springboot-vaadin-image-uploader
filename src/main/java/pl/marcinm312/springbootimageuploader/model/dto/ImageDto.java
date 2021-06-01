@@ -62,4 +62,10 @@ public class ImageDto {
 		String target = splittedAddress[splittedAddress.length - 2];
 		return getImageAddress().replace(target, "h_" + imageHeight + ",f_auto/q_100");
 	}
+
+	public String getAutoCompressedImageAddress() {
+		String[] splittedAddress = getImageAddress().split("/");
+		String target = splittedAddress[splittedAddress.length - 2];
+		return getImageAddress().replace(target, "h_700,f_auto/q_auto:best");
+	}
 }

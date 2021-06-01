@@ -22,3 +22,7 @@ p.registration {
 vaadin-button.updateprofile {
     margin-bottom: 40px;
 }
+
+l2t-paper-slider {
+    margin: 0;
+}
