@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.util.List;
+
 @Component
 public class SessionUtils {
 
@@ -27,7 +29,9 @@ public class SessionUtils {
 			if (principal instanceof UserDetails) {
 				UserDetails userDetails = (UserDetails) principal;
 				if (userDetails.getUsername().equals(username)) {
-					for (SessionInformation sessionInformation : sessionRegistry.getAllSessions(userDetails, true)) {
+					List<SessionInformation> listOfSessionInformation = sessionRegistry.getAllSessions(userDetails, true);
+					log.info("listOfSessionInformation.size()={}", listOfSessionInformation.size());
+					for (SessionInformation sessionInformation : listOfSessionInformation) {
 						processSession(username, expireCurrentSession, sessionInformation);
 					}
 				}

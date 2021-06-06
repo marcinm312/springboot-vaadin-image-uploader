@@ -58,7 +58,6 @@ public class MyProfileGui extends VerticalLayout {
 		this.userValidator = userValidator;
 
 		AppUser appUser = getAuthenticatedUser();
-		log.info("Old user = {}", appUser);
 		String oldLogin = appUser.getUsername();
 
 		deleteDialog = prepareDeleteDialog(appUser);
@@ -130,6 +129,7 @@ public class MyProfileGui extends VerticalLayout {
 	}
 
 	private void updateUser(String oldLogin, AppUser appUser) {
+		log.info("Old user = {}", appUser);
 		appUser.setUsername(loginTextField.getValue());
 		appUser.setEmail(emailTextField.getValue());
 		binder.setBean(appUser);

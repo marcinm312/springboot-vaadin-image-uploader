@@ -105,8 +105,10 @@ public class UserService {
 	}
 
 	public AppUser getUserByAuthentication(Authentication authentication) {
-		log.info("Loading user by authentication name = {}", authentication.getName());
-		return (AppUser) authentication.getPrincipal();
+		String userName = authentication.getName();
+		log.info("Loading user by authentication name = {}", userName);
+		Optional<AppUser> optionalUser = appUserRepo.findByUsername(userName);
+		return optionalUser.orElse(null);
 	}
 
 	private void sendToken(AppUser appUser, String appURL) {
