@@ -23,13 +23,13 @@ import static org.mockito.BDDMockito.given;
 class ImageManagementGuiTest {
 
 	@Mock
-	ImageRepo imageRepo;
+	private ImageRepo imageRepo;
 
 	@Spy
-	Environment environment;
+	private Environment environment;
 
 	@InjectMocks
-	ImageService imageService;
+	private ImageService imageService;
 
 	@BeforeEach
 	void setup() {

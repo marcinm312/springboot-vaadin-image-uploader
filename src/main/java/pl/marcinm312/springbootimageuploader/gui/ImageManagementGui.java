@@ -48,11 +48,8 @@ public class ImageManagementGui extends VerticalLayout {
 		log.info("authentication.getName()={}", getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		logoutAnchor.setTarget("_top");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
-		galleryAnchor.setTarget("_top");
 		uploadAnchor = new Anchor("../upload", "Upload image");
-		uploadAnchor.setTarget("_top");
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, galleryAnchor, uploadAnchor);
 

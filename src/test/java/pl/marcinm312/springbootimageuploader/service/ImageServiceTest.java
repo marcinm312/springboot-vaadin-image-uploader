@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 class ImageServiceTest {
 
 	@Mock
-	CloudinaryService cloudinaryService;
+	private CloudinaryService cloudinaryService;
 
 	@Mock
-	ImageRepo imageRepo;
+	private ImageRepo imageRepo;
 
 	@InjectMocks
-	ImageService imageService;
+	private ImageService imageService;
 
 	@BeforeEach
 	void setup() {

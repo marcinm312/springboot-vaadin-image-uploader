@@ -21,16 +21,16 @@ import static org.mockito.Mockito.*;
 class UpdatePasswordGuiTest {
 
 	@Mock
-	AppUserRepo appUserRepo;
+	private AppUserRepo appUserRepo;
 
 	@Mock
-	SessionUtils sessionUtils;
+	private SessionUtils sessionUtils;
 
 	@Spy
-	BCryptPasswordEncoder passwordEncoder;
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@InjectMocks
-	UserService userService;
+	private UserService userService;
 
 	@BeforeEach
 	void setUp() {

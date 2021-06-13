@@ -52,7 +52,7 @@ class WebSecurityConfigTest {
 	private WebApplicationContext webApplicationContext;
 
 	@MockBean
-	AppUserRepo appUserRepo;
+	private AppUserRepo appUserRepo;
 
 	@BeforeEach
 	void setUp() {

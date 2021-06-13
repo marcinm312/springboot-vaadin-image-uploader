@@ -50,10 +50,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
-		myProfileAnchor.setTarget("_top");
-
 		logoutAnchor = new Anchor("../../logout", "Log out");
-		logoutAnchor.setTarget("_top");
 
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, myProfileAnchor);

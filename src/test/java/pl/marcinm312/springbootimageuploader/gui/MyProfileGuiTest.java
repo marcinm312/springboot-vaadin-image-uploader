@@ -29,16 +29,16 @@ class MyProfileGuiTest {
 	private final UI ui = new UI();
 
 	@Mock
-	AppUserRepo appUserRepo;
+	private AppUserRepo appUserRepo;
 
 	@Mock
-	ImageRepo imageRepo;
+	private ImageRepo imageRepo;
 
 	@Mock
-	SessionUtils sessionUtils;
+	private SessionUtils sessionUtils;
 
 	@InjectMocks
-	UserService userService;
+	private UserService userService;
 
 	@BeforeEach
 	void setUp() {
@@ -78,6 +78,40 @@ class MyProfileGuiTest {
 		boolean binderResult = myProfileGui.binder.isValid();
 
 		Assertions.assertTrue(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+
+		myProfileGui.saveUserButton.click();
+
+		verify(sessionUtils, times(1))
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
+		verify(sessionUtils, times(1))
+				.expireUserSessions(newLogin, true);
+	}
+
+	@Test
+	void myProfileGuiTest_updateEmptyEmailUserWithLoginAndEmailChange_success() {
+		String newLogin = "hhhhhh";
+		String newEmail = "aaa@abc.com";
+		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("User successfully updated", notificationText);
+			}
+
+			@Override
+			AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleUserWithNullEmail();
+			}
+		};
+		myProfileGui.loginTextField.setValue(newLogin);
+		myProfileGui.emailTextField.setValue(newEmail);
+		boolean binderResult = myProfileGui.binder.isValid();
+
+		Assertions.assertTrue(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
 
@@ -107,6 +141,35 @@ class MyProfileGuiTest {
 		boolean binderResult = myProfileGui.binder.isValid();
 
 		Assertions.assertTrue(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+
+		myProfileGui.saveUserButton.click();
+
+		verify(sessionUtils, never())
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
+	}
+
+	@Test
+	void myProfileGuiTest_updateAdministratorWithOnlyEmailChange_success() {
+		String newEmail = "aaa@abc.com";
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("User successfully updated", notificationText);
+			}
+
+			@Override
+			AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodAdministrator();
+			}
+		};
+		myProfileGui.emailTextField.setValue(newEmail);
+		boolean binderResult = myProfileGui.binder.isValid();
+
+		Assertions.assertTrue(binderResult);
+		Assertions.assertFalse(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
 
@@ -136,6 +199,7 @@ class MyProfileGuiTest {
 		boolean binderResult = myProfileGui.binder.isValid();
 
 		Assertions.assertFalse(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
 
@@ -168,6 +232,7 @@ class MyProfileGuiTest {
 		boolean binderResult = myProfileGui.binder.isValid();
 
 		Assertions.assertTrue(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
 
@@ -199,6 +264,7 @@ class MyProfileGuiTest {
 		boolean binderResult = myProfileGui.binder.isValid();
 
 		Assertions.assertFalse(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
 

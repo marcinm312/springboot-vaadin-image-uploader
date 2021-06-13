@@ -47,11 +47,8 @@ public class GalleryGui extends VerticalLayout {
 		log.info("authentication.getName()={}", getAuthenticationName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		logoutAnchor.setTarget("_top");
 		managementAnchor = new Anchor("../management", "Image management");
-		managementAnchor.setTarget("_top");
 		myProfileAnchor = new Anchor("../myprofile/update", "My profile");
-		myProfileAnchor.setTarget("_top");
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, myProfileAnchor);
 		if (isUserAdmin()) {

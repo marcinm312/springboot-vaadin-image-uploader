@@ -44,13 +44,12 @@ public class UploadGui extends VerticalLayout {
 		this.imageService = imageService;
 		this.userService = userService;
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()={}", authentication.getName());
+		AppUser appUser = getAuthenticatedUser();
+		log.info("appUser.getUsername()={}", appUser.getUsername());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
-		logoutAnchor.setTarget("_top");
 		managementAnchor = new Anchor("../management", "Back to image management");
-		managementAnchor.setTarget("_top");
+
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, managementAnchor);
 
@@ -61,18 +60,17 @@ public class UploadGui extends VerticalLayout {
 
 		image = new Image();
 
-		upload.addSucceededListener(event -> uploadImageAction(authentication, vaadinBuffer, event));
+		upload.addSucceededListener(event -> uploadImageAction(appUser, vaadinBuffer, event));
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void uploadImageAction(Authentication authentication, MemoryBuffer vaadinBuffer, SucceededEvent event) {
+	private void uploadImageAction(AppUser appUser, MemoryBuffer vaadinBuffer, SucceededEvent event) {
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
 			log.info("Start uploading an image");
 			InputStream initialStream = vaadinBuffer.getInputStream();
 			log.info("Get input stream");
 			try {
-				AppUser appUser = userService.getUserByAuthentication(authentication);
 				pl.marcinm312.springbootimageuploader.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
@@ -99,5 +97,10 @@ public class UploadGui extends VerticalLayout {
 
 	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
+	}
+
+	AppUser getAuthenticatedUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return userService.getUserByAuthentication(authentication);
 	}
 }

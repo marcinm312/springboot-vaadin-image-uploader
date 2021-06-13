@@ -25,7 +25,7 @@ public class TokenGui extends VerticalLayout {
 		String tokenValue = null;
 		anchor = new Anchor("..", "Back to main page");
 		try {
-			tokenValue = UI.getCurrent().getInternals().getLastHandledLocation().getQueryParameters().getParameters().get("value").get(0);
+			tokenValue = getTokenValue();
 		} catch (Exception exc) {
 			log.error("Error retrieving the value of the token: {}", exc.getMessage());
 		}
@@ -42,5 +42,9 @@ public class TokenGui extends VerticalLayout {
 			h1 = new H1("Error getting token value");
 		}
 		add(h1, anchor);
+	}
+
+	String getTokenValue() {
+		return UI.getCurrent().getInternals().getLastHandledLocation().getQueryParameters().getParameters().get("value").get(0);
 	}
 }

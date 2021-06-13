@@ -27,19 +27,19 @@ import static org.mockito.Mockito.*;
 class RegisterGuiTest {
 
 	@Mock
-	AppUserRepo appUserRepo;
+	private AppUserRepo appUserRepo;
 
 	@Mock
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Mock
-	MailService mailService;
+	private MailService mailService;
 
 	@Mock
-	TokenRepo tokenRepo;
+	private TokenRepo tokenRepo;
 
 	@InjectMocks
-	UserService userService;
+	private UserService userService;
 
 	@BeforeEach
 	void setUp() throws MessagingException {

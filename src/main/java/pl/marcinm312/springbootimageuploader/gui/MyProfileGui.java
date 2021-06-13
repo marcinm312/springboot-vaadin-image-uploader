@@ -65,13 +65,8 @@ public class MyProfileGui extends VerticalLayout {
 		binder = new BeanValidationBinder<>(AppUser.class);
 
 		logoutAnchor = new Anchor("../../logout", "Log out");
-		logoutAnchor.setTarget("_top");
-
 		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
-		galleryAnchor.setTarget("_top");
-
 		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
-		updatePasswordAnchor.setTarget("_top");
 
 		horizontalMenu = new HorizontalLayout();
 		horizontalMenu.add(logoutAnchor, galleryAnchor, updatePasswordAnchor);

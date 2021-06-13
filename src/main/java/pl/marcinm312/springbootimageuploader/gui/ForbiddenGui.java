@@ -20,14 +20,16 @@ public class ForbiddenGui extends VerticalLayout {
 
 	public ForbiddenGui() {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("authentication.getName()={}", authentication.getName());
+		log.info("authentication.getName()={}", getAuthenticatedUsername());
 
 		h1 = new H1("No permission. This functionality is only available to the system administrator");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
-		galleryAnchor.setTarget("_top");
 
 		add(h1, galleryAnchor);
 	}
 
+	String getAuthenticatedUsername() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();
+	}
 }
