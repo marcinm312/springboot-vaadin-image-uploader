@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.1</version>
+        <version>2.5.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>pl.marcinm312</groupId>
@@ -15,10 +15,10 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <vaadin.version>14.6.3</vaadin.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -137,7 +137,7 @@
         <dependency>
             <groupId>com.flowingcode.addons.carousel</groupId>
             <artifactId>carousel-addon</artifactId>
-            <version>2.0.1</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -321,7 +321,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <nodeVersion>v14.17.0</nodeVersion>
+                            <nodeVersion>v14.17.3</nodeVersion>
                         </configuration>
                     </plugin>
                 </plugins>
