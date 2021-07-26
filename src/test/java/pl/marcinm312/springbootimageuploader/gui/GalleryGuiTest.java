@@ -50,6 +50,33 @@ class GalleryGuiTest {
 	}
 
 	@Test
+	void galleryGuiTest_differentCasesOfViewingImages_specificPaginationText() {
+		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
+		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+		GalleryGui galleryGui = getGalleryGuiWithModifiedMethod();
+
+		Assertions.assertEquals("Image 1 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.nextImageButton.click();
+		Assertions.assertEquals("Image 2 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.prevImageButton.click();
+		Assertions.assertEquals("Image 1 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.lastImageButton.click();
+		Assertions.assertEquals("Image 9 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.firstImageButton.click();
+		Assertions.assertEquals("Image 1 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.prevImageButton.click();
+		Assertions.assertEquals("Image 9 of 9", galleryGui.paginationText.getText());
+
+		galleryGui.nextImageButton.click();
+		Assertions.assertEquals("Image 1 of 9", galleryGui.paginationText.getText());
+	}
+
+	@Test
 	void galleryGuiTest_imageListWithEmptyUser_success() {
 		List<Image> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
