@@ -2,13 +2,9 @@ package pl.marcinm312.springbootimageuploader.gui;
 
 import com.flowingcode.vaadin.addons.carousel.Carousel;
 import com.flowingcode.vaadin.addons.carousel.Slide;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -27,6 +23,8 @@ import java.util.List;
 @StyleSheet("/css/style.css")
 public class GalleryGui extends VerticalLayout {
 
+	private static final String MARGIN = "margin";
+
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
 	Anchor managementAnchor;
@@ -35,13 +33,14 @@ public class GalleryGui extends VerticalLayout {
 
 	Carousel carousel;
 
+	HorizontalLayout paginationContainer;
+	Paragraph paginationText;
+
 	HorizontalLayout navigationButtons;
 	Button nextImageButton;
 	Button prevImageButton;
 	Button lastImageButton;
 	Button firstImageButton;
-	Span paginationSpan;
-	Text paginationText;
 
 	private final transient List<ImageDto> allImagesFromDB;
 	private int imageNumber = 1;
@@ -69,9 +68,20 @@ public class GalleryGui extends VerticalLayout {
 		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 
 		prepareImageCarousel();
+
+		paginationContainer = new HorizontalLayout();
+		paginationText = new Paragraph(preparePaginationText());
+		paginationText.getStyle().set(MARGIN, "0");
+		paginationContainer.setAlignItems(Alignment.CENTER);
+		paginationContainer.setJustifyContentMode(JustifyContentMode.CENTER);
+		paginationContainer.setWidthFull();
+		paginationContainer.setMargin(false);
+		paginationContainer.getStyle().set(MARGIN, "0");
+		paginationContainer.add(paginationText);
+
 		prepareNavigationButtons();
 
-		add(horizontalMenu, h1, carousel, navigationButtons);
+		add(horizontalMenu, h1, carousel, paginationContainer, navigationButtons);
 	}
 
 	private void prepareNavigationButtons() {
@@ -79,7 +89,7 @@ public class GalleryGui extends VerticalLayout {
 		prevImageButton = new Button("<<");
 		lastImageButton = new Button(">|");
 		firstImageButton = new Button("|<");
-		paginationText = new Text(preparePaginationText());
+
 		nextImageButton.addClickListener(e -> {
 			if (imageNumber == allImagesFromDB.size()) {
 				imageNumber = 1;
@@ -108,9 +118,7 @@ public class GalleryGui extends VerticalLayout {
 			paginationText.setText(preparePaginationText());
 			carousel.movePos(0);
 		});
-		paginationSpan = new Span();
-		paginationSpan.add(paginationText);
-		navigationButtons = new HorizontalLayout(firstImageButton, prevImageButton, paginationSpan, nextImageButton,
+		navigationButtons = new HorizontalLayout(firstImageButton, prevImageButton, nextImageButton,
 				lastImageButton);
 		navigationButtons.setAlignItems(Alignment.CENTER);
 		navigationButtons.setJustifyContentMode(JustifyContentMode.CENTER);
@@ -125,7 +133,7 @@ public class GalleryGui extends VerticalLayout {
 			Image vaadinImage = new Image(imageDto.getAutoCompressedImageAddress(), imageDto.getAutoCompressedImageAddress());
 			vaadinImage.setMaxHeight("65vh");
 			vaadinImage.setMaxWidth("90vw");
-			vaadinImage.getStyle().set("margin", "0");
+			vaadinImage.getStyle().set(MARGIN, "0");
 			VerticalLayout d = new VerticalLayout(vaadinImage);
 			d.setAlignItems(Alignment.CENTER);
 			d.setJustifyContentMode(JustifyContentMode.CENTER);
