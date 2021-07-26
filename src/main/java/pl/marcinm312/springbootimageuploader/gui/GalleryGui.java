@@ -127,7 +127,7 @@ public class GalleryGui extends VerticalLayout {
 	}
 
 	private void prepareImageCarousel() {
-		carousel = new Carousel().withoutNavigation();
+		carousel = new Carousel().withoutNavigation().withoutSwipe();
 		List<Slide> slidesList = new ArrayList<>();
 		for (ImageDto imageDto : allImagesFromDB) {
 			Image vaadinImage = new Image(imageDto.getAutoCompressedImageAddress(), imageDto.getAutoCompressedImageAddress());
