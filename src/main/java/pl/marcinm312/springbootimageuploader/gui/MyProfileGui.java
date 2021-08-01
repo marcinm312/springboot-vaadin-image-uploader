@@ -125,8 +125,8 @@ public class MyProfileGui extends VerticalLayout {
 
 	private void updateUser(String oldLogin, AppUser appUser) {
 		log.info("Old user = {}", appUser);
-		appUser.setUsername(loginTextField.getValue());
-		appUser.setEmail(emailTextField.getValue());
+		appUser.setUsername(loginTextField.getValue().trim());
+		appUser.setEmail(emailTextField.getValue().trim());
 		binder.setBean(appUser);
 		binder.validate();
 		if (binder.isValid()) {

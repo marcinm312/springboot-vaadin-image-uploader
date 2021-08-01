@@ -74,9 +74,9 @@ public class RegisterGui extends VerticalLayout {
 	}
 
 	private void createUser() {
-		String username = loginTextField.getValue();
+		String username = loginTextField.getValue().trim();
 		String password = passwordField.getValue();
-		String email = emailTextField.getValue();
+		String email = emailTextField.getValue().trim();
 		AppUser appUser = new AppUser(username, password, "ROLE_USER", email);
 		binder.setBean(appUser);
 		binder.validate();
