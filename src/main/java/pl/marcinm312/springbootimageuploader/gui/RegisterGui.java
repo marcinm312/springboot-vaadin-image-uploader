@@ -74,9 +74,9 @@ public class RegisterGui extends VerticalLayout {
 	}
 
 	private void createUser() {
-		String username = loginTextField.getValue();
+		String username = loginTextField.getValue().trim();
 		String password = passwordField.getValue();
-		String email = emailTextField.getValue();
+		String email = emailTextField.getValue().trim();
 		AppUser appUser = new AppUser(username, password, "ROLE_USER", email);
 		binder.setBean(appUser);
 		binder.validate();
@@ -87,9 +87,11 @@ public class RegisterGui extends VerticalLayout {
 				userService.createUser(appUser, false, uriString);
 				showNotification("User successfully registered");
 			} else {
+				clearPasswordFieldsValues();
 				showNotification(validationError);
 			}
 		} else {
+			clearPasswordFieldsValues();
 			showNotification("Error: Check the validation messages on the form");
 		}
 	}
@@ -101,5 +103,10 @@ public class RegisterGui extends VerticalLayout {
 
 	void showNotification(String notificationText) {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
+	}
+
+	private void clearPasswordFieldsValues() {
+		passwordField.setValue("");
+		confirmPasswordField.setValue("");
 	}
 }

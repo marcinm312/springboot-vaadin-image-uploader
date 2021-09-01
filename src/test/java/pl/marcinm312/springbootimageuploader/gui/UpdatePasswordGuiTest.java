@@ -97,6 +97,9 @@ class UpdatePasswordGuiTest {
 
 		verify(sessionUtils, never())
 				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -128,6 +131,9 @@ class UpdatePasswordGuiTest {
 
 		verify(sessionUtils, never())
 				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -159,6 +165,9 @@ class UpdatePasswordGuiTest {
 
 		verify(sessionUtils, never())
 				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -190,5 +199,8 @@ class UpdatePasswordGuiTest {
 
 		verify(sessionUtils, never())
 				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
 	}
 }
