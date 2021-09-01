@@ -96,11 +96,19 @@ public class UpdatePasswordGui extends VerticalLayout {
 				userService.updateUserPassword(appUser);
 				showNotification("User password successfully updated");
 			} else {
+				clearPasswordFieldsValues();
 				showNotification("Error: Check the validation messages on the form");
 			}
 		} else {
+			clearPasswordFieldsValues();
 			showNotification(validationError);
 		}
+	}
+
+	private void clearPasswordFieldsValues() {
+		currentPasswordField.setValue("");
+		passwordField.setValue("");
+		confirmPasswordField.setValue("");
 	}
 
 	void showNotification(String notificationText) {

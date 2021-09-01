@@ -93,6 +93,30 @@ class RegisterGuiTest {
 		registerGui.button.click();
 
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		Assertions.assertEquals("", registerGui.passwordField.getValue());
+		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
+	}
+
+	@Test
+	void registerGuiTest_stringTrimmerTestInLogin_validationMessage() throws MessagingException {
+		UserValidator validator = new UserValidator(userService);
+		RegisterGui registerGui = new RegisterGui(userService, validator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
+			}
+		};
+		registerGui.loginTextField.setValue(" hh ");
+		registerGui.passwordField.setValue("hhhhhhhh");
+		registerGui.confirmPasswordField.setValue("hhhhhhhh");
+		registerGui.emailTextField.setValue("aaa@abc.com");
+		boolean binderResult = registerGui.binder.isValid();
+		Assertions.assertTrue(binderResult);
+		registerGui.button.click();
+
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		Assertions.assertEquals("", registerGui.passwordField.getValue());
+		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -114,6 +138,8 @@ class RegisterGuiTest {
 		registerGui.button.click();
 
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		Assertions.assertEquals("", registerGui.passwordField.getValue());
+		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -135,6 +161,8 @@ class RegisterGuiTest {
 		registerGui.button.click();
 
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		Assertions.assertEquals("", registerGui.passwordField.getValue());
+		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
 	}
 
 	@Test
@@ -162,5 +190,7 @@ class RegisterGuiTest {
 		registerGui.button.click();
 
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		Assertions.assertEquals("", registerGui.passwordField.getValue());
+		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
 	}
 }
