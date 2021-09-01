@@ -210,6 +210,38 @@ class MyProfileGuiTest {
 	}
 
 	@Test
+	void myProfileGuiTest_stringTrimmerTestInLogin_validationMessage() {
+		String newLogin = " hh ";
+		String newEmail = "aaa@abc.com";
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
+			@Override
+			void showNotification(String notificationText) {
+				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
+			}
+
+			@Override
+			AppUser getAuthenticatedUser() {
+				return UserDataProvider.prepareExampleGoodUser();
+			}
+		};
+		myProfileGui.loginTextField.setValue(newLogin);
+		myProfileGui.emailTextField.setValue(newEmail);
+		boolean binderResult = myProfileGui.binder.isValid();
+
+		Assertions.assertTrue(binderResult);
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+
+		myProfileGui.saveUserButton.click();
+
+		verify(sessionUtils, never())
+				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
+		verify(sessionUtils, never())
+				.expireUserSessions(newLogin, true);
+	}
+
+	@Test
 	void myProfileGuiTest_updateUserWithLoginThatAlreadyExists_notificationThatUserExists() {
 		String newLogin = "hhhhhh";
 		String newPassword = "aaa@abc.com";
