@@ -39,6 +39,8 @@ build/
 node_modules/
 
 webpack.generated.js
+package.json
+package-lock.json
 
 /logs/
 /node/
