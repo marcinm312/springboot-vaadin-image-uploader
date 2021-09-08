@@ -71,7 +71,7 @@ public class UploadGui extends VerticalLayout {
 			InputStream initialStream = vaadinBuffer.getInputStream();
 			log.info("Get input stream");
 			try {
-				pl.marcinm312.springbootimageuploader.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
+				pl.marcinm312.springbootimageuploader.model.image.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
 					log.info("Image saved in DB: {}", uploadedImageUrl);

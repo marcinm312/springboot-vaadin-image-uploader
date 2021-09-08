@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.image.Image;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;
 
