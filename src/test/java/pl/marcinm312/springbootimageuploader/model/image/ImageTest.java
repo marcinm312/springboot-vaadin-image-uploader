@@ -1,4 +1,4 @@
-package pl.marcinm312.springbootimageuploader.model;
+package pl.marcinm312.springbootimageuploader.model.image;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

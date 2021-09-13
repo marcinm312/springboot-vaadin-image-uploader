@@ -1,6 +1,6 @@
 package pl.marcinm312.springbootimageuploader.testdataprovider;
 
-import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.image.Image;
 
 import java.util.ArrayList;
 import java.util.Date;

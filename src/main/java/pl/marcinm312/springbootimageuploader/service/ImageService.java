@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
-import pl.marcinm312.springbootimageuploader.model.Image;
-import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
+import pl.marcinm312.springbootimageuploader.model.image.Image;
+import pl.marcinm312.springbootimageuploader.model.image.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
-import pl.marcinm312.springbootimageuploader.utils.ConvertUtils;
+import pl.marcinm312.springbootimageuploader.model.image.ImageMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ public class ImageService {
 		List<ImageDto> imagesDtoList = new ArrayList<>();
 		List<Image> imagesList = imageRepo.findAllByOrderByIdDesc();
 		for (Image image : imagesList) {
-			imagesDtoList.add(ConvertUtils.convertImageToImageDto(image));
+			imagesDtoList.add(ImageMapper.convertImageToImageDto(image));
 		}
 		return imagesDtoList;
 	}

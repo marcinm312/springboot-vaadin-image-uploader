@@ -1,18 +1,16 @@
-package pl.marcinm312.springbootimageuploader.utils;
+package pl.marcinm312.springbootimageuploader.model.image;
 
 import pl.marcinm312.springbootimageuploader.model.AppUser;
-import pl.marcinm312.springbootimageuploader.model.Image;
-import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
+import pl.marcinm312.springbootimageuploader.model.image.dto.ImageDto;
 
-public class ConvertUtils {
+public class ImageMapper {
 
-	private ConvertUtils() {
+	private ImageMapper() {
 
 	}
 
 	public static ImageDto convertImageToImageDto(Image image) {
-		ImageDto imageDto = new ImageDto();
-		imageDto.setId(image.getId());
+		ImageDto imageDto = new ImageDto(image.getId());
 		imageDto.setImageAddress(image.getImageAddress());
 		imageDto.setPublicId(image.getPublicId());
 		imageDto.setCreatedAt(image.getCreatedAtAsString());

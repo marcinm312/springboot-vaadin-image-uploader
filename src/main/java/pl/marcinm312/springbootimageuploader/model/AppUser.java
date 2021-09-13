@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 @Entity
 public class AppUser extends AuditModel implements UserDetails {
@@ -139,13 +138,15 @@ public class AppUser extends AuditModel implements UserDetails {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof AppUser)) return false;
+
 		AppUser appUser = (AppUser) o;
-		return isEnabled == appUser.isEnabled && Objects.equals(id, appUser.id) && username.equals(appUser.username) && password.equals(appUser.password) && Objects.equals(role, appUser.role) && Objects.equals(email, appUser.email);
+
+		return getUsername() != null ? getUsername().equals(appUser.getUsername()) : appUser.getUsername() == null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, username, password, role, isEnabled, email);
+		return getUsername() != null ? getUsername().hashCode() : 0;
 	}
 }
