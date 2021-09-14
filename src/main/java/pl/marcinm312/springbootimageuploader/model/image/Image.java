@@ -1,6 +1,8 @@
-package pl.marcinm312.springbootimageuploader.model;
+package pl.marcinm312.springbootimageuploader.model.image;
 
 import org.apache.commons.io.FilenameUtils;
+import pl.marcinm312.springbootimageuploader.model.AppUser;
+import pl.marcinm312.springbootimageuploader.model.AuditModel;
 
 import javax.persistence.*;
 import java.util.Date;

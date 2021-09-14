@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.core.env.Environment;
-import pl.marcinm312.springbootimageuploader.model.Image;
+import pl.marcinm312.springbootimageuploader.model.image.Image;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.ImageDataProvider;

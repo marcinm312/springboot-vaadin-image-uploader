@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
-import pl.marcinm312.springbootimageuploader.model.dto.ImageDto;
+import pl.marcinm312.springbootimageuploader.model.image.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 
 import java.util.List;
