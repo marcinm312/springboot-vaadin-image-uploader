@@ -162,7 +162,9 @@ public class UserService {
 	}
 
 	private String generateEmailContent(AppUser appUser, String tokenValue, String appURL) {
-		return "Welcome " + appUser.getUsername() + "," + "<br><br>Confirm your email address by clicking on the link below:"
-				+ "<br><a href=\"" + appURL + "/token?value=" + tokenValue + "\">Activate account</a>";
+		return new StringBuilder().append("Welcome ").append(appUser.getUsername())
+				.append(",<br><br>Confirm your email address by clicking on the link below:")
+				.append("<br><a href=\"").append(appURL).append("/token?value=").append(tokenValue)
+				.append("\">Activate account</a>").toString();
 	}
 }
