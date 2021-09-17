@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
@@ -13,6 +14,7 @@ import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.service.MailService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 import javax.mail.MessagingException;
@@ -46,10 +48,12 @@ class RegisterGuiTest {
 		MockitoAnnotations.openMocks(this);
 		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
 		doNothing().when(mailService).sendMail(isA(String.class), isA(String.class), isA(String.class), isA(boolean.class));
+		Mockito.mockStatic(VaadinUtils.class);
 	}
 
 	@Test
 	void registerGuiTest_simpleCase_success() throws MessagingException {
+		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
 		UserValidator validator = new UserValidator(userService);
@@ -57,11 +61,6 @@ class RegisterGuiTest {
 			@Override
 			void showNotification(String notificationText) {
 				Assertions.assertEquals("User successfully registered", notificationText);
-			}
-
-			@Override
-			String getUriString() {
-				return "http://localhost:8080";
 			}
 		};
 		registerGui.loginTextField.setValue("hhhhhh");
@@ -174,11 +173,6 @@ class RegisterGuiTest {
 			@Override
 			void showNotification(String notificationText) {
 				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
-			}
-
-			@Override
-			String getUriString() {
-				return "http://localhost:8080";
 			}
 		};
 		registerGui.loginTextField.setValue("hhhhhh");

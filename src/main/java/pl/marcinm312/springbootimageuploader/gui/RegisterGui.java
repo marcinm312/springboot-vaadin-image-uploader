@@ -11,8 +11,6 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
@@ -83,8 +81,7 @@ public class RegisterGui extends VerticalLayout {
 		if (binder.isValid()) {
 			String validationError = userValidator.validateUserRegistration(appUser, confirmPasswordField.getValue());
 			if (validationError == null) {
-				String uriString = getUriString();
-				userService.createUser(appUser, false, uriString);
+				userService.createUser(appUser, false);
 				showNotification("User successfully registered");
 			} else {
 				clearPasswordFieldsValues();
@@ -94,11 +91,6 @@ public class RegisterGui extends VerticalLayout {
 			clearPasswordFieldsValues();
 			showNotification("Error: Check the validation messages on the form");
 		}
-	}
-
-	String getUriString() {
-		VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
-		return request.getRequestURL().toString().replace("/register", "");
 	}
 
 	void showNotification(String notificationText) {

@@ -16,6 +16,7 @@ import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class UserService {
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
 	public AppUser createFirstUser() {
-		if (!appUserRepo.findByUsername("administrator").isPresent()) {
+		if (appUserRepo.findByUsername("administrator").isEmpty()) {
 			log.info("Creating administrator user");
 			String password = environment.getProperty("admin.default.password");
 			String email = environment.getProperty("admin.default.email");
 			AppUser appUserAdmin = new AppUser("administrator", password, "ROLE_ADMIN", email);
-			return createUser(appUserAdmin, true, null);
+			return createUser(appUserAdmin, true);
 		} else {
 			log.info("Administrator already exists in DB");
 			return null;
@@ -66,7 +67,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public AppUser createUser(AppUser appUser, boolean isFirstUser, String appURL) {
+	public AppUser createUser(AppUser appUser, boolean isFirstUser) {
 		log.info("Creating user: {}", appUser);
 		AppUser savedUser;
 		appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
@@ -76,7 +77,7 @@ public class UserService {
 		} else {
 			appUser.setEnabled(false);
 			savedUser = appUserRepo.save(appUser);
-			sendToken(appUser, appURL);
+			sendToken(appUser);
 		}
 		log.info("User: {} created", appUser.getUsername());
 		return savedUser;
@@ -111,13 +112,13 @@ public class UserService {
 		return optionalUser.orElse(null);
 	}
 
-	private void sendToken(AppUser appUser, String appURL) {
+	private void sendToken(AppUser appUser) {
 		String tokenValue = UUID.randomUUID().toString();
 		Token token = new Token();
 		token.setUser(appUser);
 		token.setValue(tokenValue);
 		tokenRepo.save(token);
-		String emailContent = generateEmailContent(appUser, tokenValue, appURL);
+		String emailContent = generateEmailContent(appUser, tokenValue);
 		try {
 			mailService.sendMail(appUser.getEmail(), "Confirm your email address", emailContent, true);
 		} catch (MessagingException e) {
@@ -161,10 +162,10 @@ public class UserService {
 		return passwordEncoder.matches(currentPassword, appUser.getPassword());
 	}
 
-	private String generateEmailContent(AppUser appUser, String tokenValue, String appURL) {
+	private String generateEmailContent(AppUser appUser, String tokenValue) {
 		return new StringBuilder().append("Welcome ").append(appUser.getUsername())
 				.append(",<br><br>Confirm your email address by clicking on the link below:")
-				.append("<br><a href=\"").append(appURL).append("/token?value=").append(tokenValue)
+				.append("<br><a href=\"").append(VaadinUtils.getUriString()).append("/token?value=").append(tokenValue)
 				.append("\">Activate account</a>").toString();
 	}
 }
