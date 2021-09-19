@@ -2,30 +2,38 @@ package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
+import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
+
+import java.util.Optional;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mockStatic;
 
 class UploadGuiTest {
 
 	private final UI ui = new UI();
 
 	@Mock
-	private ImageService imageService;
+	private AppUserRepo appUserRepo;
+
+	@InjectMocks
+	private UserService userService;
 
 	@Mock
-	private UserService userService;
+	private ImageService imageService;
+
+	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
 
 	@BeforeEach
 	void setUp() {
+		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
 		UI.setCurrent(ui);
@@ -36,18 +44,20 @@ class UploadGuiTest {
 
 	@AfterEach
 	void tearDown() {
+		mockedVaadinUtils.close();
 		UI.setCurrent(null);
 	}
 
 	@Test
 	void uploadGuiTest_initView_success() {
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-		UploadGui uploadGui = new UploadGui(imageService, userService) {
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UploadGui uploadGui = new UploadGui(imageService, userService);
+
 		long receivedChildrenSize = uploadGui.getChildren().count();
 		Assertions.assertEquals(4, receivedChildrenSize);
 	}

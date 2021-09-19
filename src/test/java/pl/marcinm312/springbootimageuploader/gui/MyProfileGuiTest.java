@@ -2,20 +2,15 @@ package pl.marcinm312.springbootimageuploader.gui;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.repo.ImageRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 import java.util.Optional;
@@ -40,8 +35,11 @@ class MyProfileGuiTest {
 	@InjectMocks
 	private UserService userService;
 
+	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
+
 	@BeforeEach
 	void setUp() {
+		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
 		UI.setCurrent(ui);
@@ -52,6 +50,7 @@ class MyProfileGuiTest {
 
 	@AfterEach
 	void tearDown() {
+		mockedVaadinUtils.close();
 		UI.setCurrent(null);
 	}
 
@@ -59,20 +58,17 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateUserWithLoginAndEmailChange_success() {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
+
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("User successfully updated", notificationText);
-			}
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -82,30 +78,27 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, times(1))
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, times(1))
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
+				times(1));
+		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
 	void myProfileGuiTest_updateEmptyEmailUserWithLoginAndEmailChange_success() {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
+
+		AppUser loggedUser = UserDataProvider.prepareExampleUserWithNullEmail();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("User successfully updated", notificationText);
-			}
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleUserWithNullEmail();
-			}
-		};
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -115,28 +108,25 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, times(1))
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, times(1))
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
+				times(1));
+		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
 	void myProfileGuiTest_updateUserWithOnlyEmailChange_success() {
 		String newEmail = "aaa@abc.com";
 
-		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("User successfully updated", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
 
@@ -145,26 +135,24 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 	}
 
 	@Test
 	void myProfileGuiTest_updateAdministratorWithOnlyEmailChange_success() {
 		String newEmail = "aaa@abc.com";
 
-		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("User successfully updated", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodAdministrator();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodAdministrator();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
 
@@ -173,8 +161,9 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 	}
 
 	@Test
@@ -182,18 +171,15 @@ class MyProfileGuiTest {
 		String newLogin = "hh";
 		String newEmail = "aaa@abc.com";
 
-		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -203,10 +189,10 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, never())
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
@@ -214,18 +200,15 @@ class MyProfileGuiTest {
 		String newLogin = " hh ";
 		String newEmail = "aaa@abc.com";
 
-		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -235,30 +218,27 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, never())
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
 	void myProfileGuiTest_updateUserWithLoginThatAlreadyExists_notificationThatUserExists() {
 		String newLogin = "hhhhhh";
 		String newPassword = "aaa@abc.com";
+
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.of(new AppUser()));
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: This user already exists!", notificationText);
-			}
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newPassword);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -268,10 +248,10 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, never())
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: This user already exists!")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
@@ -279,18 +259,15 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaaaaaaaaaaaaaaaaa";
 
-		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -300,77 +277,66 @@ class MyProfileGuiTest {
 
 		myProfileGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(myProfileGui.getAuthenticatedUser().getUsername(), true);
-		verify(sessionUtils, never())
-				.expireUserSessions(newLogin, true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
 	}
 
 	@Test
 	void myProfileGuiTest_cancelDeletingUser_userIsNotDeleted() {
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.cancelDeleteButton.click();
-		verify(appUserRepo, never())
-				.delete(any());
-		verify(sessionUtils, never())
-				.expireUserSessions(any(), eq(true));
-		verify(imageRepo, never())
-				.deleteUserFromImages(any());
+
+		verify(appUserRepo, never()).delete(any());
+		verify(sessionUtils, never()).expireUserSessions(any(), eq(true));
+		verify(imageRepo, never()).deleteUserFromImages(any());
 	}
 
 	@Test
 	void myProfileGuiTest_confirmDeletingUser_userIsDeleted() {
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
-
-		AppUser appUser = myProfileGui.getAuthenticatedUser();
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.confirmDeleteButton.click();
-		verify(appUserRepo, times(1))
-				.delete(appUser);
-		verify(sessionUtils, times(1))
-				.expireUserSessions(appUser.getUsername(), true);
-		verify(imageRepo, times(1))
-				.deleteUserFromImages(appUser);
+
+		verify(appUserRepo, times(1)).delete(loggedUser);
+		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
+		verify(imageRepo, times(1)).deleteUserFromImages(loggedUser);
 	}
 
 	@Test
 	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String oldLogin = loggedUser.getUsername();
+
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("You have been successfully logged out from other devices", notificationText);
-			}
-
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUser();
-			}
-		};
-
-		AppUser appUser = myProfileGui.getAuthenticatedUser();
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.expireSessionsButton.click();
 
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("You have been successfully logged out from other devices")),
+				times(1));
 		verify(sessionUtils, times(1))
-				.expireUserSessions(appUser.getUsername(), false);
+				.expireUserSessions(oldLogin, false);
 	}
 }

@@ -1,22 +1,20 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.repo.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.utils.SessionUtils;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
-import static org.mockito.Mockito.*;
+import java.util.Optional;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 class UpdatePasswordGuiTest {
 
@@ -32,9 +30,17 @@ class UpdatePasswordGuiTest {
 	@InjectMocks
 	private UserService userService;
 
+	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
+
 	@BeforeEach
 	void setUp() {
+		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
+	}
+
+	@AfterEach
+	void tearDown() {
+		mockedVaadinUtils.close();
 	}
 
 	@Test
@@ -43,18 +49,15 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
-		UserValidator userValidator = new UserValidator(userService);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("User password successfully updated", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
@@ -62,10 +65,11 @@ class UpdatePasswordGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		updatePasswordGui.button.click();
+		updatePasswordGui.saveUserButton.click();
 
-		verify(sessionUtils, times(1))
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User password successfully updated")),
+				times(1));
+		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
 	}
 
 	@Test
@@ -74,18 +78,15 @@ class UpdatePasswordGuiTest {
 		String password = "hh2";
 		String confirmPassword = "hh2";
 
-		UserValidator userValidator = new UserValidator(userService);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: Check the validation messages on the form", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
@@ -93,10 +94,11 @@ class UpdatePasswordGuiTest {
 
 		Assertions.assertFalse(binderResult);
 
-		updatePasswordGui.button.click();
+		updatePasswordGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
@@ -108,18 +110,15 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh3";
 
-		UserValidator userValidator = new UserValidator(userService);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: The passwords in both fields must be the same!", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
@@ -127,10 +126,11 @@ class UpdatePasswordGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		updatePasswordGui.button.click();
+		updatePasswordGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: The passwords in both fields must be the same!")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
@@ -142,18 +142,15 @@ class UpdatePasswordGuiTest {
 		String password = "password";
 		String confirmPassword = "password";
 
-		UserValidator userValidator = new UserValidator(userService);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: The new password must be different from the previous one!", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
@@ -161,10 +158,11 @@ class UpdatePasswordGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		updatePasswordGui.button.click();
+		updatePasswordGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: The new password must be different from the previous one!")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
@@ -176,18 +174,15 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
-		UserValidator userValidator = new UserValidator(userService);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator) {
-			@Override
-			void showNotification(String notificationText) {
-				Assertions.assertEquals("Error: The current password is incorrect", notificationText);
-			}
+		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		String oldLogin = loggedUser.getUsername();
 
-			@Override
-			AppUser getAuthenticatedUser() {
-				return UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-			}
-		};
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+
+		UserValidator userValidator = new UserValidator(userService);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
@@ -195,10 +190,11 @@ class UpdatePasswordGuiTest {
 
 		Assertions.assertTrue(binderResult);
 
-		updatePasswordGui.button.click();
+		updatePasswordGui.saveUserButton.click();
 
-		verify(sessionUtils, never())
-				.expireUserSessions(updatePasswordGui.getAuthenticatedUser().getUsername(), true);
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: The current password is incorrect")),
+				times(1));
+		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
 		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());

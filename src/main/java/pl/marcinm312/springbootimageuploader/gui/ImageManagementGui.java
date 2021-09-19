@@ -8,18 +8,16 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.image.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 import java.util.List;
 
@@ -45,7 +43,7 @@ public class ImageManagementGui extends VerticalLayout {
 
 		this.imageService = imageService;
 
-		log.info("authentication.getName()={}", getAuthenticationName());
+		log.info("authentication.getName()={}", VaadinUtils.getAuthenticatedUserName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
@@ -116,19 +114,10 @@ public class ImageManagementGui extends VerticalLayout {
 			} else {
 				grid.setPage(pageNumber);
 			}
-			showNotification("Image successfully deleted");
+			VaadinUtils.showNotification("Image successfully deleted");
 		} else {
-			showNotification("The image has not been deleted");
+			VaadinUtils.showNotification("The image has not been deleted");
 		}
 		dialog.close();
-	}
-
-	String getAuthenticationName() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication.getName();
-	}
-
-	void showNotification(String notificationText) {
-		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

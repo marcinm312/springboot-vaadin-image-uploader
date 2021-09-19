@@ -5,7 +5,6 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,6 +13,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("register")
@@ -28,7 +28,7 @@ public class RegisterGui extends VerticalLayout {
 	PasswordField passwordField;
 	PasswordField confirmPasswordField;
 	TextField emailTextField;
-	Button button;
+	Button saveUserButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
@@ -66,9 +66,9 @@ public class RegisterGui extends VerticalLayout {
 		emailTextField.setLabel("Email");
 		binder.forField(emailTextField).bind("email");
 
-		button = new Button("Register!");
-		button.addClickListener(event -> createUser());
-		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, button);
+		saveUserButton = new Button("Register!");
+		saveUserButton.addClickListener(event -> createUser());
+		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, saveUserButton);
 	}
 
 	private void createUser() {
@@ -82,19 +82,15 @@ public class RegisterGui extends VerticalLayout {
 			String validationError = userValidator.validateUserRegistration(appUser, confirmPasswordField.getValue());
 			if (validationError == null) {
 				userService.createUser(appUser, false);
-				showNotification("User successfully registered");
+				VaadinUtils.showNotification("User successfully registered");
 			} else {
 				clearPasswordFieldsValues();
-				showNotification(validationError);
+				VaadinUtils.showNotification(validationError);
 			}
 		} else {
 			clearPasswordFieldsValues();
-			showNotification("Error: Check the validation messages on the form");
+			VaadinUtils.showNotification("Error: Check the validation messages on the form");
 		}
-	}
-
-	void showNotification(String notificationText) {
-		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 
 	private void clearPasswordFieldsValues() {

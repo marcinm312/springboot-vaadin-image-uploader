@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +61,21 @@ public class UserService {
 		}
 	}
 
-	public Optional<AppUser> getUserByUsername(String username) {
+	public Optional<AppUser> getOptionalUserByUsername(String username) {
 		return appUserRepo.findByUsername(username);
+	}
+
+	public AppUser getUserByUsername(String userName) {
+		log.info("Loading user: {}", userName);
+		Optional<AppUser> optionalUser = appUserRepo.findByUsername(userName);
+		if (optionalUser.isPresent()) {
+			AppUser user = optionalUser.get();
+			log.info("Loaded user = {}", userName);
+			return user;
+		} else {
+			log.error("User {} not found!", userName);
+			return null;
+		}
 	}
 
 	@Transactional
@@ -89,7 +101,6 @@ public class UserService {
 		AppUser savedUser = appUserRepo.save(newUser);
 		if (!oldLogin.equals(newUser.getUsername())) {
 			sessionUtils.expireUserSessions(oldLogin, true);
-			sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		}
 		log.info("User updated");
 		return savedUser;
@@ -103,13 +114,6 @@ public class UserService {
 		sessionUtils.expireUserSessions(newUser.getUsername(), true);
 		log.info("User updated");
 		return savedUser;
-	}
-
-	public AppUser getUserByAuthentication(Authentication authentication) {
-		String userName = authentication.getName();
-		log.info("Loading user by authentication name = {}", userName);
-		Optional<AppUser> optionalUser = appUserRepo.findByUsername(userName);
-		return optionalUser.orElse(null);
 	}
 
 	private void sendToken(AppUser appUser) {

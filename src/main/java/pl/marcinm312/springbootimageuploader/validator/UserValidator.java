@@ -20,7 +20,7 @@ public class UserValidator {
 	public String validateUserRegistration(AppUser appUser, String confirmPasswordValue) {
 
 		String username = appUser.getUsername();
-		Optional<AppUser> optionalUser = userService.getUserByUsername(username);
+		Optional<AppUser> optionalUser = userService.getOptionalUserByUsername(username);
 		if (optionalUser.isPresent()) {
 			return "Error: This user already exists!";
 		}
@@ -32,7 +32,7 @@ public class UserValidator {
 
 	public String validateUserDataUpdate(AppUser newAppUser, String oldLogin) {
 
-		if (!newAppUser.getUsername().equals(oldLogin) && userService.getUserByUsername(newAppUser.getUsername()).isPresent()) {
+		if (!newAppUser.getUsername().equals(oldLogin) && userService.getOptionalUserByUsername(newAppUser.getUsername()).isPresent()) {
 			return "Error: This user already exists!";
 		}
 		return null;
