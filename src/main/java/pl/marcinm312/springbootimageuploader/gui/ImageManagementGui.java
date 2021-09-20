@@ -32,6 +32,8 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
+	private final transient List<ImageDto> allImagesFromDB;
+
 	private final transient ImageService imageService;
 
 	private static final int IMAGE_HEIGHT = 100;
@@ -54,7 +56,7 @@ public class ImageManagementGui extends VerticalLayout {
 		h1 = new H1("Image management");
 
 		log.info("Loading all images from DB");
-		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
+		allImagesFromDB = this.imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
 		int pageSize = 5;
@@ -103,11 +105,10 @@ public class ImageManagementGui extends VerticalLayout {
 		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
 		if (deleteResult) {
 			int pageNumber = grid.getPage();
-			log.info("Loading all images from DB");
-			List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
-			int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
+			allImagesFromDB.remove(imageDto);
+			int sizeOfListAfterDeletingOfImage = allImagesFromDB.size();
 			log.info("sizeOfListAfterDeletingOfImage={}", sizeOfListAfterDeletingOfImage);
-			grid.setItems(allImagesFromDBAfterDelete);
+			grid.setItems(allImagesFromDB);
 			grid.refreshPaginator();
 			if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
 				grid.setPage(pageNumber - 1);
