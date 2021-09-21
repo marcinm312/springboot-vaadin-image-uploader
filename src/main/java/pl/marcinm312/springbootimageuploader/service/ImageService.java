@@ -55,27 +55,31 @@ public class ImageService {
 	}
 
 	@Transactional
-	public boolean deleteImageFromCloudinaryAndDB(Long imageId) {
+	public DeleteResult deleteImageFromCloudinaryAndDB(Long imageId) {
 		log.info("Deleting imageId: {}", imageId);
-		try {
-			Optional<Image> optionalImage = imageRepo.findById(imageId);
-			if (optionalImage.isPresent()) {
-				Image image = optionalImage.get();
-				boolean imageExists = cloudinaryService.checkIfImageExistsInCloudinary(image);
-				if (imageExists) {
-					boolean deleteResult = cloudinaryService.deleteImageFromCloudinary(image);
-					if (deleteResult) {
-						imageRepo.delete(image);
-						return true;
-					}
-				} else {
-					imageRepo.delete(image);
-					return true;
+		Optional<Image> optionalImage = imageRepo.findById(imageId);
+		if (optionalImage.isPresent()) {
+			Image image = optionalImage.get();
+			try {
+				boolean imageExistsInCloudinary = cloudinaryService.checkIfImageExistsInCloudinary(image);
+				boolean deleteFromCloudinaryResult = false;
+				if (imageExistsInCloudinary) {
+					deleteFromCloudinaryResult = cloudinaryService.deleteImageFromCloudinary(image);
 				}
+				if (!imageExistsInCloudinary || deleteFromCloudinaryResult) {
+					imageRepo.delete(image);
+					return DeleteResult.DELETED;
+				}
+			} catch (Exception e) {
+				log.error("Error occurred during deleting imageId: {} [MESSAGE]: {}", imageId, e.getMessage());
 			}
-		} catch (Exception e) {
-			log.error("Error occurred during deleting imageId: {} [MESSAGE]: {}", imageId, e.getMessage());
+		} else {
+			return DeleteResult.NOT_EXISTS_IN_DB;
 		}
-		return false;
+		return DeleteResult.ERROR;
+	}
+
+	public enum DeleteResult {
+		DELETED, NOT_EXISTS_IN_DB, ERROR
 	}
 }

@@ -32,7 +32,7 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
-	private final transient List<ImageDto> allImagesFromDB;
+	private transient List<ImageDto> allImagesFromDB;
 
 	private final transient ImageService imageService;
 
@@ -102,23 +102,33 @@ public class ImageManagementGui extends VerticalLayout {
 	}
 
 	private void deleteEvent(int pageSize, ImageDto imageDto, Dialog dialog) {
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
-		if (deleteResult) {
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+		if (deleteResult.equals(ImageService.DeleteResult.DELETED)) {
 			int pageNumber = grid.getPage();
 			allImagesFromDB.remove(imageDto);
-			int sizeOfListAfterDeletingOfImage = allImagesFromDB.size();
-			log.info("sizeOfListAfterDeletingOfImage={}", sizeOfListAfterDeletingOfImage);
-			grid.setItems(allImagesFromDB);
-			grid.refreshPaginator();
-			if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
-				grid.setPage(pageNumber - 1);
-			} else {
-				grid.setPage(pageNumber);
-			}
+			refreshGridAfterRemovalElement(pageSize, pageNumber);
 			VaadinUtils.showNotification("Image successfully deleted");
+		} else if (deleteResult.equals(ImageService.DeleteResult.NOT_EXISTS_IN_DB)) {
+			int pageNumber = grid.getPage();
+			log.info("Loading all images from DB");
+			allImagesFromDB = imageService.getAllImagesFromDB();
+			refreshGridAfterRemovalElement(pageSize, pageNumber);
+			VaadinUtils.showNotification("The image does not exist in the database");
 		} else {
 			VaadinUtils.showNotification("The image has not been deleted");
 		}
 		dialog.close();
+	}
+
+	private void refreshGridAfterRemovalElement(int pageSize, int pageNumber) {
+		int sizeOfListAfterDeletingItem = allImagesFromDB.size();
+		log.info("sizeOfListAfterDeletingItem={}", sizeOfListAfterDeletingItem);
+		grid.setItems(allImagesFromDB);
+		grid.refreshPaginator();
+		if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingItem / (double) pageSize)) {
+			grid.setPage(pageNumber - 1);
+		} else {
+			grid.setPage(pageNumber);
+		}
 	}
 }
