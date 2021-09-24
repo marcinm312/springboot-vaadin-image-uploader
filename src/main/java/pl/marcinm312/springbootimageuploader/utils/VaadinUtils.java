@@ -34,7 +34,7 @@ public class VaadinUtils {
 	}
 
 	public static String getParamValueFromUrlQuery(String queryParamName) {
-		return UI.getCurrent().getInternals().getActiveViewLocation().getQueryParameters().getParameters()
+		return UI.getCurrent().getInternals().getLastHandledLocation().getQueryParameters().getParameters()
 				.get(queryParamName).get(0);
 	}
 
