@@ -45,22 +45,22 @@ class ImageServiceTest {
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
 		given(cloudinaryService.deleteImageFromCloudinary(image)).willReturn(true);
 
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 
-		Assertions.assertTrue(deleteResult);
+		Assertions.assertEquals(ImageService.DeleteResult.DELETED, deleteResult);
 		verify(imageRepo, times(1)).delete(image);
 		verify(cloudinaryService, times(1)).deleteImageFromCloudinary(image);
 	}
 
 	@Test
-	void deleteImageFromCloudinaryAndDBTest_imageNotExistsInDB_imageNotDeleted() throws Exception {
+	void deleteImageFromCloudinaryAndDBTest_imageNotExistsInDB_infoThatImageNotExistsInDB() throws Exception {
 		Image image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.empty());
 
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 
-		Assertions.assertFalse(deleteResult);
+		Assertions.assertEquals(ImageService.DeleteResult.NOT_EXISTS_IN_DB, deleteResult);
 		verify(imageRepo, never()).delete(image);
 		verify(cloudinaryService, never()).deleteImageFromCloudinary(image);
 	}
@@ -72,9 +72,9 @@ class ImageServiceTest {
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(false);
 
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 
-		Assertions.assertTrue(deleteResult);
+		Assertions.assertEquals(ImageService.DeleteResult.DELETED, deleteResult);
 		verify(imageRepo, times(1)).delete(image);
 		verify(cloudinaryService, never()).deleteImageFromCloudinary(image);
 	}
@@ -87,9 +87,9 @@ class ImageServiceTest {
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
 		given(cloudinaryService.deleteImageFromCloudinary(image)).willReturn(false);
 
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(image.getId());
 
-		Assertions.assertFalse(deleteResult);
+		Assertions.assertEquals(ImageService.DeleteResult.ERROR, deleteResult);
 		verify(imageRepo, never()).delete(image);
 		verify(cloudinaryService, times(1)).deleteImageFromCloudinary(image);
 	}

@@ -8,18 +8,16 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.model.image.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 import java.util.List;
 
@@ -34,6 +32,8 @@ public class ImageManagementGui extends VerticalLayout {
 	H1 h1;
 	PaginatedGrid<ImageDto> grid;
 
+	private transient List<ImageDto> allImagesFromDB;
+
 	private final transient ImageService imageService;
 
 	private static final int IMAGE_HEIGHT = 100;
@@ -45,7 +45,7 @@ public class ImageManagementGui extends VerticalLayout {
 
 		this.imageService = imageService;
 
-		log.info("authentication.getName()={}", getAuthenticationName());
+		log.info("authentication.getName()={}", VaadinUtils.getAuthenticatedUserName());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
@@ -56,7 +56,7 @@ public class ImageManagementGui extends VerticalLayout {
 		h1 = new H1("Image management");
 
 		log.info("Loading all images from DB");
-		List<ImageDto> allImagesFromDB = imageService.getAllImagesFromDB();
+		allImagesFromDB = this.imageService.getAllImagesFromDB();
 		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 		grid = new PaginatedGrid<>(ImageDto.class);
 		int pageSize = 5;
@@ -102,33 +102,33 @@ public class ImageManagementGui extends VerticalLayout {
 	}
 
 	private void deleteEvent(int pageSize, ImageDto imageDto, Dialog dialog) {
-		boolean deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
-		if (deleteResult) {
+		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+		if (deleteResult.equals(ImageService.DeleteResult.DELETED)) {
+			int pageNumber = grid.getPage();
+			allImagesFromDB.remove(imageDto);
+			refreshGridAfterRemovalElement(pageSize, pageNumber);
+			VaadinUtils.showNotification("Image successfully deleted");
+		} else if (deleteResult.equals(ImageService.DeleteResult.NOT_EXISTS_IN_DB)) {
 			int pageNumber = grid.getPage();
 			log.info("Loading all images from DB");
-			List<ImageDto> allImagesFromDBAfterDelete = imageService.getAllImagesFromDB();
-			int sizeOfListAfterDeletingOfImage = allImagesFromDBAfterDelete.size();
-			log.info("sizeOfListAfterDeletingOfImage={}", sizeOfListAfterDeletingOfImage);
-			grid.setItems(allImagesFromDBAfterDelete);
-			grid.refreshPaginator();
-			if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingOfImage / (double) pageSize)) {
-				grid.setPage(pageNumber - 1);
-			} else {
-				grid.setPage(pageNumber);
-			}
-			showNotification("Image successfully deleted");
+			allImagesFromDB = imageService.getAllImagesFromDB();
+			refreshGridAfterRemovalElement(pageSize, pageNumber);
+			VaadinUtils.showNotification("The image does not exist in the database");
 		} else {
-			showNotification("The image has not been deleted");
+			VaadinUtils.showNotification("The image has not been deleted");
 		}
 		dialog.close();
 	}
 
-	String getAuthenticationName() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication.getName();
-	}
-
-	void showNotification(String notificationText) {
-		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
+	private void refreshGridAfterRemovalElement(int pageSize, int pageNumber) {
+		int sizeOfListAfterDeletingItem = allImagesFromDB.size();
+		log.info("sizeOfListAfterDeletingItem={}", sizeOfListAfterDeletingItem);
+		grid.setItems(allImagesFromDB);
+		grid.refreshPaginator();
+		if ((pageNumber - 1) == ((double) sizeOfListAfterDeletingItem / (double) pageSize)) {
+			grid.setPage(pageNumber - 1);
+		} else {
+			grid.setPage(pageNumber);
+		}
 	}
 }

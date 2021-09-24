@@ -6,8 +6,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 @Route("forbidden")
 @StyleSheet("/css/style.css")
@@ -20,16 +19,11 @@ public class ForbiddenGui extends VerticalLayout {
 
 	public ForbiddenGui() {
 
-		log.info("authentication.getName()={}", getAuthenticatedUsername());
+		log.info("authentication.getName()={}", VaadinUtils.getAuthenticatedUserName());
 
 		h1 = new H1("No permission. This functionality is only available to the system administrator");
 		galleryAnchor = new Anchor("../gallery", "Back to gallery");
 
 		add(h1, galleryAnchor);
-	}
-
-	String getAuthenticatedUsername() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication.getName();
 	}
 }
