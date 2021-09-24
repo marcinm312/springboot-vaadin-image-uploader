@@ -8,7 +8,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -16,10 +15,9 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("myprofile/update")
@@ -57,7 +55,7 @@ public class MyProfileGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		AppUser appUser = getAuthenticatedUser();
+		AppUser appUser = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		String oldLogin = appUser.getUsername();
 
 		deleteDialog = prepareDeleteDialog(appUser);
@@ -115,12 +113,7 @@ public class MyProfileGui extends VerticalLayout {
 
 	private void expireSessions(AppUser appUser) {
 		userService.expireOtherUserSessions(appUser);
-		showNotification("You have been successfully logged out from other devices");
-	}
-
-	AppUser getAuthenticatedUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return userService.getUserByAuthentication(authentication);
+		VaadinUtils.showNotification("You have been successfully logged out from other devices");
 	}
 
 	private void updateUser(String oldLogin, AppUser appUser) {
@@ -133,20 +126,16 @@ public class MyProfileGui extends VerticalLayout {
 			String validationError = userValidator.validateUserDataUpdate(appUser, oldLogin);
 			if (validationError == null) {
 				userService.updateUserData(oldLogin, appUser);
-				showNotification("User successfully updated");
+				VaadinUtils.showNotification("User successfully updated");
 			} else {
-				showNotification(validationError);
+				VaadinUtils.showNotification(validationError);
 			}
 		} else {
-			showNotification("Error: Check the validation messages on the form");
+			VaadinUtils.showNotification("Error: Check the validation messages on the form");
 		}
 	}
 
 	private void deleteUser(AppUser appUser) {
 		userService.deleteUser(appUser);
-	}
-
-	void showNotification(String notificationText) {
-		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 }

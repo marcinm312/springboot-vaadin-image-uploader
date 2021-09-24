@@ -1,10 +1,9 @@
 package pl.marcinm312.springbootimageuploader.gui;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.model.Token;
@@ -13,6 +12,7 @@ import pl.marcinm312.springbootimageuploader.repo.TokenRepo;
 import pl.marcinm312.springbootimageuploader.service.UserService;
 import pl.marcinm312.springbootimageuploader.testdataprovider.TokenDataProvider;
 import pl.marcinm312.springbootimageuploader.testdataprovider.UserDataProvider;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 import java.util.Optional;
 
@@ -31,8 +31,11 @@ class TokenGuiTest {
 	@InjectMocks
 	private UserService userService;
 
+	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
+
 	@BeforeEach
 	void setUp() {
+		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
 		AppUser activatedAppUser = UserDataProvider.prepareExampleActivatedUserWithEncodedPassword();
@@ -40,13 +43,19 @@ class TokenGuiTest {
 		doNothing().when(tokenRepo).delete(isA(Token.class));
 	}
 
+	@AfterEach
+	void tearDown() {
+		mockedVaadinUtils.close();
+	}
+
 	@Test
 	void tokenGuiTest_simpleCase_userActivated() {
 		Token foundToken = TokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(tokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
+		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleExistingTokenValue);
 
-		TokenGui tokenGui = getTokenGuiWithTokenValue(exampleExistingTokenValue);
+		TokenGui tokenGui = new TokenGui(userService);
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("User activated", receivedMessage);
@@ -58,8 +67,9 @@ class TokenGuiTest {
 	void tokenGuiTest_tokenNotFound_userNotActivated() {
 		String exampleNotExistingTokenValue = "000-000-000";
 		given(tokenRepo.findByValue(exampleNotExistingTokenValue)).willReturn(Optional.empty());
+		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleNotExistingTokenValue);
 
-		TokenGui tokenGui = getTokenGuiWithTokenValue(exampleNotExistingTokenValue);
+		TokenGui tokenGui = new TokenGui(userService);
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Token not found", receivedMessage);
@@ -69,20 +79,13 @@ class TokenGuiTest {
 
 	@Test
 	void tokenGuiTest_nullTokenValue_userNotActivated() {
-		TokenGui tokenGui = getTokenGuiWithTokenValue(null);
+		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(null);
+
+		TokenGui tokenGui = new TokenGui(userService);
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Error getting token value", receivedMessage);
 		verify(tokenRepo, never()).delete(any(Token.class));
 		verify(appUserRepo, never()).save(any(AppUser.class));
-	}
-
-	private TokenGui getTokenGuiWithTokenValue(String tokenValue) {
-		return new TokenGui(userService) {
-			@Override
-			String getTokenValue() {
-				return tokenValue;
-			}
-		};
 	}
 }

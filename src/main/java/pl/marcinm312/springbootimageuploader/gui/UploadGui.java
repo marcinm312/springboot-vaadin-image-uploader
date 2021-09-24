@@ -4,7 +4,6 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.SucceededEvent;
@@ -13,11 +12,10 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
 import pl.marcinm312.springbootimageuploader.service.ImageService;
 import pl.marcinm312.springbootimageuploader.service.UserService;
+import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +32,6 @@ public class UploadGui extends VerticalLayout {
 	Image image;
 
 	private final transient ImageService imageService;
-	private final transient UserService userService;
 
 	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
@@ -42,9 +39,8 @@ public class UploadGui extends VerticalLayout {
 	public UploadGui(ImageService imageService, UserService userService) {
 
 		this.imageService = imageService;
-		this.userService = userService;
 
-		AppUser appUser = getAuthenticatedUser();
+		AppUser appUser = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		log.info("appUser.getUsername()={}", appUser.getUsername());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
@@ -80,27 +76,18 @@ public class UploadGui extends VerticalLayout {
 					image.setAlt(uploadedImageUrl);
 					image.setMaxHeight("500px");
 					log.info("Image loaded: {}", uploadedImageUrl);
-					showNotification("Image successfully uploaded");
+					VaadinUtils.showNotification("Image successfully uploaded");
 				} else {
-					showNotification("Error uploading and saving the image");
+					VaadinUtils.showNotification("Error uploading and saving the image");
 				}
 			} catch (IOException e) {
 				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
-				showNotification("Error occurred: " + e.getMessage());
+				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
 			}
 		} else {
 			log.info("Invalid file type");
 			log.info("fileType={}", fileType);
-			showNotification("Error: Invalid file type");
+			VaadinUtils.showNotification("Error: Invalid file type");
 		}
-	}
-
-	void showNotification(String notificationText) {
-		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
-	}
-
-	AppUser getAuthenticatedUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return userService.getUserByAuthentication(authentication);
 	}
 }
