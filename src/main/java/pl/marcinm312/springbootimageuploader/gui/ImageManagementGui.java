@@ -83,7 +83,7 @@ public class ImageManagementGui extends VerticalLayout {
 		grid.setPaginationLocation(PaginatedGrid.PaginationLocation.BOTTOM);
 		grid.setPaginatorSize(2);
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
-		grid.setHeightByRows(true);
+		grid.setAllRowsVisible(true);
 		grid.setPaginatorTexts("Page", "of");
 		log.info("All images loaded");
 
