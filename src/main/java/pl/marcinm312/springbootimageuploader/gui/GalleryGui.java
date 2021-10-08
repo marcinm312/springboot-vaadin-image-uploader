@@ -44,7 +44,6 @@ public class GalleryGui extends VerticalLayout {
 	Button firstImageButton;
 
 	private final transient List<ImageDto> allImagesFromDB;
-	private int imageNumber = 1;
 
 	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
@@ -71,7 +70,7 @@ public class GalleryGui extends VerticalLayout {
 		prepareImageCarousel();
 
 		paginationContainer = new HorizontalLayout();
-		paginationText = new Paragraph(preparePaginationText());
+		paginationText = new Paragraph("");
 		paginationText.getStyle().set(MARGIN, "0");
 		paginationContainer.setAlignItems(Alignment.CENTER);
 		paginationContainer.setJustifyContentMode(JustifyContentMode.CENTER);
@@ -91,34 +90,10 @@ public class GalleryGui extends VerticalLayout {
 		lastImageButton = new Button(">|");
 		firstImageButton = new Button("|<");
 
-		nextImageButton.addClickListener(e -> {
-			if (imageNumber == allImagesFromDB.size()) {
-				imageNumber = 1;
-			} else {
-				imageNumber++;
-			}
-			paginationText.setText(preparePaginationText());
-			carousel.moveNext();
-		});
-		prevImageButton.addClickListener(e -> {
-			if (imageNumber == 1) {
-				imageNumber = allImagesFromDB.size();
-			} else {
-				imageNumber--;
-			}
-			paginationText.setText(preparePaginationText());
-			carousel.movePrev();
-		});
-		lastImageButton.addClickListener(e -> {
-			imageNumber = allImagesFromDB.size();
-			paginationText.setText(preparePaginationText());
-			carousel.movePos(allImagesFromDB.size() - 1);
-		});
-		firstImageButton.addClickListener(e -> {
-			imageNumber = 1;
-			paginationText.setText(preparePaginationText());
-			carousel.movePos(0);
-		});
+		nextImageButton.addClickListener(e -> carousel.moveNext());
+		prevImageButton.addClickListener(e -> carousel.movePrev());
+		lastImageButton.addClickListener(e -> carousel.movePos(allImagesFromDB.size() - 1));
+		firstImageButton.addClickListener(e -> carousel.movePos(0));
 		navigationButtons = new HorizontalLayout(firstImageButton, prevImageButton, nextImageButton,
 				lastImageButton);
 		navigationButtons.setAlignItems(Alignment.CENTER);
@@ -128,7 +103,7 @@ public class GalleryGui extends VerticalLayout {
 	}
 
 	private void prepareImageCarousel() {
-		carousel = new Carousel().withoutNavigation().withoutSwipe();
+		carousel = new Carousel().withoutNavigation();
 		List<Slide> slidesList = new ArrayList<>();
 		for (ImageDto imageDto : allImagesFromDB) {
 			Image vaadinImage = new Image(imageDto.getAutoCompressedImageAddress(), imageDto.getAutoCompressedImageAddress());
@@ -145,11 +120,19 @@ public class GalleryGui extends VerticalLayout {
 		slidesList.toArray(slidesArray);
 		carousel.setSlides(slidesArray);
 		carousel.setSizeFull();
+		carousel.addChangeListener(e -> paginationText.setText(preparePaginationText(e.getPosition())));
 
 		log.info("All images loaded");
 	}
 
-	private String preparePaginationText() {
-		return "Image " + imageNumber + " of " + allImagesFromDB.size();
+	private String preparePaginationText(String position) {
+		int positionNumber = 0;
+		try {
+			positionNumber = Integer.parseInt(position);
+		} catch (Exception e) {
+			log.error("Error converting the position to int: {}", e.getMessage());
+		}
+		positionNumber ++;
+		return "Image " + positionNumber + " of " + allImagesFromDB.size();
 	}
 }
