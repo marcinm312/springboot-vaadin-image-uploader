@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.model.AppUser;
@@ -18,6 +19,7 @@ import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("register")
 @StyleSheet("/css/style.css")
+@PageTitle("Registration form")
 public class RegisterGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;

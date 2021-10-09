@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import pl.marcinm312.springbootimageuploader.validator.UserValidator;
 
 @Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
+@PageTitle("Update password form")
 public class UpdatePasswordGui extends VerticalLayout {
 
 	BeanValidationBinder<AppUser> binder;

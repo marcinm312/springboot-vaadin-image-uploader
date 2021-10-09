@@ -4,12 +4,14 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 @Route("forbidden")
 @StyleSheet("/css/style.css")
+@PageTitle("No permission")
 public class ForbiddenGui extends VerticalLayout {
 
 	H1 h1;
