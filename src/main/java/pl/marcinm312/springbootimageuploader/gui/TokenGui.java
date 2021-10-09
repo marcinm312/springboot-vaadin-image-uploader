@@ -4,6 +4,7 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import pl.marcinm312.springbootimageuploader.utils.VaadinUtils;
 
 @Route("token")
 @StyleSheet("/css/style.css")
+@PageTitle("User activation")
 public class TokenGui extends VerticalLayout {
 
 	H1 h1;
