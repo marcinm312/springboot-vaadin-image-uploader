@@ -131,7 +131,6 @@ public class AppUser extends AuditModel implements UserDetails {
 				"username='" + username + '\'' +
 				", role='" + role + '\'' +
 				", isEnabled=" + isEnabled +
-				", email='" + email + '\'' +
 				'}';
 	}
 
