@@ -29,33 +29,33 @@ public class SessionUtils {
 			if (principal instanceof UserDetails) {
 				UserDetails userDetails = (UserDetails) principal;
 				if (userDetails.getUsername().equals(username)) {
-					List<SessionInformation> listOfSessionInformation = sessionRegistry.getAllSessions(userDetails, true);
-					log.info("listOfSessionInformation.size()={}", listOfSessionInformation.size());
-					for (SessionInformation sessionInformation : listOfSessionInformation) {
-						processSession(username, expireCurrentSession, sessionInformation);
-					}
+					processSessionsOfUser(username, expireCurrentSession, userDetails);
 				}
 			}
 		}
 		log.info("Sessions for user: {} expired", username);
 	}
 
-	private void processSession(String username, boolean expireCurrentSession, SessionInformation sessionInformation) {
+	private void processSessionsOfUser(String username, boolean expireCurrentSession, UserDetails userDetails) {
+		List<SessionInformation> listOfSessionInformation = sessionRegistry.getAllSessions(userDetails, true);
+		log.info("listOfSessionInformation.size()={}", listOfSessionInformation.size());
 		if (expireCurrentSession) {
-			expireSession(username, true, sessionInformation);
+			for (SessionInformation sessionInformation : listOfSessionInformation) {
+				expireSession(username, sessionInformation);
+			}
+			UI.getCurrent().getPage().reload();
 		} else {
 			String currentSessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-			if (!sessionInformation.getSessionId().equals(currentSessionId)) {
-				expireSession(username, false, sessionInformation);
+			for (SessionInformation sessionInformation : listOfSessionInformation) {
+				if (!sessionInformation.getSessionId().equals(currentSessionId)) {
+					expireSession(username, sessionInformation);
+				}
 			}
 		}
 	}
 
-	private void expireSession(String username, boolean expireCurrentSession, SessionInformation sessionInformation) {
+	private void expireSession(String username, SessionInformation sessionInformation) {
 		sessionInformation.expireNow();
-		if (expireCurrentSession) {
-			UI.getCurrent().getPage().reload();
-		}
 		log.info("Session {} of user {} has expired", sessionInformation.getSessionId(), username);
 	}
 }
