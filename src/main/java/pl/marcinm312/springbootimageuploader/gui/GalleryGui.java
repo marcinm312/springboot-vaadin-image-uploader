@@ -134,7 +134,9 @@ public class GalleryGui extends VerticalLayout {
 		} catch (Exception e) {
 			log.error("Error converting the position to int: {}", e.getMessage());
 		}
-		positionNumber ++;
+		if (!allImagesFromDB.isEmpty()) {
+			positionNumber ++;
+		}
 		return "Image " + positionNumber + " of " + allImagesFromDB.size();
 	}
 }
