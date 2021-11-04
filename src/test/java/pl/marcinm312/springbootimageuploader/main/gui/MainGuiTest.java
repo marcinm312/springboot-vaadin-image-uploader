@@ -1,0 +1,16 @@
+package pl.marcinm312.springbootimageuploader.main.gui;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import pl.marcinm312.springbootimageuploader.main.gui.MainGui;
+
+class MainGuiTest {
+
+	@Test
+	void mainGuiTest_simpleCase_success() {
+
+		MainGui mainGui = new MainGui();
+		long receivedChildrenSize = mainGui.getChildren().count();
+		Assertions.assertEquals(2, receivedChildrenSize);
+	}
+}
