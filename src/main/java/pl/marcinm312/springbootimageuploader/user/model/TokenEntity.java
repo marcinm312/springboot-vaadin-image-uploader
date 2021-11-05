@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "tokens")
-public class Token extends AuditModel {
+public class TokenEntity extends AuditModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +19,10 @@ public class Token extends AuditModel {
 	@OneToOne
 	private AppUser user;
 
-	public Token() {
+	public TokenEntity() {
 	}
 
-	public Token(Long id, String value, AppUser user) {
+	public TokenEntity(Long id, String value, AppUser user) {
 		this.id = id;
 		this.value = value;
 		this.user = user;
@@ -54,7 +54,7 @@ public class Token extends AuditModel {
 
 	@Override
 	public String toString() {
-		return "Token{" +
+		return "TokenEntity{" +
 				"id=" + id +
 				", value='" + value + '\'' +
 				", user=" + user +

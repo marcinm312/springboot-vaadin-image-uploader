@@ -1,12 +1,12 @@
 package pl.marcinm312.springbootimageuploader.user.testdataprovider;
 
 import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.model.Token;
+import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
 
 public class TokenDataProvider {
 
-	public static Token prepareExampleToken() {
+	public static TokenEntity prepareExampleToken() {
 		AppUser appUser = UserDataProvider.prepareExampleDisabledUserWithEncodedPassword();
-		return new Token(1L, "123456-123-123-1234", appUser);
+		return new TokenEntity(1L, "123456-123-123-1234", appUser);
 	}
 }

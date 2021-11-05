@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.model.Token;
+import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
@@ -63,7 +63,7 @@ class RegisterGuiTest {
 	void registerGuiTest_simpleCase_success() throws MessagingException {
 		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
+		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
 
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);
@@ -178,7 +178,7 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
 		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		given(tokenRepo.save(any(Token.class))).willReturn(new Token());
+		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
 
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);

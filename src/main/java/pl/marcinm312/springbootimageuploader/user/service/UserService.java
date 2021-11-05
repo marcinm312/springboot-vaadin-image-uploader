@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.model.Token;
+import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
@@ -119,7 +119,7 @@ public class UserService {
 
 	private void sendToken(AppUser appUser) {
 		String tokenValue = UUID.randomUUID().toString();
-		Token token = new Token();
+		TokenEntity token = new TokenEntity();
 		token.setUser(appUser);
 		token.setValue(tokenValue);
 		tokenRepo.save(token);
@@ -133,9 +133,9 @@ public class UserService {
 
 	@Transactional
 	public AppUser activateUser(String tokenValue) {
-		Optional<Token> optionalToken = tokenRepo.findByValue(tokenValue);
+		Optional<TokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
 		if (optionalToken.isPresent()) {
-			Token token = optionalToken.get();
+			TokenEntity token = optionalToken.get();
 			AppUser appUser = token.getUser();
 			log.info("Activating user = {}", appUser.getUsername());
 			appUser.setEnabled(true);

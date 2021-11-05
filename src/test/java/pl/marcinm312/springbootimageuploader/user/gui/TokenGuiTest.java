@@ -9,10 +9,10 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.TokenDataProvider;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.model.Token;
 import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
@@ -43,7 +43,7 @@ class TokenGuiTest {
 
 		AppUser activatedAppUser = UserDataProvider.prepareExampleActivatedUserWithEncodedPassword();
 		given(appUserRepo.save(any(AppUser.class))).willReturn(activatedAppUser);
-		doNothing().when(tokenRepo).delete(isA(Token.class));
+		doNothing().when(tokenRepo).delete(isA(TokenEntity.class));
 	}
 
 	@AfterEach
@@ -53,7 +53,7 @@ class TokenGuiTest {
 
 	@Test
 	void tokenGuiTest_simpleCase_userActivated() {
-		Token foundToken = TokenDataProvider.prepareExampleToken();
+		TokenEntity foundToken = TokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(tokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
 		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleExistingTokenValue);
@@ -76,7 +76,7 @@ class TokenGuiTest {
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Token not found", receivedMessage);
-		verify(tokenRepo, never()).delete(any(Token.class));
+		verify(tokenRepo, never()).delete(any(TokenEntity.class));
 		verify(appUserRepo, never()).save(any(AppUser.class));
 	}
 
@@ -88,7 +88,7 @@ class TokenGuiTest {
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Error getting token value", receivedMessage);
-		verify(tokenRepo, never()).delete(any(Token.class));
+		verify(tokenRepo, never()).delete(any(TokenEntity.class));
 		verify(appUserRepo, never()).save(any(AppUser.class));
 	}
 }
