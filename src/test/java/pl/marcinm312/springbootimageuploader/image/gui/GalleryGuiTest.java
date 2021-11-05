@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.core.env.Environment;
-import pl.marcinm312.springbootimageuploader.image.model.Image;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
@@ -55,7 +55,7 @@ class GalleryGuiTest {
 
 	@Test
 	void galleryGuiTest_simpleCase_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
@@ -71,7 +71,7 @@ class GalleryGuiTest {
 
 	@Test
 	void galleryGuiTest_imageListWithEmptyUser_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
@@ -87,7 +87,7 @@ class GalleryGuiTest {
 
 	@Test
 	void galleryGuiTest_emptyImageList_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
@@ -103,7 +103,7 @@ class GalleryGuiTest {
 
 	@Test
 	void galleryGuiTest_simpleCaseWithAdmin_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("administrator");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);
@@ -119,7 +119,7 @@ class GalleryGuiTest {
 
 	@Test
 	void galleryGuiTest_emptyImageListWithAdmin_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("administrator");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import pl.marcinm312.springbootimageuploader.image.model.Image;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.testdataprovider.ImageDataProvider;
 
@@ -31,15 +31,15 @@ class ImageServiceTest {
 	void setup() {
 		MockitoAnnotations.openMocks(this);
 
-		Image image = ImageDataProvider.prepareExampleImage();
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
-		given(imageRepo.save(any(Image.class))).willReturn(image);
-		doNothing().when(imageRepo).delete(isA(Image.class));
+		given(imageRepo.save(any(ImageEntity.class))).willReturn(image);
+		doNothing().when(imageRepo).delete(isA(ImageEntity.class));
 	}
 
 	@Test
 	void deleteImageFromCloudinaryAndDBTest_simpleCase_success() throws Exception {
-		Image image = ImageDataProvider.prepareExampleImage();
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
@@ -54,7 +54,7 @@ class ImageServiceTest {
 
 	@Test
 	void deleteImageFromCloudinaryAndDBTest_imageNotExistsInDB_infoThatImageNotExistsInDB() throws Exception {
-		Image image = ImageDataProvider.prepareExampleImage();
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.empty());
 
@@ -67,7 +67,7 @@ class ImageServiceTest {
 
 	@Test
 	void deleteImageFromCloudinaryAndDBTest_imageExistsInDBButNotExistsInCloudinary_success() throws Exception {
-		Image image = ImageDataProvider.prepareExampleImage();
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(false);
@@ -81,7 +81,7 @@ class ImageServiceTest {
 
 	@Test
 	void deleteImageFromCloudinaryAndDBTest_errorWhileDeletingImageFromCloudinary_imageNotDeletedFromDB() throws Exception {
-		Image image = ImageDataProvider.prepareExampleImage();
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
 		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);

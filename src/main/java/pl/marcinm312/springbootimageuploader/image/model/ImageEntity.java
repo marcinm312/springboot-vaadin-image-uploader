@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Image extends AuditModel {
+public class ImageEntity extends AuditModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +19,12 @@ public class Image extends AuditModel {
 	@JoinColumn(name = "user_id")
 	private AppUser appUser;
 
-	public Image(String imageAddress, AppUser appUser) {
+	public ImageEntity(String imageAddress, AppUser appUser) {
 		this.imageAddress = imageAddress;
 		this.appUser = appUser;
 	}
 
-	public Image(Long id, String imageAddress, AppUser appUser, Date createdAt, Date updatedAt) {
+	public ImageEntity(Long id, String imageAddress, AppUser appUser, Date createdAt, Date updatedAt) {
 		this.id = id;
 		this.imageAddress = imageAddress;
 		this.appUser = appUser;
@@ -32,7 +32,7 @@ public class Image extends AuditModel {
 		setUpdatedAt(updatedAt);
 	}
 
-	public Image() {
+	public ImageEntity() {
 	}
 
 	public Long getId() {

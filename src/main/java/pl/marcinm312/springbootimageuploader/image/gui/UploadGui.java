@@ -13,6 +13,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.user.model.AppUser;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
@@ -69,7 +70,7 @@ public class UploadGui extends VerticalLayout {
 			InputStream initialStream = vaadinBuffer.getInputStream();
 			log.info("Get input stream");
 			try {
-				pl.marcinm312.springbootimageuploader.image.model.Image savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
+				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
 					log.info("Image saved in DB: {}", uploadedImageUrl);

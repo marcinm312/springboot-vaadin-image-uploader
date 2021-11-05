@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.marcinm312.springbootimageuploader.image.model.Image;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.model.ImageMapper;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
@@ -33,22 +33,22 @@ public class ImageService {
 
 	public List<ImageDto> getAllImagesFromDB() {
 		List<ImageDto> imagesDtoList = new ArrayList<>();
-		List<Image> imagesList = imageRepo.findAllByOrderByIdDesc();
-		for (Image image : imagesList) {
+		List<ImageEntity> imagesList = imageRepo.findAllByOrderByIdDesc();
+		for (ImageEntity image : imagesList) {
 			imagesDtoList.add(ImageMapper.convertImageToImageDto(image));
 		}
 		return imagesDtoList;
 	}
 
 	@Transactional
-	public Image uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
+	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
 		log.info("Starting uploading a file");
 		Map uploadResult = cloudinaryService.uploadImageToCloudinary(inputStream);
 		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
 			String uploadedImageUrl = uploadResult.get("secure_url").toString();
 			log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
 			log.info("Saving image in DB: {}", uploadedImageUrl);
-			return imageRepo.save(new Image(uploadedImageUrl, appUser));
+			return imageRepo.save(new ImageEntity(uploadedImageUrl, appUser));
 		} else {
 			return null;
 		}
@@ -57,9 +57,9 @@ public class ImageService {
 	@Transactional
 	public DeleteResult deleteImageFromCloudinaryAndDB(Long imageId) {
 		log.info("Deleting imageId: {}", imageId);
-		Optional<Image> optionalImage = imageRepo.findById(imageId);
+		Optional<ImageEntity> optionalImage = imageRepo.findById(imageId);
 		if (optionalImage.isPresent()) {
-			Image image = optionalImage.get();
+			ImageEntity image = optionalImage.get();
 			try {
 				boolean imageExistsInCloudinary = cloudinaryService.checkIfImageExistsInCloudinary(image);
 				boolean deleteFromCloudinaryResult = false;

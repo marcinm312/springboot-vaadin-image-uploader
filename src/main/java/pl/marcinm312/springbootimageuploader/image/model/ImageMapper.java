@@ -9,7 +9,7 @@ public class ImageMapper {
 
 	}
 
-	public static ImageDto convertImageToImageDto(Image image) {
+	public static ImageDto convertImageToImageDto(ImageEntity image) {
 		ImageDto imageDto = new ImageDto(image.getId());
 		imageDto.setImageAddress(image.getImageAddress());
 		imageDto.setPublicId(image.getPublicId());

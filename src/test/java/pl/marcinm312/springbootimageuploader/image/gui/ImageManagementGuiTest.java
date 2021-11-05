@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.core.env.Environment;
 import org.vaadin.klaudeta.PaginatedGrid;
-import pl.marcinm312.springbootimageuploader.image.model.Image;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
@@ -46,7 +46,7 @@ class ImageManagementGuiTest {
 
 	@Test
 	void imageManagementGuiTest_simpleCase_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareExampleImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
@@ -61,7 +61,7 @@ class ImageManagementGuiTest {
 
 	@Test
 	void imageManagementGuiTest_imageListWithEmptyUser_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
@@ -76,7 +76,7 @@ class ImageManagementGuiTest {
 
 	@Test
 	void imageManagementGuiTest_emptyImageList_success() {
-		List<Image> expectedImageList = ImageDataProvider.prepareEmptyImageList();
+		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 

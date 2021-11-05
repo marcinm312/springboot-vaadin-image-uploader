@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import pl.marcinm312.springbootimageuploader.image.model.Image;
+import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,12 +32,12 @@ public class CloudinaryService {
 		return cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 	}
 
-	public boolean deleteImageFromCloudinary(Image image) throws Exception {
+	public boolean deleteImageFromCloudinary(ImageEntity image) throws Exception {
 		ApiResponse apiResponse = cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
 		return checkDeleteFromCloudinaryResult(image, apiResponse);
 	}
 
-	public boolean checkIfImageExistsInCloudinary(Image image) {
+	public boolean checkIfImageExistsInCloudinary(ImageEntity image) {
 		String publicId = image.getPublicId();
 		log.info("Checking if image exists in Cloudinary. publicId: {}", publicId);
 		try {
@@ -59,7 +59,7 @@ public class CloudinaryService {
 		return false;
 	}
 
-	private boolean checkDeleteFromCloudinaryResult(Image image, ApiResponse deleteApiResponse) {
+	private boolean checkDeleteFromCloudinaryResult(ImageEntity image, ApiResponse deleteApiResponse) {
 		String deleted = "deleted";
 		String publicId = image.getPublicId();
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
