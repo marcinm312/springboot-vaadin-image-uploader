@@ -8,7 +8,7 @@ import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.model.ImageMapper;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,14 +41,14 @@ public class ImageService {
 	}
 
 	@Transactional
-	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, AppUser appUser) throws IOException {
+	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, UserEntity user) throws IOException {
 		log.info("Starting uploading a file");
 		Map uploadResult = cloudinaryService.uploadImageToCloudinary(inputStream);
 		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
 			String uploadedImageUrl = uploadResult.get("secure_url").toString();
 			log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
 			log.info("Saving image in DB: {}", uploadedImageUrl);
-			return imageRepo.save(new ImageEntity(uploadedImageUrl, appUser));
+			return imageRepo.save(new ImageEntity(uploadedImageUrl, user));
 		} else {
 			return null;
 		}

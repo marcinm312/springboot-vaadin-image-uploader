@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.marcinm312.springbootimageuploader.main.gui.MainGui;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 
@@ -52,15 +52,15 @@ class WebSecurityConfigTest {
 	private WebApplicationContext webApplicationContext;
 
 	@MockBean
-	private AppUserRepo appUserRepo;
+	private UserRepo userRepo;
 
 	@BeforeEach
 	void setUp() {
-		given(appUserRepo.findByUsername("administrator"))
+		given(userRepo.findByUsername("administrator"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword()));
-		given(appUserRepo.findByUsername("username"))
+		given(userRepo.findByUsername("username"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodUserWithEncodedPassword()));
-		given(appUserRepo.findByUsername("lalala"))
+		given(userRepo.findByUsername("lalala"))
 				.willReturn(Optional.empty());
 
 		this.mockMvc = MockMvcBuilders

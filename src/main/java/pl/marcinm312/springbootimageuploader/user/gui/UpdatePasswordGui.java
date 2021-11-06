@@ -13,7 +13,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -23,7 +23,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Update password form")
 public class UpdatePasswordGui extends VerticalLayout {
 
-	BeanValidationBinder<AppUser> binder;
+	BeanValidationBinder<UserEntity> binder;
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
 	Anchor myProfileAnchor;
@@ -47,7 +47,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		binder = new BeanValidationBinder<>(AppUser.class);
+		binder = new BeanValidationBinder<>(UserEntity.class);
 
 		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
 		logoutAnchor = new Anchor("../../logout", "Log out");
@@ -80,15 +80,15 @@ public class UpdatePasswordGui extends VerticalLayout {
 	}
 
 	private void updateUserPassword() {
-		AppUser appUser = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
-		log.info("Old user = {}", appUser);
-		String validationError = userValidator.validateUserPasswordUpdate(appUser, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
+		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		log.info("Old user = {}", user);
+		String validationError = userValidator.validateUserPasswordUpdate(user, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
 		if (validationError == null) {
-			appUser.setPassword(passwordField.getValue());
-			binder.setBean(appUser);
+			user.setPassword(passwordField.getValue());
+			binder.setBean(user);
 			binder.validate();
 			if (binder.isValid()) {
-				userService.updateUserPassword(appUser);
+				userService.updateUserPassword(user);
 				VaadinUtils.showNotification("User password successfully updated");
 			} else {
 				clearPasswordFieldsValues();

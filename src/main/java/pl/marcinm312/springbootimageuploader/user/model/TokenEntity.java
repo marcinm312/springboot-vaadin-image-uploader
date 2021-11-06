@@ -17,12 +17,12 @@ public class TokenEntity extends AuditModel {
 	private String value;
 
 	@OneToOne
-	private AppUser user;
+	private UserEntity user;
 
 	public TokenEntity() {
 	}
 
-	public TokenEntity(Long id, String value, AppUser user) {
+	public TokenEntity(Long id, String value, UserEntity user) {
 		this.id = id;
 		this.value = value;
 		this.user = user;
@@ -44,11 +44,11 @@ public class TokenEntity extends AuditModel {
 		this.value = value;
 	}
 
-	public AppUser getUser() {
+	public UserEntity getUser() {
 		return user;
 	}
 
-	public void setUser(AppUser user) {
+	public void setUser(UserEntity user) {
 		this.user = user;
 	}
 

@@ -13,7 +13,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-public class AppUser extends AuditModel implements UserDetails {
+@Table(name = "app_user")
+public class UserEntity extends AuditModel implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +37,14 @@ public class AppUser extends AuditModel implements UserDetails {
 	@Email(message = "Incorrect email address! ")
 	private String email;
 
-	public AppUser(String username, String password, String role, String email) {
+	public UserEntity(String username, String password, String role, String email) {
 		this.username = username;
 		this.password = password;
 		this.role = role;
 		this.email = email;
 	}
 
-	public AppUser(Long id, String username, String password, String role, boolean isEnabled, String email) {
+	public UserEntity(Long id, String username, String password, String role, boolean isEnabled, String email) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -52,7 +53,7 @@ public class AppUser extends AuditModel implements UserDetails {
 		this.email = email;
 	}
 
-	public AppUser() {
+	public UserEntity() {
 	}
 
 	public Long getId() {
@@ -128,7 +129,7 @@ public class AppUser extends AuditModel implements UserDetails {
 
 	@Override
 	public String toString() {
-		return "AppUser{" +
+		return "UserEntity{" +
 				"username='" + username + '\'' +
 				", role='" + role + '\'' +
 				", isEnabled=" + isEnabled +
@@ -138,11 +139,11 @@ public class AppUser extends AuditModel implements UserDetails {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof AppUser)) return false;
+		if (!(o instanceof UserEntity)) return false;
 
-		AppUser appUser = (AppUser) o;
+		UserEntity user = (UserEntity) o;
 
-		return getUsername() != null ? getUsername().equals(appUser.getUsername()) : appUser.getUsername() == null;
+		return getUsername() != null ? getUsername().equals(user.getUsername()) : user.getUsername() == null;
 	}
 
 	@Override

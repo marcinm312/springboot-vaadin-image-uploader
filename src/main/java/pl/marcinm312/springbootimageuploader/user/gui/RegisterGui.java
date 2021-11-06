@@ -12,7 +12,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -22,7 +22,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Registration form")
 public class RegisterGui extends VerticalLayout {
 
-	BeanValidationBinder<AppUser> binder;
+	BeanValidationBinder<UserEntity> binder;
 	Anchor mainPageAnchor;
 	H1 h1;
 	Paragraph paragraph;
@@ -43,7 +43,7 @@ public class RegisterGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		binder = new BeanValidationBinder<>(AppUser.class);
+		binder = new BeanValidationBinder<>(UserEntity.class);
 
 		mainPageAnchor = new Anchor("..", "Back to main page");
 		h1 = new H1("Registration form");
@@ -77,13 +77,13 @@ public class RegisterGui extends VerticalLayout {
 		String username = loginTextField.getValue().trim();
 		String password = passwordField.getValue();
 		String email = emailTextField.getValue().trim();
-		AppUser appUser = new AppUser(username, password, "ROLE_USER", email);
-		binder.setBean(appUser);
+		UserEntity user = new UserEntity(username, password, "ROLE_USER", email);
+		binder.setBean(user);
 		binder.validate();
 		if (binder.isValid()) {
-			String validationError = userValidator.validateUserRegistration(appUser, confirmPasswordField.getValue());
+			String validationError = userValidator.validateUserRegistration(user, confirmPasswordField.getValue());
 			if (validationError == null) {
-				userService.createUser(appUser, false);
+				userService.createUser(user, false);
 				VaadinUtils.showNotification("User successfully registered");
 			} else {
 				clearPasswordFieldsValues();

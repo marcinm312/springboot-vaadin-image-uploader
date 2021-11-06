@@ -2,7 +2,7 @@ package pl.marcinm312.springbootimageuploader.user.validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
 import java.util.Optional;
@@ -17,30 +17,30 @@ public class UserValidator {
 		this.userService = userService;
 	}
 
-	public String validateUserRegistration(AppUser appUser, String confirmPasswordValue) {
+	public String validateUserRegistration(UserEntity user, String confirmPasswordValue) {
 
-		String username = appUser.getUsername();
-		Optional<AppUser> optionalUser = userService.getOptionalUserByUsername(username);
+		String username = user.getUsername();
+		Optional<UserEntity> optionalUser = userService.getOptionalUserByUsername(username);
 		if (optionalUser.isPresent()) {
 			return "Error: This user already exists!";
 		}
-		if (!confirmPasswordValue.equals(appUser.getPassword())) {
+		if (!confirmPasswordValue.equals(user.getPassword())) {
 			return "Error: The passwords in both fields must be the same!";
 		}
 		return null;
 	}
 
-	public String validateUserDataUpdate(AppUser newAppUser, String oldLogin) {
+	public String validateUserDataUpdate(UserEntity newUser, String oldLogin) {
 
-		if (!newAppUser.getUsername().equals(oldLogin) && userService.getOptionalUserByUsername(newAppUser.getUsername()).isPresent()) {
+		if (!newUser.getUsername().equals(oldLogin) && userService.getOptionalUserByUsername(newUser.getUsername()).isPresent()) {
 			return "Error: This user already exists!";
 		}
 		return null;
 	}
 
-	public String validateUserPasswordUpdate(AppUser oldAppUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
+	public String validateUserPasswordUpdate(UserEntity oldUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
 
-		if (currentPasswordEntered.isEmpty() || !userService.isPasswordCorrect(oldAppUser, currentPasswordEntered)) {
+		if (currentPasswordEntered.isEmpty() || !userService.isPasswordCorrect(oldUser, currentPasswordEntered)) {
 			return "Error: The current password is incorrect";
 		}
 		if (!confirmPasswordValue.equals(newPassword)) {

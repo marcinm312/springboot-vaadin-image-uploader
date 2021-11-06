@@ -1,6 +1,6 @@
 package pl.marcinm312.springbootimageuploader.image.model;
 
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 
 public class ImageMapper {
@@ -15,9 +15,9 @@ public class ImageMapper {
 		imageDto.setPublicId(image.getPublicId());
 		imageDto.setCreatedAt(image.getCreatedAtAsString());
 		imageDto.setUpdatedAt(image.getUpdatedAtAsString());
-		AppUser appUser = image.getUser();
-		if (appUser != null) {
-			imageDto.setUsername(appUser.getUsername());
+		UserEntity user = image.getUser();
+		if (user != null) {
+			imageDto.setUsername(user.getUsername());
 		}
 		return imageDto;
 	}

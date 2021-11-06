@@ -6,7 +6,7 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
 public class VaadinUtils {
 
@@ -26,7 +26,7 @@ public class VaadinUtils {
 
 	public static boolean isCurrentUserAdmin() {
 		Authentication authentication = getCurrentAuthentication();
-		return "ROLE_ADMIN".equals(((AppUser) authentication.getPrincipal()).getRole());
+		return "ROLE_ADMIN".equals(((UserEntity) authentication.getPrincipal()).getRole());
 	}
 
 	public static void showNotification(String notificationText) {

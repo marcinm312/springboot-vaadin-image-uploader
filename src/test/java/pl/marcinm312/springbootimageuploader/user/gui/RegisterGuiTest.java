@@ -11,9 +11,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class RegisterGuiTest {
 
 	@Mock
-	private AppUserRepo appUserRepo;
+	private UserRepo userRepo;
 
 	@Mock
 	private PasswordEncoder passwordEncoder;
@@ -62,7 +62,7 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_simpleCase_success() throws MessagingException {
 		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
-		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
 
 		UserValidator validator = new UserValidator(userService);
@@ -129,7 +129,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() throws MessagingException {
-		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new AppUser()));
+		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new UserEntity()));
 
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);
@@ -153,7 +153,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() throws MessagingException {
-		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);
@@ -177,7 +177,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
-		given(appUserRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
+		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
 
 		UserValidator validator = new UserValidator(userService);

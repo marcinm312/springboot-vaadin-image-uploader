@@ -14,7 +14,7 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
@@ -43,8 +43,8 @@ public class UploadGui extends VerticalLayout {
 
 		this.imageService = imageService;
 
-		AppUser appUser = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
-		log.info("appUser.getUsername()={}", appUser.getUsername());
+		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		log.info("user.getUsername()={}", user.getUsername());
 
 		logoutAnchor = new Anchor("../logout", "Log out");
 		managementAnchor = new Anchor("../management", "Back to image management");
@@ -59,18 +59,18 @@ public class UploadGui extends VerticalLayout {
 
 		image = new Image();
 
-		upload.addSucceededListener(event -> uploadImageAction(appUser, vaadinBuffer, event));
+		upload.addSucceededListener(event -> uploadImageAction(user, vaadinBuffer, event));
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void uploadImageAction(AppUser appUser, MemoryBuffer vaadinBuffer, SucceededEvent event) {
+	private void uploadImageAction(UserEntity user, MemoryBuffer vaadinBuffer, SucceededEvent event) {
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
 			log.info("Start uploading an image");
 			InputStream initialStream = vaadinBuffer.getInputStream();
 			log.info("Get input stream");
 			try {
-				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(initialStream, appUser);
+				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(initialStream, user);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
 					log.info("Image saved in DB: {}", uploadedImageUrl);

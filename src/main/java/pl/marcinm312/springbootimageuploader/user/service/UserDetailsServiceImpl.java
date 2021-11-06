@@ -6,27 +6,27 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 
 import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private final AppUserRepo appUserRepo;
+	private final UserRepo userRepo;
 
 	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	public UserDetailsServiceImpl(AppUserRepo appUserRepo) {
-		this.appUserRepo = appUserRepo;
+	public UserDetailsServiceImpl(UserRepo userRepo) {
+		this.userRepo = userRepo;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("Loading user: {}", username);
-		Optional<AppUser> optionalUser = appUserRepo.findByUsername(username);
+		Optional<UserEntity> optionalUser = userRepo.findByUsername(username);
 		if (optionalUser.isPresent()) {
 			return optionalUser.get();
 		} else {

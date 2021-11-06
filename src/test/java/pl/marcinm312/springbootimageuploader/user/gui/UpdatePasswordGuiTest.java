@@ -8,9 +8,9 @@ import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 class UpdatePasswordGuiTest {
 
 	@Mock
-	private AppUserRepo appUserRepo;
+	private UserRepo userRepo;
 
 	@Mock
 	private SessionUtils sessionUtils;
@@ -52,11 +52,11 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
@@ -81,11 +81,11 @@ class UpdatePasswordGuiTest {
 		String password = "hh2";
 		String confirmPassword = "hh2";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
@@ -113,11 +113,11 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh3";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
@@ -145,11 +145,11 @@ class UpdatePasswordGuiTest {
 		String password = "password";
 		String confirmPassword = "password";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
@@ -177,11 +177,11 @@ class UpdatePasswordGuiTest {
 		String password = "hhhhh2";
 		String confirmPassword = "hhhhh2";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);

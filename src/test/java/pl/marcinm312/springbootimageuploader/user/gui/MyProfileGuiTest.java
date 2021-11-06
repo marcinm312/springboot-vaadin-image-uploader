@@ -10,9 +10,9 @@ import org.mockito.*;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
@@ -27,7 +27,7 @@ class MyProfileGuiTest {
 	private final UI ui = new UI();
 
 	@Mock
-	private AppUserRepo appUserRepo;
+	private UserRepo userRepo;
 
 	@Mock
 	private ImageRepo imageRepo;
@@ -62,12 +62,12 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -92,12 +92,12 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleUserWithNullEmail();
+		UserEntity loggedUser = UserDataProvider.prepareExampleUserWithNullEmail();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.empty());
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -121,11 +121,11 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateUserWithOnlyEmailChange_success() {
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -147,11 +147,11 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateAdministratorWithOnlyEmailChange_success() {
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodAdministrator();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodAdministrator();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -174,11 +174,11 @@ class MyProfileGuiTest {
 		String newLogin = "hh";
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -203,11 +203,11 @@ class MyProfileGuiTest {
 		String newLogin = " hh ";
 		String newEmail = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -232,12 +232,12 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newPassword = "aaa@abc.com";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-		given(appUserRepo.findByUsername(newLogin)).willReturn(Optional.of(new AppUser()));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(newLogin)).willReturn(Optional.of(new UserEntity()));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -262,11 +262,11 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaaaaaaaaaaaaaaaaa";
 
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -288,11 +288,11 @@ class MyProfileGuiTest {
 
 	@Test
 	void myProfileGuiTest_cancelDeletingUser_userIsNotDeleted() {
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -300,18 +300,18 @@ class MyProfileGuiTest {
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.cancelDeleteButton.click();
 
-		verify(appUserRepo, never()).delete(any());
+		verify(userRepo, never()).delete(any());
 		verify(sessionUtils, never()).expireUserSessions(any(), eq(true));
 		verify(imageRepo, never()).deleteUserFromImages(any());
 	}
 
 	@Test
 	void myProfileGuiTest_confirmDeletingUser_userIsDeleted() {
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
@@ -319,18 +319,18 @@ class MyProfileGuiTest {
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.confirmDeleteButton.click();
 
-		verify(appUserRepo, times(1)).delete(loggedUser);
+		verify(userRepo, times(1)).delete(loggedUser);
 		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
 		verify(imageRepo, times(1)).deleteUserFromImages(loggedUser);
 	}
 
 	@Test
 	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);

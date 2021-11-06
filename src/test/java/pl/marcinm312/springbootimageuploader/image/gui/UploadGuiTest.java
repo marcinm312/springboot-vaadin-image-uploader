@@ -4,8 +4,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
-import pl.marcinm312.springbootimageuploader.user.repository.AppUserRepo;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
@@ -21,7 +21,7 @@ class UploadGuiTest {
 	private final UI ui = new UI();
 
 	@Mock
-	private AppUserRepo appUserRepo;
+	private UserRepo userRepo;
 
 	@InjectMocks
 	private UserService userService;
@@ -50,11 +50,11 @@ class UploadGuiTest {
 
 	@Test
 	void uploadGuiTest_initView_success() {
-		AppUser loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(appUserRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UploadGui uploadGui = new UploadGui(imageService, userService);
 

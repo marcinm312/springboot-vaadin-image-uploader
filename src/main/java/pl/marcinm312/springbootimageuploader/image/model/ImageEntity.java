@@ -1,13 +1,14 @@
 package pl.marcinm312.springbootimageuploader.image.model;
 
 import org.apache.commons.io.FilenameUtils;
-import pl.marcinm312.springbootimageuploader.user.model.AppUser;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "image")
 public class ImageEntity extends AuditModel {
 
 	@Id
@@ -17,17 +18,17 @@ public class ImageEntity extends AuditModel {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private AppUser appUser;
+	private UserEntity user;
 
-	public ImageEntity(String imageAddress, AppUser appUser) {
+	public ImageEntity(String imageAddress, UserEntity user) {
 		this.imageAddress = imageAddress;
-		this.appUser = appUser;
+		this.user = user;
 	}
 
-	public ImageEntity(Long id, String imageAddress, AppUser appUser, Date createdAt, Date updatedAt) {
+	public ImageEntity(Long id, String imageAddress, UserEntity user, Date createdAt, Date updatedAt) {
 		this.id = id;
 		this.imageAddress = imageAddress;
-		this.appUser = appUser;
+		this.user = user;
 		setCreatedAt(createdAt);
 		setUpdatedAt(updatedAt);
 	}
@@ -51,12 +52,12 @@ public class ImageEntity extends AuditModel {
 		this.imageAddress = imageAddress;
 	}
 
-	public AppUser getUser() {
-		return appUser;
+	public UserEntity getUser() {
+		return user;
 	}
 
-	public void setUser(AppUser appUser) {
-		this.appUser = appUser;
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 
 	public String getPublicId() {
