@@ -12,7 +12,6 @@ import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,12 +31,8 @@ public class ImageService {
 	}
 
 	public List<ImageDto> getAllImagesFromDB() {
-		List<ImageDto> imagesDtoList = new ArrayList<>();
 		List<ImageEntity> imagesList = imageRepo.findAllByOrderByIdDesc();
-		for (ImageEntity image : imagesList) {
-			imagesDtoList.add(ImageMapper.convertImageToImageDto(image));
-		}
-		return imagesDtoList;
+		return ImageMapper.convertImageEntityListToImageDtoList(imagesList);
 	}
 
 	@Transactional

@@ -1,7 +1,10 @@
 package pl.marcinm312.springbootimageuploader.image.model;
 
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ImageMapper {
 
@@ -9,7 +12,7 @@ public class ImageMapper {
 
 	}
 
-	public static ImageDto convertImageToImageDto(ImageEntity image) {
+	public static ImageDto convertImageEntityToImageDto(ImageEntity image) {
 		ImageDto imageDto = new ImageDto(image.getId());
 		imageDto.setImageAddress(image.getImageAddress());
 		imageDto.setPublicId(image.getPublicId());
@@ -20,5 +23,9 @@ public class ImageMapper {
 			imageDto.setUsername(user.getUsername());
 		}
 		return imageDto;
+	}
+
+	public static List<ImageDto> convertImageEntityListToImageDtoList(List<ImageEntity> imageList) {
+		return imageList.stream().map(ImageMapper::convertImageEntityToImageDto).collect(Collectors.toList());
 	}
 }

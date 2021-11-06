@@ -13,7 +13,7 @@ class ImageDtoTest {
 	@Test
 	void getCompressedImageAddress_simpleCase_returnAddressToCompressedImage() {
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
-		ImageDto imageDto = ImageMapper.convertImageToImageDto(image);
+		ImageDto imageDto = ImageMapper.convertImageEntityToImageDto(image);
 		String receivedCompressedImageAddress = imageDto.getCompressedImageAddress(100);
 		String expectedCompressedImageAddress = "https://res.cloudinary.com/test/image/upload/h_100,f_auto/q_100/test123.jpg";
 		Assertions.assertEquals(expectedCompressedImageAddress, receivedCompressedImageAddress);
@@ -22,7 +22,7 @@ class ImageDtoTest {
 	@Test
 	void getAutoCompressedImageAddress() {
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
-		ImageDto imageDto = ImageMapper.convertImageToImageDto(image);
+		ImageDto imageDto = ImageMapper.convertImageEntityToImageDto(image);
 		String receivedCompressedImageAddress = imageDto.getAutoCompressedImageAddress();
 		String expectedCompressedImageAddress = "https://res.cloudinary.com/test/image/upload/h_700,f_auto/q_auto:best/test123.jpg";
 		Assertions.assertEquals(expectedCompressedImageAddress, receivedCompressedImageAddress);
