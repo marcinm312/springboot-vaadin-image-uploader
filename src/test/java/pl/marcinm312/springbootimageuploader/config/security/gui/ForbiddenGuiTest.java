@@ -2,7 +2,6 @@ package pl.marcinm312.springbootimageuploader.config.security.gui;
 
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
-import pl.marcinm312.springbootimageuploader.config.security.gui.ForbiddenGui;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import static org.mockito.BDDMockito.given;

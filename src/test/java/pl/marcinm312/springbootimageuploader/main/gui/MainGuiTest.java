@@ -2,7 +2,6 @@ package pl.marcinm312.springbootimageuploader.main.gui;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pl.marcinm312.springbootimageuploader.main.gui.MainGui;
 
 class MainGuiTest {
 
