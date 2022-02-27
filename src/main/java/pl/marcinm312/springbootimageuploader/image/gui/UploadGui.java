@@ -59,17 +59,23 @@ public class UploadGui extends VerticalLayout {
 
 		image = new Image();
 
-		upload.addSucceededListener(event -> uploadImageAction(user, vaadinBuffer, event));
+		upload.addSucceededListener(event -> {
+			try {
+				uploadImageAction(user, vaadinBuffer, event);
+			} catch (IOException e) {
+				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
+				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
+			}
+		});
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void uploadImageAction(UserEntity user, MemoryBuffer vaadinBuffer, SucceededEvent event) {
+	private void uploadImageAction(UserEntity user, MemoryBuffer vaadinBuffer, SucceededEvent event) throws IOException {
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
 			log.info("Start uploading an image");
-			InputStream initialStream = vaadinBuffer.getInputStream();
-			log.info("Get input stream");
-			try {
+			try (InputStream initialStream = vaadinBuffer.getInputStream()) {
+				log.info("Get input stream");
 				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(initialStream, user);
 				if (savedImage != null) {
 					String uploadedImageUrl = savedImage.getImageAddress();
