@@ -25,6 +25,9 @@ import java.util.List;
 @Route("management")
 @StyleSheet("/css/style.css")
 @PageTitle("Image management")
+//@DeclareRoles("ADMIN")
+//@RolesAllowed("ADMIN")
+//@Secured("ADMIN")
 public class ImageManagementGui extends VerticalLayout {
 
 	HorizontalLayout horizontalMenu;
