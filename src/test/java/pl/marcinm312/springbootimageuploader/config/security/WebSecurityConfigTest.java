@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.mock.mockito.SpyBeans;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,63 +70,56 @@ class WebSecurityConfigTest {
 	}
 
 	@Test
-	@WithAnonymousUser
 	void getCss_simpleCase_success() throws Exception {
 		mockMvc.perform(
-				get("/css/style.css"))
+						get("/css/style.css"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType("text/css"))
 				.andExpect(unauthenticated());
 	}
 
 	@Test
-	@WithAnonymousUser
 	void formLogin_userWithGoodCredentials_success() throws Exception {
 		mockMvc.perform(
-				formLogin().user("username").password("password"))
+						formLogin().user("username").password("password"))
 				.andExpect(authenticated().withUsername("username").withRoles("USER"));
 	}
 
 	@Test
-	@WithAnonymousUser
 	void formLogin_administratorWithGoodCredentials_success() throws Exception {
 		mockMvc.perform(
-				formLogin().user("administrator").password("password"))
+						formLogin().user("administrator").password("password"))
 				.andExpect(authenticated().withUsername("administrator").withRoles("ADMIN"));
 	}
 
 	@Test
-	@WithAnonymousUser
 	void formLogin_userWithBadCredentials_unauthenticated() throws Exception {
 		mockMvc.perform(
-				formLogin().user("username").password("invalid"))
+						formLogin().user("username").password("invalid"))
 				.andExpect(redirectedUrl("/login?error"))
 				.andExpect(unauthenticated());
 	}
 
 	@Test
-	@WithAnonymousUser
 	void formLogin_administratorWithBadCredentials_unauthenticated() throws Exception {
 		mockMvc.perform(
-				formLogin().user("administrator").password("invalid"))
+						formLogin().user("administrator").password("invalid"))
 				.andExpect(redirectedUrl("/login?error"))
 				.andExpect(unauthenticated());
 	}
 
 	@Test
-	@WithAnonymousUser
 	void formLogin_notExistingUser_unauthenticated() throws Exception {
 		mockMvc.perform(
-				formLogin().user("lalala").password("password"))
+						formLogin().user("lalala").password("password"))
 				.andExpect(redirectedUrl("/login?error"))
 				.andExpect(unauthenticated());
 	}
 
 	@Test
-	@WithAnonymousUser
 	void logout_simpleCase_success() throws Exception {
 		mockMvc.perform(
-				logout())
+						logout())
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/"))
 				.andExpect(unauthenticated());
