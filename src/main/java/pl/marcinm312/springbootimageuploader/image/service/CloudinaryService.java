@@ -3,8 +3,7 @@ package pl.marcinm312.springbootimageuploader.image.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
@@ -13,15 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+@Slf4j
 @Service
 public class CloudinaryService {
 
 	private final Cloudinary cloudinary;
 
-	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
-	@Autowired
 	public CloudinaryService(Environment environment) {
+
 		cloudinary = new Cloudinary(ObjectUtils.asMap(
 				"cloud_name", environment.getProperty("cloudinary.cloudNameValue"),
 				"api_key", environment.getProperty("cloudinary.apiKeyValue"),
@@ -33,11 +31,13 @@ public class CloudinaryService {
 	}
 
 	public boolean deleteImageFromCloudinary(ImageEntity image) throws Exception {
+
 		ApiResponse apiResponse = cloudinary.api().deleteResources(Collections.singletonList(image.getPublicId()), ObjectUtils.emptyMap());
 		return checkDeleteFromCloudinaryResult(image, apiResponse);
 	}
 
 	public boolean checkIfImageExistsInCloudinary(ImageEntity image) {
+
 		String publicId = image.getPublicId();
 		log.info("Checking if image exists in Cloudinary. publicId: {}", publicId);
 		try {
@@ -60,6 +60,7 @@ public class CloudinaryService {
 	}
 
 	private boolean checkDeleteFromCloudinaryResult(ImageEntity image, ApiResponse deleteApiResponse) {
+
 		String deleted = "deleted";
 		String publicId = image.getPublicId();
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
