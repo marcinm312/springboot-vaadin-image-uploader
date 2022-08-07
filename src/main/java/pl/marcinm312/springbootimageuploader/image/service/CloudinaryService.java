@@ -43,9 +43,9 @@ public class CloudinaryService {
 		try {
 			ApiResponse apiResponse = cloudinary.api().resourcesByIds(Collections.singletonList(publicId), ObjectUtils.emptyMap());
 			if (apiResponse.containsKey("resources")) {
-				List<HashMap> listFromApi = (ArrayList<HashMap>) apiResponse.get("resources");
+				List<Map<?, ?>> listFromApi = (List<Map<?, ?>>) apiResponse.get("resources");
 				if (!listFromApi.isEmpty()) {
-					HashMap firstElement = listFromApi.get(0);
+					Map<?, ?> firstElement = listFromApi.get(0);
 					if (firstElement.containsKey("public_id") && publicId.equals(firstElement.get("public_id"))) {
 						log.info("Image with publicId: {} exists in Cloudinary", publicId);
 						return true;
@@ -65,7 +65,7 @@ public class CloudinaryService {
 		String publicId = image.getPublicId();
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
 		if (deleteApiResponse.containsKey(deleted)) {
-			Map deletedMap = (Map) deleteApiResponse.get(deleted);
+			Map<?, ?> deletedMap = (Map<?, ?>) deleteApiResponse.get(deleted);
 			if (deletedMap.containsKey(publicId)) {
 				String deleteImageResult = (String) deletedMap.get(publicId);
 				if (deleted.equals(deleteImageResult)) {
