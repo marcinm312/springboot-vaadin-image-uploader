@@ -13,7 +13,6 @@ import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,18 +33,14 @@ public class ImageService {
 	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, UserEntity user) throws IOException {
 
 		log.info("Starting uploading a file");
-		Map<?, ?> uploadResult = cloudinaryService.uploadImageToCloudinary(inputStream);
-		if (uploadResult != null && uploadResult.containsKey("secure_url")) {
-			String uploadedImageUrl = uploadResult.get("secure_url").toString();
-			log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
-			log.info("Saving image in DB: {}", uploadedImageUrl);
-			return imageRepo.save(new ImageEntity(uploadedImageUrl, user));
-		}
-		return null;
+		String uploadedImageUrl = cloudinaryService.uploadImageToCloudinary(inputStream);
+		log.info("Image uploaded to Cloudinary server: {}", uploadedImageUrl);
+		log.info("Saving image in DB: {}", uploadedImageUrl);
+		return imageRepo.save(new ImageEntity(uploadedImageUrl, user));
 	}
 
 	@Transactional
-	public DeleteResult deleteImageFromCloudinaryAndDB(Long imageId) {
+	public DeleteResult deleteImageFromCloudinaryAndDB(Long imageId) throws Exception {
 
 		log.info("Deleting imageId: {}", imageId);
 		Optional<ImageEntity> optionalImage = imageRepo.findById(imageId);
@@ -53,19 +48,17 @@ public class ImageService {
 			return DeleteResult.NOT_EXISTS_IN_DB;
 		}
 		ImageEntity image = optionalImage.get();
-		try {
-			boolean imageExistsInCloudinary = cloudinaryService.checkIfImageExistsInCloudinary(image);
-			boolean deleteFromCloudinaryResult = false;
-			if (imageExistsInCloudinary) {
-				deleteFromCloudinaryResult = cloudinaryService.deleteImageFromCloudinary(image);
-			}
-			if (!imageExistsInCloudinary || deleteFromCloudinaryResult) {
-				imageRepo.delete(image);
-				return DeleteResult.DELETED;
-			}
-		} catch (Exception e) {
-			log.error("Error occurred during deleting imageId: {} [MESSAGE]: {}", imageId, e.getMessage());
+
+		boolean imageExistsInCloudinary = cloudinaryService.checkIfImageExistsInCloudinary(image);
+		boolean deleteFromCloudinaryResult = false;
+		if (imageExistsInCloudinary) {
+			deleteFromCloudinaryResult = cloudinaryService.deleteImageFromCloudinary(image);
 		}
+		if (!imageExistsInCloudinary || deleteFromCloudinaryResult) {
+			imageRepo.delete(image);
+			return DeleteResult.DELETED;
+		}
+
 		return DeleteResult.ERROR;
 	}
 

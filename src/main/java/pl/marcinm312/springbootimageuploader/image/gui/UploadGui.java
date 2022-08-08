@@ -19,7 +19,6 @@ import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Slf4j
@@ -85,7 +84,7 @@ public class UploadGui extends VerticalLayout {
 				} else {
 					VaadinUtils.showNotification("Error uploading and saving the image");
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
 				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
 			}

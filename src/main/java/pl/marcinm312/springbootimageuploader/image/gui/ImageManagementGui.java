@@ -115,7 +115,16 @@ public class ImageManagementGui extends VerticalLayout {
 
 	private void deleteEvent(int pageSize, ImageDto imageDto, Dialog dialog) {
 
-		ImageService.DeleteResult deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+		ImageService.DeleteResult deleteResult;
+		try {
+			deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
+		} catch (Exception e) {
+			String errorMessage = "The image has not been deleted. Error message: " + e.getMessage();
+			log.error(errorMessage);
+			VaadinUtils.showNotification(errorMessage);
+			dialog.close();
+			return;
+		}
 		if (deleteResult == ImageService.DeleteResult.DELETED) {
 			int pageNumber = grid.getPage();
 			allImagesFromDB.remove(imageDto);
