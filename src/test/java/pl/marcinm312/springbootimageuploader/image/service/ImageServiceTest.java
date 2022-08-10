@@ -10,9 +10,11 @@ import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.testdataprovider.ImageDataProvider;
 
+import java.io.IOException;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -80,7 +82,7 @@ class ImageServiceTest {
 	}
 
 	@Test
-	void deleteImageFromCloudinaryAndDBTest_errorWhileDeletingImageFromCloudinary_imageNotDeletedFromDB() throws Exception {
+	void deleteImageFromCloudinaryAndDBTest_imageNotDeletedFromCloudinary_imageNotDeletedFromDB() throws Exception {
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
 
 		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
@@ -92,5 +94,48 @@ class ImageServiceTest {
 		Assertions.assertEquals(ImageService.DeleteResult.ERROR, deleteResult);
 		verify(imageRepo, never()).delete(image);
 		verify(cloudinaryService, times(1)).deleteImageFromCloudinary(image);
+	}
+
+	@Test()
+	void deleteImageFromCloudinaryAndDBTest_errorWhileDeletingImageFromCloudinary_imageNotDeletedFromDB() throws Exception {
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
+		String errorMessage = "Connection error";
+
+		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
+		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willReturn(true);
+		given(cloudinaryService.deleteImageFromCloudinary(image)).willThrow(new IOException(errorMessage));
+
+		try {
+			imageService.deleteImageFromCloudinaryAndDB(image.getId());
+			Assertions.fail();
+		} catch (Exception e) {
+			Assertions.assertEquals(IOException.class, e.getClass());
+			Assertions.assertEquals(errorMessage, e.getMessage());
+		}
+
+		verify(imageRepo, never()).delete(image);
+		verify(cloudinaryService, times(1)).checkIfImageExistsInCloudinary(image);
+		verify(cloudinaryService, times(1)).deleteImageFromCloudinary(image);
+	}
+
+	@Test()
+	void deleteImageFromCloudinaryAndDBTest_errorWhileCheckingImageInCloudinary_imageNotDeletedFromDB() throws Exception {
+		ImageEntity image = ImageDataProvider.prepareExampleImage();
+		String errorMessage = "Connection error";
+
+		given(imageRepo.findById(image.getId())).willReturn(Optional.of(image));
+		given(cloudinaryService.checkIfImageExistsInCloudinary(image)).willThrow(new IOException(errorMessage));
+
+		try {
+			imageService.deleteImageFromCloudinaryAndDB(image.getId());
+			Assertions.fail();
+		} catch (Exception e) {
+			Assertions.assertEquals(IOException.class, e.getClass());
+			Assertions.assertEquals(errorMessage, e.getMessage());
+		}
+
+		verify(imageRepo, never()).delete(image);
+		verify(cloudinaryService, times(1)).checkIfImageExistsInCloudinary(image);
+		verify(cloudinaryService, never()).deleteImageFromCloudinary(image);
 	}
 }
