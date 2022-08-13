@@ -58,7 +58,6 @@ public class ImageService {
 			imageRepo.delete(image);
 			return DeleteResult.DELETED;
 		}
-
 		return DeleteResult.ERROR;
 	}
 

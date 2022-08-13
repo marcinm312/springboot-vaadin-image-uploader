@@ -51,17 +51,20 @@ public class CloudinaryService {
 
 		String publicId = image.getPublicId();
 		log.info("Checking if image exists in Cloudinary. publicId: {}", publicId);
+		String commonErrorMessage = "Image with publicId: " + publicId + " does not exist in Cloudinary";
 		ApiResponse apiResponse = cloudinary.api().resourcesByIds(Collections.singletonList(publicId), ObjectUtils.emptyMap());
 
 		if (apiResponse == null || !apiResponse.containsKey(RESOURCES_KEY)) {
 			String errorMessage = "Response from Cloudinary does not contain the '" + RESOURCES_KEY + "' key!";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
 			throw new CloudinaryException(errorMessage);
 		}
 
 		Object resourcesObject = apiResponse.get(RESOURCES_KEY);
 		if (!(resourcesObject instanceof List)) {
-			String errorMessage = "Object with '" + RESOURCES_KEY + "' key is not a List!";
+			String errorMessage = "Object with '" + RESOURCES_KEY + "' key is not a List";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
 			log.error("resourcesObject type: {}", resourcesObject.getClass().getName());
 			throw new CloudinaryException(errorMessage);
@@ -69,27 +72,29 @@ public class CloudinaryService {
 
 		List<?> listFromApi = (List<?>) resourcesObject;
 		if (listFromApi.isEmpty()) {
-			String errorMessage = "Resources list from Cloudinary response is empty!";
+			String errorMessage = "Resources list from Cloudinary response is empty";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
-			throw new CloudinaryException(errorMessage);
+			return false;
 		}
 
 		Object firstElementFromResourcesList = listFromApi.get(0);
 		if (!(firstElementFromResourcesList instanceof Map)) {
-			String errorMessage = "First element from resources list is not a Map!";
+			String errorMessage = "First element from resources list is not a Map";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
 			log.error("firstElementFromResourcesList type: {}", firstElementFromResourcesList.getClass().getName());
-			throw new CloudinaryException(errorMessage);
+			return false;
 		}
 
 		Map<?, ?> mapFromResourcesList = (Map<?, ?>) firstElementFromResourcesList;
-		if (mapFromResourcesList.containsKey("public_id") && publicId.equals(mapFromResourcesList.get("public_id"))) {
-			log.info("Image with publicId: {} exists in Cloudinary", publicId);
-			return true;
+		if (!mapFromResourcesList.containsKey("public_id") || !publicId.equals(mapFromResourcesList.get("public_id"))) {
+			log.info(commonErrorMessage);
+			return false;
 		}
 
-		log.info("Image with publicId: {} not exists in Cloudinary", publicId);
-		return false;
+		log.info("Image with publicId: {} exists in Cloudinary", publicId);
+		return true;
 	}
 
 	private boolean checkDeleteFromCloudinaryResult(ImageEntity image, ApiResponse deleteApiResponse) {
@@ -98,23 +103,24 @@ public class CloudinaryService {
 		log.info("Checking delete from Cloudinary result for publicId: {}", publicId);
 		String commonErrorMessage = "Image with publicId: " + publicId + " has not been deleted from Cloudinary";
 
-		if (!deleteApiResponse.containsKey(DELETED_KEY)) {
-			String errorMessage = "Response from Cloudinary does not contain '" + DELETED_KEY + "' key! " + commonErrorMessage;
+		if (deleteApiResponse == null || !deleteApiResponse.containsKey(DELETED_KEY)) {
+			String errorMessage = "Response from Cloudinary does not contain '" + DELETED_KEY + "' key";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
 			return false;
 		}
 
 		Map<?, ?> deletedMap = (Map<?, ?>) deleteApiResponse.get(DELETED_KEY);
 		if (!deletedMap.containsKey(publicId)) {
-			String errorMessage = "Deleted object from Cloudinary does not contain '" + publicId + "' key! " + commonErrorMessage;
+			String errorMessage = "Deleted object from Cloudinary does not contain '" + publicId + "' key";
+			log.error(commonErrorMessage);
 			log.error(errorMessage);
 			return false;
 		}
 
 		String deleteImageResult = (String) deletedMap.get(publicId);
 		if (!DELETED_KEY.equals(deleteImageResult)) {
-			String errorMessage = commonErrorMessage;
-			log.error(errorMessage);
+			log.error(commonErrorMessage);
 			return false;
 		}
 
