@@ -19,6 +19,7 @@ import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -133,14 +134,21 @@ public class GalleryGui extends VerticalLayout {
 		}
 
 		Slide[] slidesArray = slidesList.toArray(new Slide[0]);
-		carousel.setSlides(slidesArray);
+		carousel.setSlides(cleanSlidesExceptOne(slidesArray, 0));
 		carousel.setSizeFull();
-		carousel.addChangeListener(e -> paginationText.setText(preparePaginationText(e.getPosition())));
+		carousel.addChangeListener(e -> {
+					int positionInt = Integer.parseInt(e.getPosition());
+					carousel.getElement().removeAllChildren();
+					carousel.setSlides(cleanSlidesExceptOne(slidesArray, positionInt));
+					paginationText.setText(preparePaginationText(e.getPosition()));
+				}
+		);
 
 		log.info("All images loaded");
 	}
 
 	private String preparePaginationText(String position) {
+
 		int positionNumber = 0;
 		try {
 			positionNumber = Integer.parseInt(position);
@@ -148,8 +156,19 @@ public class GalleryGui extends VerticalLayout {
 			log.error("Error converting the position={} to int: {}", position, e.getMessage());
 		}
 		if (!allImagesFromDB.isEmpty()) {
-			positionNumber ++;
+			positionNumber++;
 		}
 		return "Image " + positionNumber + " of " + allImagesFromDB.size();
+	}
+
+	private Slide[] cleanSlidesExceptOne(Slide[] oldSlidesArray, int index) {
+
+		Slide[] newSlidesArray = Arrays.copyOf(oldSlidesArray, oldSlidesArray.length);
+		for (int i = 0; i < oldSlidesArray.length; i++) {
+			if (i != index) {
+				newSlidesArray[i] = new Slide();
+			}
+		}
+		return newSlidesArray;
 	}
 }
