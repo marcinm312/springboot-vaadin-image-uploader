@@ -14,13 +14,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
-import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Slf4j
 @Route("myprofile/update")
 @StyleSheet("/css/style.css")
 @PageTitle("Update profile form")
@@ -49,8 +50,6 @@ public class MyProfileGui extends VerticalLayout {
 
 	private static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
 
-	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	public MyProfileGui(UserService userService, UserValidator userValidator) {
 
@@ -64,16 +63,25 @@ public class MyProfileGui extends VerticalLayout {
 
 		binder = new BeanValidationBinder<>(UserEntity.class);
 
-		logoutAnchor = new Anchor("../../logout", "Log out");
-		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
-		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
-
-		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, galleryAnchor, updatePasswordAnchor);
+		prepareHorizontalMenu();
 
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
+
+		prepareUpdateProfileForm(user, oldLogin);
+
+		expireSessionsButton = new Button("Log me out from other devices");
+		expireSessionsButton.addClickListener(event -> expireSessions(user));
+
+		deleteUserButton = new Button("Delete my account");
+		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		deleteUserButton.addClickListener(event -> deleteDialog.open());
+
+		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
+	}
+
+	private void prepareUpdateProfileForm(UserEntity user, String oldLogin) {
 
 		loginTextField = new TextField();
 		loginTextField.setLabel("Login");
@@ -93,18 +101,20 @@ public class MyProfileGui extends VerticalLayout {
 		saveUserButton = new Button("Save");
 		saveUserButton.setClassName("updateprofile");
 		saveUserButton.addClickListener(event -> updateUser(oldLogin, user));
+	}
 
-		expireSessionsButton = new Button("Log me out from other devices");
-		expireSessionsButton.addClickListener(event -> expireSessions(user));
+	private void prepareHorizontalMenu() {
 
-		deleteUserButton = new Button("Delete my account");
-		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
-		deleteUserButton.addClickListener(event -> deleteDialog.open());
+		logoutAnchor = new Anchor("../../logout", "Log out");
+		galleryAnchor = new Anchor("../../gallery", "Back to gallery");
+		updatePasswordAnchor = new Anchor("../../myprofile/updatePassword", "Update my password");
 
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(logoutAnchor, galleryAnchor, updatePasswordAnchor);
 	}
 
 	private Dialog prepareDeleteDialog(UserEntity user) {
+
 		Dialog dialogWindow = new Dialog();
 		Text confirmText = new Text("Are you sure you want to delete your user account?");
 		confirmDeleteButton = new Button("Confirm", deleteEvent -> deleteUser(user));
@@ -114,11 +124,13 @@ public class MyProfileGui extends VerticalLayout {
 	}
 
 	private void expireSessions(UserEntity user) {
+
 		userService.expireOtherUserSessions(user);
 		VaadinUtils.showNotification("You have been successfully logged out from other devices");
 	}
 
 	private void updateUser(String oldLogin, UserEntity user) {
+
 		log.info("Old user = {}", user);
 		user.setUsername(loginTextField.getValue().trim());
 		user.setEmail(emailTextField.getValue().trim());

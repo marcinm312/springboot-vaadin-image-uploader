@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VaadinUtils {
@@ -25,7 +26,7 @@ public class VaadinUtils {
 
 	public static boolean isCurrentUserAdmin() {
 		Authentication authentication = getCurrentAuthentication();
-		return "ROLE_ADMIN".equals(((UserEntity) authentication.getPrincipal()).getRole());
+		return Role.ROLE_ADMIN == ((UserEntity) authentication.getPrincipal()).getRole();
 	}
 
 	public static void showNotification(String notificationText) {
