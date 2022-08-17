@@ -11,17 +11,17 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
-import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
-import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 @Route("upload")
 @StyleSheet("/css/style.css")
 @PageTitle("Upload image")
@@ -30,66 +30,61 @@ public class UploadGui extends VerticalLayout {
 	Anchor logoutAnchor;
 	Anchor managementAnchor;
 	HorizontalLayout horizontalMenu;
+
 	H1 h1;
+
 	Upload upload;
 	Image image;
 
 	private final transient ImageService imageService;
-
-	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+	private final UserEntity user;
 
 	@Autowired
 	public UploadGui(ImageService imageService, UserService userService) {
 
 		this.imageService = imageService;
 
-		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		log.info("user.getUsername()={}", user.getUsername());
 
-		logoutAnchor = new Anchor("../logout", "Log out");
-		managementAnchor = new Anchor("../management", "Back to image management");
-
-		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, managementAnchor);
-
+		prepareHorizontalMenu();
 		h1 = new H1("Upload image");
-
-		MemoryBuffer vaadinBuffer = new MemoryBuffer();
-		upload = new Upload(vaadinBuffer);
-
+		prepareUploadButton();
 		image = new Image();
+		image.setMaxHeight("500px");
 
-		upload.addSucceededListener(event -> {
-			try {
-				uploadImageAction(user, vaadinBuffer, event);
-			} catch (IOException e) {
-				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
-				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
-			}
-		});
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void uploadImageAction(UserEntity user, MemoryBuffer vaadinBuffer, SucceededEvent event) throws IOException {
+	private void prepareUploadButton() {
+
+		MemoryBuffer vaadinBuffer = new MemoryBuffer();
+		upload = new Upload(vaadinBuffer);
+		upload.addSucceededListener(event -> uploadImageAction(vaadinBuffer, event));
+	}
+
+	private void prepareHorizontalMenu() {
+
+		logoutAnchor = new Anchor("../logout", "Log out");
+		managementAnchor = new Anchor("../management", "Back to image management");
+		horizontalMenu = new HorizontalLayout(logoutAnchor, managementAnchor);
+	}
+
+	private void uploadImageAction(MemoryBuffer vaadinBuffer, SucceededEvent event) {
+
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
 			log.info("Start uploading an image");
-			try (InputStream initialStream = vaadinBuffer.getInputStream()) {
+			try (InputStream inputStream = vaadinBuffer.getInputStream()) {
 				log.info("Get input stream");
-				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(initialStream, user);
+				ImageEntity savedImage = imageService.uploadAndSaveImageToDB(inputStream, user);
 				if (savedImage != null) {
-					String uploadedImageUrl = savedImage.getImageAddress();
-					log.info("Image saved in DB: {}", uploadedImageUrl);
-					log.info("Loading uploaded image: {}", uploadedImageUrl);
-					image.setSrc(uploadedImageUrl);
-					image.setAlt(uploadedImageUrl);
-					image.setMaxHeight("500px");
-					log.info("Image loaded: {}", uploadedImageUrl);
+					showUploadedImage(savedImage);
 					VaadinUtils.showNotification("Image successfully uploaded");
 				} else {
 					VaadinUtils.showNotification("Error uploading and saving the image");
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
 				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
 			}
@@ -98,5 +93,15 @@ public class UploadGui extends VerticalLayout {
 			log.info("fileType={}", fileType);
 			VaadinUtils.showNotification("Error: Invalid file type");
 		}
+	}
+
+	private void showUploadedImage(ImageEntity savedImage) {
+		
+		String uploadedImageUrl = savedImage.getImageAddress();
+		log.info("Image saved in DB: {}", uploadedImageUrl);
+		log.info("Loading uploaded image: {}", uploadedImageUrl);
+		image.setSrc(uploadedImageUrl);
+		image.setAlt(uploadedImageUrl);
+		log.info("Image loaded: {}", uploadedImageUrl);
 	}
 }

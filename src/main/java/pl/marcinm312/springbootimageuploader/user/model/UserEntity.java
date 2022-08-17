@@ -1,9 +1,14 @@
 package pl.marcinm312.springbootimageuploader.user.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,6 +17,10 @@ import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
 
+@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
 @Entity
 @Table(name = "app_user")
 public class UserEntity extends AuditModel implements UserDetails {
@@ -29,70 +38,26 @@ public class UserEntity extends AuditModel implements UserDetails {
 	@Size(min = 6, message = "This field must contain at least 6 characters")
 	private String password;
 
-	private String role;
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
-	private boolean isEnabled;
+	@Column(name = "is_enabled")
+	private boolean enabled;
 
 	@NotBlank(message = "This field must be completed!")
 	@Email(message = "Incorrect email address! ")
 	private String email;
 
-	public UserEntity(String username, String password, String role, String email) {
+	public UserEntity(String username, String password, Role role, String email) {
 		this.username = username;
 		this.password = password;
 		this.role = role;
 		this.email = email;
-	}
-
-	public UserEntity(Long id, String username, String password, String role, boolean isEnabled, String email) {
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.role = role;
-		this.isEnabled = isEnabled;
-		this.email = email;
-	}
-
-	public UserEntity() {
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(new SimpleGrantedAuthority(role));
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public String getUsername() {
-		return username;
+		return Collections.singleton(new SimpleGrantedAuthority(role.name()));
 	}
 
 	@Override
@@ -111,28 +76,11 @@ public class UserEntity extends AuditModel implements UserDetails {
 	}
 
 	@Override
-	public boolean isEnabled() {
-		return isEnabled;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public void setEnabled(boolean isEnabled) {
-		this.isEnabled = isEnabled;
-	}
-
-	@Override
 	public String toString() {
 		return "UserEntity{" +
 				"username='" + username + '\'' +
 				", role='" + role + '\'' +
-				", isEnabled=" + isEnabled +
+				", isEnabled=" + enabled +
 				'}';
 	}
 

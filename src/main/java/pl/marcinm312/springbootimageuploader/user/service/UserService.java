@@ -1,27 +1,30 @@
 package pl.marcinm312.springbootimageuploader.user.service;
 
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
-import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
-import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
-import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
-import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
+import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
+import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
+import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
+import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service
 public class UserService {
 
@@ -33,20 +36,6 @@ public class UserService {
 	private final SessionUtils sessionUtils;
 	private final ImageRepo imageRepo;
 
-	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
-	@Autowired
-	public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, Environment environment,
-					   TokenRepo tokenRepo, MailService mailService, SessionUtils sessionUtils, ImageRepo imageRepo) {
-		this.userRepo = userRepo;
-		this.passwordEncoder = passwordEncoder;
-		this.environment = environment;
-		this.tokenRepo = tokenRepo;
-		this.mailService = mailService;
-		this.sessionUtils = sessionUtils;
-		this.imageRepo = imageRepo;
-	}
-
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
 	public UserEntity createFirstUser() {
@@ -54,12 +43,11 @@ public class UserService {
 			log.info("Creating administrator user");
 			String password = environment.getProperty("admin.default.password");
 			String email = environment.getProperty("admin.default.email");
-			UserEntity userAdmin = new UserEntity("administrator", password, "ROLE_ADMIN", email);
+			UserEntity userAdmin = new UserEntity("administrator", password, Role.ROLE_ADMIN, email);
 			return createUser(userAdmin, true);
-		} else {
-			log.info("Administrator already exists in DB");
-			return null;
 		}
+		log.info("Administrator already exists in DB");
+		return null;
 	}
 
 	public Optional<UserEntity> getOptionalUserByUsername(String username) {
@@ -67,20 +55,21 @@ public class UserService {
 	}
 
 	public UserEntity getUserByUsername(String userName) {
+
 		log.info("Loading user: {}", userName);
 		Optional<UserEntity> optionalUser = userRepo.findByUsername(userName);
 		if (optionalUser.isPresent()) {
 			UserEntity user = optionalUser.get();
 			log.info("Loaded user = {}", userName);
 			return user;
-		} else {
-			log.error("User {} not found!", userName);
-			return null;
 		}
+		log.error("User {} not found!", userName);
+		return null;
 	}
 
 	@Transactional
 	public UserEntity createUser(UserEntity user, boolean isFirstUser) {
+
 		log.info("Creating user: {}", user);
 		UserEntity savedUser;
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -97,31 +86,32 @@ public class UserService {
 	}
 
 	public UserEntity updateUserData(String oldLogin, UserEntity newUser) {
+
 		log.info("Updating user data");
 		log.info("New user = {}", newUser);
 		UserEntity savedUser = userRepo.save(newUser);
 		if (!oldLogin.equals(newUser.getUsername())) {
 			sessionUtils.expireUserSessions(oldLogin, true);
 		}
-		log.info("User updated");
+		log.info("User data updated");
 		return savedUser;
 	}
 
 	public UserEntity updateUserPassword(UserEntity newUser) {
+
 		log.info("Updating user password");
 		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 		log.info("New user = {}", newUser);
 		UserEntity savedUser = userRepo.save(newUser);
 		sessionUtils.expireUserSessions(newUser.getUsername(), true);
-		log.info("User updated");
+		log.info("User password updated");
 		return savedUser;
 	}
 
 	private void sendToken(UserEntity user) {
+
 		String tokenValue = UUID.randomUUID().toString();
-		TokenEntity token = new TokenEntity();
-		token.setUser(user);
-		token.setValue(tokenValue);
+		TokenEntity token = new TokenEntity(tokenValue, user);
 		tokenRepo.save(token);
 		String emailContent = generateEmailContent(user, tokenValue);
 		try {
@@ -133,23 +123,24 @@ public class UserService {
 
 	@Transactional
 	public UserEntity activateUser(String tokenValue) {
+
 		Optional<TokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
-		if (optionalToken.isPresent()) {
-			TokenEntity token = optionalToken.get();
-			UserEntity user = token.getUser();
-			log.info("Activating user = {}", user.getUsername());
-			user.setEnabled(true);
-			UserEntity savedUser = userRepo.save(user);
-			tokenRepo.delete(token);
-			log.info("User {} activated", user.getUsername());
-			return savedUser;
-		} else {
+		if (optionalToken.isEmpty()) {
 			throw new TokenNotFoundException();
 		}
+		TokenEntity token = optionalToken.get();
+		UserEntity user = token.getUser();
+		log.info("Activating user = {}", user.getUsername());
+		user.setEnabled(true);
+		UserEntity savedUser = userRepo.save(user);
+		tokenRepo.delete(token);
+		log.info("User {} activated", user.getUsername());
+		return savedUser;
 	}
 
 	@Transactional
 	public void deleteUser(UserEntity user) {
+
 		log.info("Deleting user = {}", user.getUsername());
 		imageRepo.deleteUserFromImages(user);
 		userRepo.delete(user);
@@ -159,6 +150,7 @@ public class UserService {
 	}
 
 	public void expireOtherUserSessions(UserEntity user) {
+
 		log.info("Expiring other sessions for user: {}", user.getUsername());
 		sessionUtils.expireUserSessions(user.getUsername(), false);
 	}
@@ -168,6 +160,7 @@ public class UserService {
 	}
 
 	private String generateEmailContent(UserEntity user, String tokenValue) {
+
 		return new StringBuilder().append("Welcome ").append(user.getUsername())
 				.append(",<br><br>Confirm your email address by clicking on the link below:")
 				.append("<br><a href=\"").append(VaadinUtils.getUriString()).append("/token?value=").append(tokenValue)
