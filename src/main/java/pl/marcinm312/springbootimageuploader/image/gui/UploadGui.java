@@ -13,21 +13,24 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import java.io.InputStream;
 
 @Slf4j
 @Route("upload")
 @StyleSheet("/css/style.css")
 @PageTitle("Upload image")
-//@DeclareRoles("ADMIN")
-//@RolesAllowed("ADMIN")
-//@Secured("ADMIN")
+@DeclareRoles("ADMIN")
+@RolesAllowed("ADMIN")
+@Secured("ADMIN")
 public class UploadGui extends VerticalLayout {
 
 	Anchor logoutAnchor;

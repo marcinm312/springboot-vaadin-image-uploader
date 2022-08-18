@@ -15,20 +15,23 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @Slf4j
 @Route("management")
 @StyleSheet("/css/style.css")
 @PageTitle("Image management")
-//@DeclareRoles("ADMIN")
-//@RolesAllowed("ADMIN")
-//@Secured("ADMIN")
+@DeclareRoles("ADMIN")
+@RolesAllowed("ADMIN")
+@Secured("ADMIN")
 public class ImageManagementGui extends VerticalLayout {
 
 	HorizontalLayout horizontalMenu;
