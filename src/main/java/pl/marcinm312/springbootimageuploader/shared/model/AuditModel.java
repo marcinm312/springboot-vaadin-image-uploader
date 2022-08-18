@@ -1,7 +1,9 @@
 package pl.marcinm312.springbootimageuploader.shared.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,10 +12,13 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+@Getter
+@SuperBuilder
+@NoArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
-public class AuditModel implements Serializable {
+public abstract class AuditModel implements Serializable {
 
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
@@ -24,30 +29,4 @@ public class AuditModel implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
 	private Date updatedAt;
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
-	@JsonIgnore
-	public String getUpdatedAtAsString() {
-		return getUpdatedAt().toString().substring(0, 19).replace("T", " ");
-	}
-
-	@JsonIgnore
-	public String getCreatedAtAsString() {
-		return getCreatedAt().toString().substring(0, 19).replace("T", " ");
-	}
 }

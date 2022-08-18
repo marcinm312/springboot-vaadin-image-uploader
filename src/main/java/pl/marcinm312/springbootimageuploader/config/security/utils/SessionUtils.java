@@ -1,8 +1,8 @@
 package pl.marcinm312.springbootimageuploader.config.security.utils;
 
 import com.vaadin.flow.component.UI;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +11,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.List;
 
+@Slf4j
+@RequiredArgsConstructor
 @Component
 public class SessionUtils {
 
 	private final SessionRegistry sessionRegistry;
-
-	private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
-	@Autowired
-	public SessionUtils(SessionRegistry sessionRegistry) {
-		this.sessionRegistry = sessionRegistry;
-	}
 
 	public void expireUserSessions(String username, boolean expireCurrentSession) {
 		log.info("Starting expiring sessions for user: {}", username);

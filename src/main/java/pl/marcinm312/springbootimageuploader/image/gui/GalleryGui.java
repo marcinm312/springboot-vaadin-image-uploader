@@ -12,15 +12,17 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Route("gallery")
 @StyleSheet("/css/style.css")
 @PageTitle("Image gallery")
@@ -47,21 +49,12 @@ public class GalleryGui extends VerticalLayout {
 
 	private final transient List<ImageDto> allImagesFromDB;
 
-	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	public GalleryGui(ImageService imageService) {
 
 		log.info("authentication.getName()={}", VaadinUtils.getAuthenticatedUserName());
 
-		logoutAnchor = new Anchor("../logout", "Log out");
-		managementAnchor = new Anchor("../management", "Image management");
-		myProfileAnchor = new Anchor("../myprofile/update", "My profile");
-		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, myProfileAnchor);
-		if (VaadinUtils.isCurrentUserAdmin()) {
-			horizontalMenu.add(managementAnchor);
-		}
+		prepareHorizontalMenu();
 
 		h1 = new H1("Image gallery");
 
@@ -70,6 +63,13 @@ public class GalleryGui extends VerticalLayout {
 		log.info("allImagesFromDB.size()={}", allImagesFromDB.size());
 
 		prepareImageCarousel();
+		prepareImageCounter();
+		prepareNavigationButtons();
+
+		add(horizontalMenu, h1, carousel, paginationContainer, navigationButtons);
+	}
+
+	private void prepareImageCounter() {
 
 		paginationContainer = new HorizontalLayout();
 		paginationText = new Paragraph("");
@@ -80,13 +80,22 @@ public class GalleryGui extends VerticalLayout {
 		paginationContainer.setMargin(false);
 		paginationContainer.getStyle().set(MARGIN, "0");
 		paginationContainer.add(paginationText);
+	}
 
-		prepareNavigationButtons();
+	private void prepareHorizontalMenu() {
 
-		add(horizontalMenu, h1, carousel, paginationContainer, navigationButtons);
+		logoutAnchor = new Anchor("../logout", "Log out");
+		managementAnchor = new Anchor("../management", "Image management");
+		myProfileAnchor = new Anchor("../myprofile/update", "My profile");
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(logoutAnchor, myProfileAnchor);
+		if (VaadinUtils.isCurrentUserAdmin()) {
+			horizontalMenu.add(managementAnchor);
+		}
 	}
 
 	private void prepareNavigationButtons() {
+
 		nextImageButton = new Button(">>");
 		prevImageButton = new Button("<<");
 		lastImageButton = new Button(">|");
@@ -96,6 +105,7 @@ public class GalleryGui extends VerticalLayout {
 		prevImageButton.addClickListener(e -> carousel.movePrev());
 		lastImageButton.addClickListener(e -> carousel.movePos(allImagesFromDB.size() - 1));
 		firstImageButton.addClickListener(e -> carousel.movePos(0));
+
 		navigationButtons = new HorizontalLayout(firstImageButton, prevImageButton, nextImageButton,
 				lastImageButton);
 		navigationButtons.setAlignItems(Alignment.CENTER);
@@ -105,38 +115,60 @@ public class GalleryGui extends VerticalLayout {
 	}
 
 	private void prepareImageCarousel() {
+
 		carousel = new Carousel().withoutNavigation();
 		List<Slide> slidesList = new ArrayList<>();
+
 		for (ImageDto imageDto : allImagesFromDB) {
+
 			Image vaadinImage = new Image(imageDto.getAutoCompressedImageAddress(), imageDto.getAutoCompressedImageAddress());
 			vaadinImage.setMaxHeight("65vh");
 			vaadinImage.setMaxWidth("90vw");
 			vaadinImage.getStyle().set(MARGIN, "0");
-			VerticalLayout d = new VerticalLayout(vaadinImage);
-			d.setAlignItems(Alignment.CENTER);
-			d.setJustifyContentMode(JustifyContentMode.CENTER);
-			d.setMargin(false);
-			slidesList.add(new Slide(d));
+
+			VerticalLayout verticalLayout = new VerticalLayout(vaadinImage);
+			verticalLayout.setAlignItems(Alignment.CENTER);
+			verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+			verticalLayout.setMargin(false);
+			slidesList.add(new Slide(verticalLayout));
 		}
-		Slide[] slidesArray = new Slide[slidesList.size()];
-		slidesList.toArray(slidesArray);
-		carousel.setSlides(slidesArray);
+
+		Slide[] slidesArray = slidesList.toArray(new Slide[0]);
+		carousel.setSlides(cleanSlidesExceptOne(slidesArray, 0));
 		carousel.setSizeFull();
-		carousel.addChangeListener(e -> paginationText.setText(preparePaginationText(e.getPosition())));
+		carousel.addChangeListener(e -> {
+					int positionInt = Integer.parseInt(e.getPosition());
+					carousel.getElement().removeAllChildren();
+					carousel.setSlides(cleanSlidesExceptOne(slidesArray, positionInt));
+					paginationText.setText(preparePaginationText(e.getPosition()));
+				}
+		);
 
 		log.info("All images loaded");
 	}
 
 	private String preparePaginationText(String position) {
+
 		int positionNumber = 0;
 		try {
 			positionNumber = Integer.parseInt(position);
 		} catch (Exception e) {
-			log.error("Error converting the position to int: {}", e.getMessage());
+			log.error("Error converting the position={} to int: {}", position, e.getMessage());
 		}
 		if (!allImagesFromDB.isEmpty()) {
-			positionNumber ++;
+			positionNumber++;
 		}
 		return "Image " + positionNumber + " of " + allImagesFromDB.size();
+	}
+
+	private Slide[] cleanSlidesExceptOne(Slide[] oldSlidesArray, int index) {
+
+		Slide[] newSlidesArray = Arrays.copyOf(oldSlidesArray, oldSlidesArray.length);
+		for (int i = 0; i < oldSlidesArray.length; i++) {
+			if (i != index) {
+				newSlidesArray[i] = new Slide();
+			}
+		}
+		return newSlidesArray;
 	}
 }

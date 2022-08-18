@@ -1,84 +1,34 @@
 package pl.marcinm312.springbootimageuploader.image.model.dto;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+
+@Getter
+@ToString
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageDto {
 
-	private final Long id;
+	private Long id;
 	private String imageAddress;
 	private String publicId;
 	private String username;
 	private String createdAt;
 	private String updatedAt;
 
-	public ImageDto(Long id) {
-		this.id = id;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getImageAddress() {
-		return imageAddress;
-	}
-
-	public void setImageAddress(String imageAddress) {
-		this.imageAddress = imageAddress;
-	}
-
-	public String getPublicId() {
-		return publicId;
-	}
-
-	public void setPublicId(String publicId) {
-		this.publicId = publicId;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public String getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(String updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
 	public String getCompressedImageAddress(int imageHeight) {
-		String[] splittedAddress = getImageAddress().split("/");
-		String target = splittedAddress[splittedAddress.length - 2];
+		String[] splitAddress = getImageAddress().split("/");
+		String target = splitAddress[splitAddress.length - 2];
 		return getImageAddress().replace(target, "h_" + imageHeight + ",f_auto/q_100");
 	}
 
 	public String getAutoCompressedImageAddress() {
-		String[] splittedAddress = getImageAddress().split("/");
-		String target = splittedAddress[splittedAddress.length - 2];
+		String[] splitAddress = getImageAddress().split("/");
+		String target = splitAddress[splitAddress.length - 2];
 		return getImageAddress().replace(target, "h_700,f_auto/q_auto:best");
-	}
-
-	@Override
-	public String toString() {
-		return "ImageDto{" +
-				"id=" + id +
-				", imageAddress='" + imageAddress + '\'' +
-				", publicId='" + publicId + '\'' +
-				", username='" + username + '\'' +
-				", createdAt='" + createdAt + '\'' +
-				", updatedAt='" + updatedAt + '\'' +
-				'}';
 	}
 
 	@Override

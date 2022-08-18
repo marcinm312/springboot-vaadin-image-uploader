@@ -1,21 +1,17 @@
 package pl.marcinm312.springbootimageuploader.user.validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Component
 public class UserValidator {
 
 	private final UserService userService;
-
-	@Autowired
-	public UserValidator(UserService userService) {
-		this.userService = userService;
-	}
 
 	public String validateUserRegistration(UserEntity user, String confirmPasswordValue) {
 

@@ -12,9 +12,10 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
+import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
 @Route("register")
@@ -50,6 +51,13 @@ public class RegisterGui extends VerticalLayout {
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
 
+		prepareRegistrationForm();
+
+		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, saveUserButton);
+	}
+
+	private void prepareRegistrationForm() {
+
 		loginTextField = new TextField();
 		loginTextField.setLabel("Login");
 		binder.forField(loginTextField).bind("username");
@@ -70,14 +78,14 @@ public class RegisterGui extends VerticalLayout {
 
 		saveUserButton = new Button("Register!");
 		saveUserButton.addClickListener(event -> createUser());
-		add(mainPageAnchor, h1, paragraph, loginTextField, passwordField, confirmPasswordField, emailTextField, saveUserButton);
 	}
 
 	private void createUser() {
+
 		String username = loginTextField.getValue().trim();
 		String password = passwordField.getValue();
 		String email = emailTextField.getValue().trim();
-		UserEntity user = new UserEntity(username, password, "ROLE_USER", email);
+		UserEntity user = new UserEntity(username, password, Role.ROLE_USER, email);
 		binder.setBean(user);
 		binder.validate();
 		if (binder.isValid()) {

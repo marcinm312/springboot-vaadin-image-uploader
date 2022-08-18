@@ -11,13 +11,14 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
-import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Slf4j
 @Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
 @PageTitle("Update password form")
@@ -39,8 +40,6 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
 
-	private final transient org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	public UpdatePasswordGui(UserService userService, UserValidator userValidator) {
 
@@ -49,15 +48,18 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		binder = new BeanValidationBinder<>(UserEntity.class);
 
-		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
-		logoutAnchor = new Anchor("../../logout", "Log out");
-
-		horizontalMenu = new HorizontalLayout();
-		horizontalMenu.add(logoutAnchor, myProfileAnchor);
+		prepareHorizontalMenu();
 
 		h1 = new H1("Update password form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
+
+		prepareUpdatePasswordForm();
+
+		add(horizontalMenu, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, saveUserButton);
+	}
+
+	private void prepareUpdatePasswordForm() {
 
 		currentPasswordField = new PasswordField();
 		currentPasswordField.setLabel("Current password");
@@ -76,10 +78,19 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 		saveUserButton = new Button("Save");
 		saveUserButton.addClickListener(event -> updateUserPassword());
-		add(horizontalMenu, h1, paragraph, currentPasswordField, passwordField, confirmPasswordField, saveUserButton);
+	}
+
+	private void prepareHorizontalMenu() {
+
+		myProfileAnchor = new Anchor("../../myprofile/update", "Back to my profile");
+		logoutAnchor = new Anchor("../../logout", "Log out");
+
+		horizontalMenu = new HorizontalLayout();
+		horizontalMenu.add(logoutAnchor, myProfileAnchor);
 	}
 
 	private void updateUserPassword() {
+
 		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		log.info("Old user = {}", user);
 		String validationError = userValidator.validateUserPasswordUpdate(user, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
@@ -101,6 +112,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 	}
 
 	private void clearPasswordFieldsValues() {
+
 		currentPasswordField.setValue("");
 		passwordField.setValue("");
 		confirmPasswordField.setValue("");
