@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.marcinm312.springbootimageuploader.image.exception.CloudinaryException;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.model.ImageMapper;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
@@ -30,7 +31,8 @@ public class ImageService {
 	}
 
 	@Transactional
-	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, UserEntity user) throws IOException {
+	public ImageEntity uploadAndSaveImageToDB(InputStream inputStream, UserEntity user) throws IOException,
+			CloudinaryException {
 
 		log.info("Starting uploading a file");
 		String uploadedImageUrl = cloudinaryService.uploadImageToCloudinary(inputStream);

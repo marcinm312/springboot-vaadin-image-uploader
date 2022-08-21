@@ -30,7 +30,7 @@ public class CloudinaryService {
 				"api_secret", environment.getProperty("cloudinary.apiSecretValue")));
 	}
 
-	public String uploadImageToCloudinary(InputStream inputStream) throws IOException {
+	public String uploadImageToCloudinary(InputStream inputStream) throws IOException, CloudinaryException {
 
 		Map<?, ?> uploadResult = cloudinary.uploader().uploadLarge(inputStream, ObjectUtils.emptyMap());
 		if (uploadResult == null || !uploadResult.containsKey("secure_url")) {

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class CloudinaryException extends RuntimeException {
+public class CloudinaryException extends Exception {
 
 	public CloudinaryException(String message) {
 		super(message);
