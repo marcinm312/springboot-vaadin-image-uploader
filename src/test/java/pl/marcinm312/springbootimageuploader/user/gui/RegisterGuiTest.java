@@ -11,21 +11,19 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
-import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
+import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
-import javax.mail.MessagingException;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-
 
 class RegisterGuiTest {
 
@@ -47,7 +45,7 @@ class RegisterGuiTest {
 	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
 
 	@BeforeEach
-	void setUp() throws MessagingException {
+	void setUp() {
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
@@ -60,7 +58,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_simpleCase_success() throws MessagingException {
+	void registerGuiTest_simpleCase_success() {
 		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
@@ -84,7 +82,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() throws MessagingException {
+	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);
 
@@ -106,7 +104,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_stringTrimmerTestInLogin_validationMessage() throws MessagingException {
+	void registerGuiTest_stringTrimmerTestInLogin_validationMessage() {
 		UserValidator validator = new UserValidator(userService);
 		RegisterGui registerGui = new RegisterGui(userService, validator);
 
@@ -128,7 +126,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() throws MessagingException {
+	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new UserEntity()));
 
 		UserValidator validator = new UserValidator(userService);
@@ -152,7 +150,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() throws MessagingException {
+	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 
 		UserValidator validator = new UserValidator(userService);
@@ -176,7 +174,7 @@ class RegisterGuiTest {
 	}
 
 	@Test
-	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() throws MessagingException {
+	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(TokenEntity.class))).willReturn(new TokenEntity());
 

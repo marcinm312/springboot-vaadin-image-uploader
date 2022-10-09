@@ -120,7 +120,7 @@ public class ImageManagementGui extends VerticalLayout {
 			deleteResult = imageService.deleteImageFromCloudinaryAndDB(imageDto.getId());
 		} catch (Exception e) {
 			String errorMessage = "The image has not been deleted. Error message: " + e.getMessage();
-			log.error(errorMessage);
+			log.error(errorMessage, e);
 			VaadinUtils.showNotification(errorMessage);
 			dialog.close();
 			return;

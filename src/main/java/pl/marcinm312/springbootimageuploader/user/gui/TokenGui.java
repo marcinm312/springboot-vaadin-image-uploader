@@ -30,7 +30,8 @@ public class TokenGui extends VerticalLayout {
 		try {
 			tokenValue = VaadinUtils.getParamValueFromUrlQuery("value");
 		} catch (Exception exc) {
-			log.error("Error retrieving the value of the token: {}", exc.getMessage());
+			String errorMessage = String.format("Error retrieving the value of the token: %s", exc.getMessage());
+			log.error(errorMessage, exc);
 		}
 
 		if(tokenValue != null) {

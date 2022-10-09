@@ -11,6 +11,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
@@ -18,6 +19,7 @@ import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Slf4j
 @Route("register")
 @StyleSheet("/css/style.css")
 @PageTitle("Registration form")
@@ -91,8 +93,14 @@ public class RegisterGui extends VerticalLayout {
 		if (binder.isValid()) {
 			String validationError = userValidator.validateUserRegistration(user, confirmPasswordField.getValue());
 			if (validationError == null) {
-				userService.createUser(user, false);
-				VaadinUtils.showNotification("User successfully registered");
+				try {
+					userService.createUser(user, false);
+					VaadinUtils.showNotification("User successfully registered");
+				} catch (Exception e) {
+					String errorMessage = String.format("An error occurred while registering the user: %s", e.getMessage());
+					log.error(errorMessage, e);
+					VaadinUtils.showNotification(errorMessage);
+				}
 			} else {
 				clearPasswordFieldsValues();
 				VaadinUtils.showNotification(validationError);

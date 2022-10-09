@@ -19,7 +19,6 @@ import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 
-import javax.mail.MessagingException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +38,7 @@ public class UserService {
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
 	public UserEntity createFirstUser() {
+
 		if (userRepo.findByUsername("administrator").isEmpty()) {
 			log.info("Creating administrator user");
 			String password = environment.getProperty("admin.default.password");
@@ -114,11 +114,7 @@ public class UserService {
 		TokenEntity token = new TokenEntity(tokenValue, user);
 		tokenRepo.save(token);
 		String emailContent = generateEmailContent(user, tokenValue);
-		try {
-			mailService.sendMail(user.getEmail(), "Confirm your email address", emailContent, true);
-		} catch (MessagingException e) {
-			log.error("An error occurred while sending the email. [MESSAGE]: {}", e.getMessage());
-		}
+		mailService.sendMail(user.getEmail(), "Confirm your email address", emailContent, true);
 	}
 
 	@Transactional

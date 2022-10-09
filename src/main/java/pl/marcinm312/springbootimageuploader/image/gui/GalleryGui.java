@@ -153,7 +153,8 @@ public class GalleryGui extends VerticalLayout {
 		try {
 			positionNumber = Integer.parseInt(position);
 		} catch (Exception e) {
-			log.error("Error converting the position={} to int: {}", position, e.getMessage());
+			String errorMessage = String.format("Error converting the position=%s to int: %s", position, e.getMessage());
+			log.error(errorMessage, e);
 		}
 		if (!allImagesFromDB.isEmpty()) {
 			positionNumber++;

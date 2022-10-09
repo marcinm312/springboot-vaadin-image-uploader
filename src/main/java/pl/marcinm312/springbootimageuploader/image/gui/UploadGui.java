@@ -85,8 +85,9 @@ public class UploadGui extends VerticalLayout {
 					VaadinUtils.showNotification("Error uploading and saving the image");
 				}
 			} catch (Exception e) {
-				log.error("Error occurred during uploading image. [MESSAGE]: {}", e.getMessage());
-				VaadinUtils.showNotification("Error occurred: " + e.getMessage());
+				String errorMessage = String.format("An error occurred while uploading the image: %s", e.getMessage());
+				log.error(errorMessage, e);
+				VaadinUtils.showNotification(errorMessage);
 			}
 		} else {
 			log.info("Invalid file type");
