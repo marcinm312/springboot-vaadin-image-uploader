@@ -292,6 +292,26 @@
                 </executions>
             </plugin>
 
+            <!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>7.3.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <formats>
+                        <format>json</format>
+                        <format>html</format>
+                    </formats>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
