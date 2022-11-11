@@ -34,9 +34,7 @@ public class ImageDto {
 	@Override
 	public final boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof ImageDto)) return false;
-
-		ImageDto imageDto = (ImageDto) o;
+		if (!(o instanceof ImageDto imageDto)) return false;
 
 		if (getId() != null ? !getId().equals(imageDto.getId()) : imageDto.getId() != null) return false;
 		if (getImageAddress() != null ? !getImageAddress().equals(imageDto.getImageAddress()) : imageDto.getImageAddress() != null)

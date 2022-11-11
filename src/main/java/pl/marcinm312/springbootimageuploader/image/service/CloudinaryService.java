@@ -62,7 +62,7 @@ public class CloudinaryService {
 		}
 
 		Object resourcesObject = apiResponse.get(RESOURCES_KEY);
-		if (!(resourcesObject instanceof List)) {
+		if (!(resourcesObject instanceof List<?> listFromApi)) {
 			String errorMessage = "Object with '" + RESOURCES_KEY + "' key is not a List";
 			log.error(commonErrorMessage);
 			log.error(errorMessage);
@@ -70,7 +70,6 @@ public class CloudinaryService {
 			throw new CloudinaryException(errorMessage);
 		}
 
-		List<?> listFromApi = (List<?>) resourcesObject;
 		if (listFromApi.isEmpty()) {
 			String errorMessage = "Resources list from Cloudinary response is empty";
 			log.error(commonErrorMessage);
@@ -79,7 +78,7 @@ public class CloudinaryService {
 		}
 
 		Object firstElementFromResourcesList = listFromApi.get(0);
-		if (!(firstElementFromResourcesList instanceof Map)) {
+		if (!(firstElementFromResourcesList instanceof Map<?, ?> mapFromResourcesList)) {
 			String errorMessage = "First element from resources list is not a Map";
 			log.error(commonErrorMessage);
 			log.error(errorMessage);
@@ -87,7 +86,6 @@ public class CloudinaryService {
 			return false;
 		}
 
-		Map<?, ?> mapFromResourcesList = (Map<?, ?>) firstElementFromResourcesList;
 		if (!mapFromResourcesList.containsKey("public_id") || !publicId.equals(mapFromResourcesList.get("public_id"))) {
 			log.info(commonErrorMessage);
 			return false;

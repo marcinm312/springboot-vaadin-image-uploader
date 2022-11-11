@@ -21,11 +21,8 @@ public class SessionUtils {
 	public void expireUserSessions(String username, boolean expireCurrentSession) {
 		log.info("Starting expiring sessions for user: {}", username);
 		for (Object principal : sessionRegistry.getAllPrincipals()) {
-			if (principal instanceof UserDetails) {
-				UserDetails userDetails = (UserDetails) principal;
-				if (userDetails.getUsername().equals(username)) {
-					processSessionsOfUser(username, expireCurrentSession, userDetails);
-				}
+			if (principal instanceof UserDetails userDetails && userDetails.getUsername().equals(username)) {
+				processSessionsOfUser(username, expireCurrentSession, userDetails);
 			}
 		}
 		log.info("Sessions for user: {} expired", username);

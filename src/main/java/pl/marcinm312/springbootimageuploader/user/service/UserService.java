@@ -157,9 +157,11 @@ public class UserService {
 
 	private String generateEmailContent(UserEntity user, String tokenValue) {
 
-		return new StringBuilder().append("Welcome ").append(user.getUsername())
-				.append(",<br><br>Confirm your email address by clicking on the link below:")
-				.append("<br><a href=\"").append(VaadinUtils.getUriString()).append("/token?value=").append(tokenValue)
-				.append("\">Activate account</a>").toString();
+		String mailTemplate =
+				"""
+						Welcome %s,<br>
+						<br>Confirm your email address by clicking on the link below:
+						<br><a href="%s/token?value=%s">Activate account</a>""";
+		return String.format(mailTemplate, user.getUsername(), VaadinUtils.getUriString(), tokenValue);
 	}
 }
