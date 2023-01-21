@@ -35,7 +35,7 @@ public class UserEntity extends AuditModel implements UserDetails {
 	private String username;
 
 	@NotBlank(message = "This field must be completed!")
-	@Size(min = 5, message = "This field must contain at least 6 characters")
+	@Size(min = 5, message = "This field must contain at least 5 characters")
 	private String password;
 
 	@Enumerated(EnumType.STRING)
