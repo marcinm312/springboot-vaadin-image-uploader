@@ -39,11 +39,12 @@ public class UserService {
 	@Transactional
 	public UserEntity createFirstUser() {
 
-		if (userRepo.findByUsername("administrator").isEmpty()) {
+		String login = "admin";
+		if (userRepo.findByUsername(login).isEmpty()) {
 			log.info("Creating administrator user");
 			String password = environment.getProperty("admin.default.password");
 			String email = environment.getProperty("admin.default.email");
-			UserEntity userAdmin = new UserEntity("administrator", password, Role.ROLE_ADMIN, email);
+			UserEntity userAdmin = new UserEntity(login, password, Role.ROLE_ADMIN, email);
 			return createUser(userAdmin, true);
 		}
 		log.info("Administrator already exists in DB");
