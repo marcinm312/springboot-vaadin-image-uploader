@@ -87,8 +87,8 @@ class RegisterGuiTest {
 		RegisterGui registerGui = new RegisterGui(userService, validator);
 
 		registerGui.loginTextField.setValue("hh");
-		registerGui.passwordField.setValue("hhhhh");
-		registerGui.confirmPasswordField.setValue("hhhhh");
+		registerGui.passwordField.setValue("hhhh");
+		registerGui.confirmPasswordField.setValue("hhhh");
 		registerGui.emailTextField.setValue("aaa@abc.com");
 		boolean binderResult = registerGui.binder.isValid();
 
