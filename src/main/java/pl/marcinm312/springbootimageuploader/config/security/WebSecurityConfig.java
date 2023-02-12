@@ -25,14 +25,14 @@ public class WebSecurityConfig {
 	public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
 
 		http.authorizeRequests()
-				.antMatchers("/upload").hasRole(ADMIN_ROLE)
-				.antMatchers("/management").hasRole(ADMIN_ROLE)
-				.antMatchers("/gallery").hasAnyRole(ADMIN_ROLE, USER_ROLE)
+				.antMatchers("/upload/**").hasRole(ADMIN_ROLE)
+				.antMatchers("/management/**").hasRole(ADMIN_ROLE)
+				.antMatchers("/gallery/**").hasAnyRole(ADMIN_ROLE, USER_ROLE)
 				.antMatchers("/myprofile/**").hasAnyRole(ADMIN_ROLE, USER_ROLE)
 
 				.and().formLogin().permitAll()
 				.and().logout().permitAll().logoutSuccessUrl("/")
-				.and().exceptionHandling().accessDeniedPage("/forbidden")
+				.and().exceptionHandling().accessDeniedPage("/forbidden/")
 				.and().csrf().disable()
 				.sessionManagement().maximumSessions(10000).maxSessionsPreventsLogin(false)
 				.expiredUrl("/").sessionRegistry(sessionRegistry());
