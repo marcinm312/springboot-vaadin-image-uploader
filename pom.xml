@@ -16,7 +16,7 @@
     <properties>
         <java.version>17</java.version>
         <!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-core -->
-        <vaadin.version>14.8.20</vaadin.version>
+        <vaadin.version>14.9.7</vaadin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -353,7 +353,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <nodeVersion>v18.14.2</nodeVersion>
+                            <nodeVersion>v18.15.0</nodeVersion>
                         </configuration>
                     </plugin>
                 </plugins>
