@@ -105,7 +105,7 @@ class GalleryGuiTest {
 	void galleryGuiTest_simpleCaseWithAdmin_success() {
 		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("administrator");
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);
 		GalleryGui galleryGui = new GalleryGui(imageService);
 
@@ -121,7 +121,7 @@ class GalleryGuiTest {
 	void galleryGuiTest_emptyImageListWithAdmin_success() {
 		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("administrator");
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);
 		GalleryGui galleryGui = new GalleryGui(imageService);
 

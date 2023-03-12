@@ -55,7 +55,7 @@ class WebSecurityConfigTest {
 
 	@BeforeEach
 	void setUp() {
-		given(userRepo.findByUsername("administrator"))
+		given(userRepo.findByUsername("admin"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword()));
 		given(userRepo.findByUsername("username"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodUserWithEncodedPassword()));
@@ -88,8 +88,8 @@ class WebSecurityConfigTest {
 	@Test
 	void formLogin_administratorWithGoodCredentials_success() throws Exception {
 		mockMvc.perform(
-						formLogin().user("administrator").password("password"))
-				.andExpect(authenticated().withUsername("administrator").withRoles("ADMIN"));
+						formLogin().user("admin").password("password"))
+				.andExpect(authenticated().withUsername("admin").withRoles("ADMIN"));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ class WebSecurityConfigTest {
 	@Test
 	void formLogin_administratorWithBadCredentials_unauthenticated() throws Exception {
 		mockMvc.perform(
-						formLogin().user("administrator").password("invalid"))
+						formLogin().user("admin").password("invalid"))
 				.andExpect(redirectedUrl("/login?error"))
 				.andExpect(unauthenticated());
 	}

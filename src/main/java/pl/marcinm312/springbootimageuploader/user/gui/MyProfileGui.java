@@ -86,7 +86,7 @@ public class MyProfileGui extends VerticalLayout {
 		loginTextField = new TextField();
 		loginTextField.setLabel("Login");
 		loginTextField.setValue(user.getUsername());
-		if ("administrator".equals(user.getUsername())) {
+		if ("admin".equals(user.getUsername())) {
 			loginTextField.setEnabled(false);
 		}
 		binder.forField(loginTextField).bind("username");
