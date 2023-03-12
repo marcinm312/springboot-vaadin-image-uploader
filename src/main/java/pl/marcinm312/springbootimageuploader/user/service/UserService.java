@@ -121,8 +121,10 @@ public class UserService {
 	@Transactional
 	public UserEntity activateUser(String tokenValue) {
 
+		log.info("Token value = {}", tokenValue);
 		Optional<TokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
 		if (optionalToken.isEmpty()) {
+			log.error("Token with value: {} not found!", tokenValue);
 			throw new TokenNotFoundException();
 		}
 		TokenEntity token = optionalToken.get();
