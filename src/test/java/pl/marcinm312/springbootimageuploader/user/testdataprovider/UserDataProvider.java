@@ -8,7 +8,7 @@ import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 public class UserDataProvider {
 
 	public static UserEntity prepareExampleGoodAdministrator() {
-		return buildUserEntity(1L, "administrator", "password", Role.ROLE_ADMIN, true, "aaa@abc.pl");
+		return buildUserEntity(1L, "admin", "password", Role.ROLE_ADMIN, true, "aaa@abc.pl");
 	}
 
 	public static UserEntity prepareExampleGoodUser() {
@@ -21,7 +21,7 @@ public class UserDataProvider {
 
 	public static UserEntity prepareExampleGoodAdministratorWithEncodedPassword() {
 		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		return buildUserEntity(1L, "administrator", passwordEncoder.encode("password"), Role.ROLE_ADMIN, true, "aaa@abc.pl");
+		return buildUserEntity(1L, "admin", passwordEncoder.encode("password"), Role.ROLE_ADMIN, true, "aaa@abc.pl");
 	}
 
 	public static UserEntity prepareExampleGoodUserWithEncodedPassword() {

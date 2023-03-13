@@ -35,7 +35,7 @@ class ImageManagementGuiTest {
 	@BeforeEach
 	void setup() {
 		mockedVaadinUtils = Mockito.mockStatic(VaadinUtils.class);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("administrator");
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
 		MockitoAnnotations.openMocks(this);
 	}
 

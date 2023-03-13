@@ -2,14 +2,19 @@ package pl.marcinm312.springbootimageuploader.image.gui;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import pl.marcinm312.springbootimageuploader.image.service.ImageService;
+import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
-import pl.marcinm312.springbootimageuploader.image.service.ImageService;
-import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
-import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.Optional;
 
@@ -22,9 +27,6 @@ class UploadGuiTest {
 
 	@Mock
 	private UserRepo userRepo;
-
-	@InjectMocks
-	private UserService userService;
 
 	@Mock
 	private ImageService imageService;
@@ -51,12 +53,13 @@ class UploadGuiTest {
 	@Test
 	void uploadGuiTest_initView_success() {
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
-		String oldLogin = loggedUser.getUsername();
+		String login = loggedUser.getUsername();
 
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(login);
+		given(VaadinUtils.getCurrentUser()).willReturn(loggedUser);
+		given(userRepo.findByUsername(login)).willReturn(Optional.of(loggedUser));
 
-		UploadGui uploadGui = new UploadGui(imageService, userService);
+		UploadGui uploadGui = new UploadGui(imageService);
 
 		long receivedChildrenSize = uploadGui.getChildren().count();
 		Assertions.assertEquals(4, receivedChildrenSize);

@@ -16,7 +16,7 @@ public class VaadinUtils {
 
 	public static String getUriString() {
 		VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
-		return request.getRequestURL().toString().replace("/register", "");
+		return request.getRequestURL().toString();
 	}
 
 	public static String getAuthenticatedUserName() {
@@ -24,9 +24,13 @@ public class VaadinUtils {
 		return authentication.getName();
 	}
 
-	public static boolean isCurrentUserAdmin() {
+	public static UserEntity getCurrentUser() {
 		Authentication authentication = getCurrentAuthentication();
-		return Role.ROLE_ADMIN == ((UserEntity) authentication.getPrincipal()).getRole();
+		return (UserEntity) authentication.getPrincipal();
+	}
+
+	public static boolean isCurrentUserAdmin() {
+		return Role.ROLE_ADMIN == getCurrentUser().getRole();
 	}
 
 	public static void showNotification(String notificationText) {

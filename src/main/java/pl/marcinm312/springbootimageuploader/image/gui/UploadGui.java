@@ -17,7 +17,6 @@ import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
 import java.io.InputStream;
 
@@ -37,30 +36,29 @@ public class UploadGui extends VerticalLayout {
 	Image image;
 
 	private final transient ImageService imageService;
-	private final UserEntity user;
 
 	@Autowired
-	public UploadGui(ImageService imageService, UserService userService) {
+	public UploadGui(ImageService imageService) {
 
 		this.imageService = imageService;
 
-		user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		UserEntity user = VaadinUtils.getCurrentUser();
 		log.info("user.getUsername()={}", user.getUsername());
 
 		prepareHorizontalMenu();
 		h1 = new H1("Upload image");
-		prepareUploadButton();
+		prepareUploadButton(user);
 		image = new Image();
 		image.setMaxHeight("500px");
 
 		add(horizontalMenu, h1, upload, image);
 	}
 
-	private void prepareUploadButton() {
+	private void prepareUploadButton(UserEntity user) {
 
 		MemoryBuffer vaadinBuffer = new MemoryBuffer();
 		upload = new Upload(vaadinBuffer);
-		upload.addSucceededListener(event -> uploadImageAction(vaadinBuffer, event));
+		upload.addSucceededListener(event -> uploadImageAction(user, vaadinBuffer, event));
 	}
 
 	private void prepareHorizontalMenu() {
@@ -70,7 +68,7 @@ public class UploadGui extends VerticalLayout {
 		horizontalMenu = new HorizontalLayout(logoutAnchor, managementAnchor);
 	}
 
-	private void uploadImageAction(MemoryBuffer vaadinBuffer, SucceededEvent event) {
+	private void uploadImageAction(UserEntity user, MemoryBuffer vaadinBuffer, SucceededEvent event) {
 
 		String fileType = event.getMIMEType();
 		if (fileType.startsWith("image")) {
