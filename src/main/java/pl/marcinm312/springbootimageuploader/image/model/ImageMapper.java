@@ -5,9 +5,8 @@ import lombok.NoArgsConstructor;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,7 @@ public class ImageMapper {
 		return imageList.stream().map(ImageMapper::convertImageEntityToImageDto).collect(Collectors.toList());
 	}
 
-	private static String getDateAsString(Date date) {
-		Format dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return dateFormat.format(date);
+	private static String getDateAsString(LocalDateTime date) {
+		return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(date);
 	}
 }
