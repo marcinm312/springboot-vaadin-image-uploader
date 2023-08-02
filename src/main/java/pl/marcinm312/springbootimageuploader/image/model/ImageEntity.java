@@ -2,6 +2,7 @@ package pl.marcinm312.springbootimageuploader.image.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.io.FilenameUtils;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
@@ -17,13 +18,15 @@ import javax.persistence.*;
 public class ImageEntity extends AuditModel {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "image_generator")
+	@SequenceGenerator(name = "image_generator", sequenceName = "image_id_seq", allocationSize = 1)
 	private Long id;
 
 	private String imageAddress;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
+	@ToString.Exclude
 	private UserEntity user;
 
 	public ImageEntity(String imageAddress, UserEntity user) {

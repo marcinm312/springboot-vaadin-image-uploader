@@ -26,7 +26,8 @@ import java.util.Collections;
 public class UserEntity extends AuditModel implements UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "user_generator")
+	@SequenceGenerator(name = "user_generator", sequenceName = "app_user_id_seq", allocationSize = 1)
 	private Long id;
 
 	@Column(unique = true)

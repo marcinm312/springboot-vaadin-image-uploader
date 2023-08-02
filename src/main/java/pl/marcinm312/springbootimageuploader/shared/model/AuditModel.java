@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 public abstract class AuditModel implements Serializable {
 
 	@CreationTimestamp
-	@Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
+	@Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "timestamp with time zone")
 	private LocalDateTime createdAt;
 
 	@UpdateTimestamp
-	@Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
+	@Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
 	private LocalDateTime updatedAt;
 }

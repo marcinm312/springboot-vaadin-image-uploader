@@ -2,12 +2,12 @@ package pl.marcinm312.springbootimageuploader.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
+import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 
 import java.util.Optional;
 
 @Repository
-public interface TokenRepo extends JpaRepository<TokenEntity, Long> {
+public interface TokenRepo extends JpaRepository<ActivationTokenEntity, Long> {
 
-	Optional<TokenEntity> findByValue(String value);
+	Optional<ActivationTokenEntity> findByValue(String value);
 }

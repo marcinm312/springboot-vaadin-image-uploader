@@ -12,27 +12,29 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @SuperBuilder
 @Entity
-@Table(name = "tokens")
-public class TokenEntity extends AuditModel {
+@Table(name = "activation_tokens")
+public class ActivationTokenEntity extends AuditModel {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "activation_token_generator")
+	@SequenceGenerator(name = "activation_token_generator", sequenceName = "activation_token_sequence", allocationSize = 1)
 	private Long id;
 
 	@NotBlank
 	private String value;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 
-	public TokenEntity(String value, UserEntity user) {
+	public ActivationTokenEntity(String value, UserEntity user) {
 		this.value = value;
 		this.user = user;
 	}
 
 	@Override
 	public String toString() {
-		return "TokenEntity{" +
+		return "ActivationTokenEntity{" +
 				"id=" + id +
 				", value='" + value + '\'' +
 				", user=" + user +

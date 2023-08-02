@@ -13,7 +13,7 @@ import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
-import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
+import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
@@ -112,7 +112,7 @@ public class UserService {
 	private void sendToken(UserEntity user) {
 
 		String tokenValue = UUID.randomUUID().toString();
-		TokenEntity token = new TokenEntity(tokenValue, user);
+		ActivationTokenEntity token = new ActivationTokenEntity(tokenValue, user);
 		tokenRepo.save(token);
 		String emailContent = generateEmailContent(user, tokenValue);
 		mailService.sendMail(user.getEmail(), "Confirm your email address", emailContent, true);
@@ -122,12 +122,12 @@ public class UserService {
 	public UserEntity activateUser(String tokenValue) {
 
 		log.info("Token value = {}", tokenValue);
-		Optional<TokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
+		Optional<ActivationTokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
 		if (optionalToken.isEmpty()) {
 			log.error("Token with value: {} not found!", tokenValue);
 			throw new TokenNotFoundException();
 		}
-		TokenEntity token = optionalToken.get();
+		ActivationTokenEntity token = optionalToken.get();
 		UserEntity user = token.getUser();
 		log.info("Activating user = {}", user.getUsername());
 		user.setEnabled(true);

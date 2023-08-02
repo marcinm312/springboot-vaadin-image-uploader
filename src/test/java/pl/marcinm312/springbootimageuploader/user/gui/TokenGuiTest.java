@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
-import pl.marcinm312.springbootimageuploader.user.model.TokenEntity;
+import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.TokenDataProvider;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
@@ -43,7 +43,7 @@ class TokenGuiTest {
 
 		UserEntity activatedUser = UserDataProvider.prepareExampleActivatedUserWithEncodedPassword();
 		given(userRepo.save(any(UserEntity.class))).willReturn(activatedUser);
-		doNothing().when(tokenRepo).delete(isA(TokenEntity.class));
+		doNothing().when(tokenRepo).delete(isA(ActivationTokenEntity.class));
 	}
 
 	@AfterEach
@@ -53,7 +53,7 @@ class TokenGuiTest {
 
 	@Test
 	void tokenGuiTest_simpleCase_userActivated() {
-		TokenEntity foundToken = TokenDataProvider.prepareExampleToken();
+		ActivationTokenEntity foundToken = TokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(tokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
 		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleExistingTokenValue);
@@ -76,7 +76,7 @@ class TokenGuiTest {
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Token not found", receivedMessage);
-		verify(tokenRepo, never()).delete(any(TokenEntity.class));
+		verify(tokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
 	}
 
@@ -88,7 +88,7 @@ class TokenGuiTest {
 
 		String receivedMessage = tokenGui.h1.getText();
 		Assertions.assertEquals("Error getting token value", receivedMessage);
-		verify(tokenRepo, never()).delete(any(TokenEntity.class));
+		verify(tokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
 	}
 }
