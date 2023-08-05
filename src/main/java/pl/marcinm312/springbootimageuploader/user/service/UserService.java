@@ -16,7 +16,7 @@ import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundExcepti
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
-import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class UserService {
 	private final UserRepo userRepo;
 	private final PasswordEncoder passwordEncoder;
 	private final Environment environment;
-	private final TokenRepo tokenRepo;
+	private final ActivationTokenRepo activationTokenRepo;
 	private final MailService mailService;
 	private final SessionUtils sessionUtils;
 	private final ImageRepo imageRepo;
@@ -100,7 +100,7 @@ public class UserService {
 
 		String tokenValue = UUID.randomUUID().toString();
 		ActivationTokenEntity token = new ActivationTokenEntity(tokenValue, user);
-		tokenRepo.save(token);
+		activationTokenRepo.save(token);
 		String emailContent = generateEmailContent(user, tokenValue);
 		mailService.sendMail(user.getEmail(), "Confirm your email address", emailContent, true);
 	}
@@ -109,7 +109,7 @@ public class UserService {
 	public UserEntity activateUser(String tokenValue) {
 
 		log.info("Token value = {}", tokenValue);
-		Optional<ActivationTokenEntity> optionalToken = tokenRepo.findByValue(tokenValue);
+		Optional<ActivationTokenEntity> optionalToken = activationTokenRepo.findByValue(tokenValue);
 		if (optionalToken.isEmpty()) {
 			log.error("Token with value: {} not found!", tokenValue);
 			throw new TokenNotFoundException();
@@ -119,7 +119,7 @@ public class UserService {
 		log.info("Activating user = {}", user.getUsername());
 		user.setEnabled(true);
 		UserEntity savedUser = userRepo.save(user);
-		tokenRepo.delete(token);
+		activationTokenRepo.delete(token);
 		log.info("User {} activated", user.getUsername());
 		return savedUser;
 	}

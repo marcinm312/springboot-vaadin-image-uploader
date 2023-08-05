@@ -10,7 +10,7 @@ import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.repository.TokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -34,7 +34,7 @@ class RegisterGuiTest {
 	private MailService mailService;
 
 	@Mock
-	private TokenRepo tokenRepo;
+	private ActivationTokenRepo activationTokenRepo;
 
 	@InjectMocks
 	private UserService userService;
@@ -57,7 +57,7 @@ class RegisterGuiTest {
 	void registerGuiTest_simpleCase_success() {
 		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		given(tokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
+		given(activationTokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		RegisterGui registerGui = new RegisterGui(userService, userValidator);
@@ -172,7 +172,7 @@ class RegisterGuiTest {
 	@Test
 	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		given(tokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
+		given(activationTokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		RegisterGui registerGui = new RegisterGui(userService, userValidator);
