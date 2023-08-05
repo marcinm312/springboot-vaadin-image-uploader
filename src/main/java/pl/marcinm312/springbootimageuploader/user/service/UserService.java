@@ -151,7 +151,7 @@ public class UserService {
 				"""
 						Welcome %s,<br>
 						<br>Confirm your email address by clicking on the link below:
-						<br><a href="%s/token?value=%s">Activate account</a>""";
+						<br><a href="%stoken?value=%s">Activate account</a>""";
 		return String.format(mailTemplate, user.getUsername(), VaadinUtils.getUriString(), tokenValue);
 	}
 }
