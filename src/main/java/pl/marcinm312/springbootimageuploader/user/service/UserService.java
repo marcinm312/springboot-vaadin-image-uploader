@@ -55,19 +55,6 @@ public class UserService {
 		return userRepo.findByUsername(username);
 	}
 
-	public UserEntity getUserByUsername(String userName) {
-
-		log.info("Loading user: {}", userName);
-		Optional<UserEntity> optionalUser = userRepo.findByUsername(userName);
-		if (optionalUser.isPresent()) {
-			UserEntity user = optionalUser.get();
-			log.info("Loaded user = {}", userName);
-			return user;
-		}
-		log.error("User {} not found!", userName);
-		return null;
-	}
-
 	@Transactional
 	public UserEntity createUser(UserEntity user, boolean isFirstUser) {
 

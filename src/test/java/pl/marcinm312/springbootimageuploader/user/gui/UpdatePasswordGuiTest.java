@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
+import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
@@ -32,6 +33,9 @@ class UpdatePasswordGuiTest {
 
 	@InjectMocks
 	private UserService userService;
+
+	@InjectMocks
+	private UserDetailsServiceImpl userDetailsService;
 
 	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
 
@@ -59,7 +63,7 @@ class UpdatePasswordGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
@@ -88,7 +92,7 @@ class UpdatePasswordGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
@@ -120,7 +124,7 @@ class UpdatePasswordGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
@@ -152,7 +156,7 @@ class UpdatePasswordGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
@@ -184,7 +188,7 @@ class UpdatePasswordGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
+		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);

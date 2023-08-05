@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
@@ -36,14 +37,16 @@ public class UpdatePasswordGui extends VerticalLayout {
 	Button saveUserButton;
 
 	private final transient UserService userService;
+	private final transient UserDetailsServiceImpl userDetailsService;
 	private final transient UserValidator userValidator;
 
 	private static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
 
 	@Autowired
-	public UpdatePasswordGui(UserService userService, UserValidator userValidator) {
+	public UpdatePasswordGui(UserService userService, UserDetailsServiceImpl userDetailsService, UserValidator userValidator) {
 
 		this.userService = userService;
+		this.userDetailsService = userDetailsService;
 		this.userValidator = userValidator;
 
 		binder = new BeanValidationBinder<>(UserEntity.class);
@@ -91,7 +94,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private void updateUserPassword() {
 
-		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		log.info("Old user = {}", user);
 		String validationError = userValidator.validateUserPasswordUpdate(user, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
 		if (validationError == null) {

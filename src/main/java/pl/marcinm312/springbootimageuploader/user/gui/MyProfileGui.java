@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
@@ -51,12 +52,12 @@ public class MyProfileGui extends VerticalLayout {
 	private static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
 
 	@Autowired
-	public MyProfileGui(UserService userService, UserValidator userValidator) {
+	public MyProfileGui(UserService userService, UserDetailsServiceImpl userDetailsService, UserValidator userValidator) {
 
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
 		String oldLogin = user.getUsername();
 
 		deleteDialog = prepareDeleteDialog(user);

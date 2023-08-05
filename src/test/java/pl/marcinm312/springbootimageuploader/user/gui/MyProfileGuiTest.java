@@ -13,6 +13,7 @@ import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
+import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -38,6 +39,9 @@ class MyProfileGuiTest {
 
 	@InjectMocks
 	private UserService userService;
+
+	@InjectMocks
+	private UserDetailsServiceImpl userDetailsService;
 
 	@Spy
 	private BCryptPasswordEncoder passwordEncoder;
@@ -74,7 +78,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -104,7 +108,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -132,7 +136,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -158,7 +162,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
 		boolean binderResult = myProfileGui.binder.isValid();
@@ -185,7 +189,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -214,7 +218,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -244,7 +248,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.of(new UserEntity()));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newPassword);
@@ -273,7 +277,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -299,7 +303,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.cancelDeleteButton.click();
@@ -318,7 +322,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
 		myProfileGui.confirmDeleteButton.click();
@@ -337,7 +341,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.expireSessionsButton.click();
 
