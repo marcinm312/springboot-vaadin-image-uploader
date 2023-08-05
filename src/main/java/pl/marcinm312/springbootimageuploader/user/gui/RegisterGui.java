@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -32,7 +33,7 @@ public class RegisterGui extends VerticalLayout {
 	TextField loginTextField;
 	PasswordField passwordField;
 	PasswordField confirmPasswordField;
-	TextField emailTextField;
+	EmailField emailTextField;
 	Button saveUserButton;
 
 	private final transient UserService userService;
@@ -74,7 +75,7 @@ public class RegisterGui extends VerticalLayout {
 		confirmPasswordField.setRevealButtonVisible(false);
 		confirmPasswordField.setRequired(true);
 
-		emailTextField = new TextField();
+		emailTextField = new EmailField();
 		emailTextField.setLabel("Email");
 		binder.forField(emailTextField).bind("email");
 

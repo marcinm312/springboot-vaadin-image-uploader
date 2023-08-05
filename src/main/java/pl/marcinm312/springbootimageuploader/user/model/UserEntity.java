@@ -46,7 +46,7 @@ public class UserEntity extends AuditModel implements UserDetails {
 	private boolean enabled;
 
 	@NotBlank(message = "This field must be completed!")
-	@Email(message = "Incorrect email address! ")
+	@Email(message = "Incorrect email address!")
 	private String email;
 
 	public UserEntity(String username, String password, Role role, String email) {

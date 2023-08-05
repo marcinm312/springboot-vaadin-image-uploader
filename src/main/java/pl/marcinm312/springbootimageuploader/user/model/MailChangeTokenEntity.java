@@ -9,6 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
@@ -28,6 +29,7 @@ public class MailChangeTokenEntity extends AuditModel {
 	private String value;
 
 	@NotBlank
+	@Email(message = "Incorrect email address!")
 	private String newEmail;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

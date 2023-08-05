@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
@@ -36,7 +37,7 @@ public class MyProfileGui extends VerticalLayout {
 	H1 h1;
 	Paragraph paragraph;
 	TextField loginTextField;
-	TextField emailTextField;
+	EmailField emailTextField;
 	Button saveUserButton;
 	Button deleteUserButton;
 
@@ -92,7 +93,7 @@ public class MyProfileGui extends VerticalLayout {
 		}
 		binder.forField(loginTextField).bind("username");
 
-		emailTextField = new TextField();
+		emailTextField = new EmailField();
 		emailTextField.setLabel("Email");
 		if (user.getEmail() != null) {
 			emailTextField.setValue(user.getEmail());
