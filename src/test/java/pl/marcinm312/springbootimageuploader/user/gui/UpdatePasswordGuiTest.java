@@ -58,7 +58,7 @@ class UpdatePasswordGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
@@ -87,7 +87,7 @@ class UpdatePasswordGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
@@ -119,7 +119,7 @@ class UpdatePasswordGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
@@ -151,7 +151,7 @@ class UpdatePasswordGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
@@ -183,7 +183,7 @@ class UpdatePasswordGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userValidator);
 
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);

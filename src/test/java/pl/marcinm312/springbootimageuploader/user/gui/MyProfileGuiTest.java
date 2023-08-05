@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
+import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
 import java.util.Optional;
@@ -37,6 +38,9 @@ class MyProfileGuiTest {
 
 	@InjectMocks
 	private UserService userService;
+
+	@Spy
+	private BCryptPasswordEncoder passwordEncoder;
 
 	private static MockedStatic<VaadinUtils> mockedVaadinUtils;
 
@@ -69,7 +73,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -99,7 +103,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -127,7 +131,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -153,7 +157,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
@@ -180,7 +184,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -209,7 +213,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -239,7 +243,7 @@ class MyProfileGuiTest {
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 		given(userRepo.findByUsername(newLogin)).willReturn(Optional.of(new UserEntity()));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -268,7 +272,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
@@ -294,7 +298,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
@@ -313,7 +317,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.deleteUserButton.click();
@@ -332,7 +336,7 @@ class MyProfileGuiTest {
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
 		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
 
-		UserValidator userValidator = new UserValidator(userService);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userValidator);
 
 		myProfileGui.expireSessionsButton.click();

@@ -4,11 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.mockito.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
@@ -30,8 +27,8 @@ class RegisterGuiTest {
 	@Mock
 	private UserRepo userRepo;
 
-	@Mock
-	private PasswordEncoder passwordEncoder;
+	@Spy
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Mock
 	private MailService mailService;
@@ -48,7 +45,6 @@ class RegisterGuiTest {
 	void setUp() {
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
-		given(passwordEncoder.encode(any(CharSequence.class))).willReturn("encodedPassword");
 		doNothing().when(mailService).sendMail(isA(String.class), isA(String.class), isA(String.class), isA(boolean.class));
 	}
 
@@ -63,8 +59,8 @@ class RegisterGuiTest {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
@@ -83,8 +79,8 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() {
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue("hh");
 		registerGui.passwordField.setValue("hhhh");
@@ -105,8 +101,8 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_stringTrimmerTestInLogin_validationMessage() {
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue(" hh ");
 		registerGui.passwordField.setValue("hhhhhhhh");
@@ -129,8 +125,8 @@ class RegisterGuiTest {
 	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new UserEntity()));
 
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
@@ -153,8 +149,8 @@ class RegisterGuiTest {
 	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
@@ -178,8 +174,8 @@ class RegisterGuiTest {
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(tokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 
-		UserValidator validator = new UserValidator(userService);
-		RegisterGui registerGui = new RegisterGui(userService, validator);
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
 		registerGui.loginTextField.setValue("hhhhhh");
 		registerGui.passwordField.setValue("hhhhhh");
