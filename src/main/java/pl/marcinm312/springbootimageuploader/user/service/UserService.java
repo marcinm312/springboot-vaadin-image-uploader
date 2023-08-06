@@ -35,6 +35,11 @@ public class UserService {
 	private final SessionUtils sessionUtils;
 	private final ImageRepo imageRepo;
 
+	enum MailType {
+		ACTIVATION,
+		MAIL_CHANGE
+	}
+
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
 	public UserEntity createFirstUser() {
@@ -67,7 +72,7 @@ public class UserService {
 		} else {
 			user.setEnabled(false);
 			savedUser = userRepo.save(user);
-			sendToken(user);
+			sendActivationToken(user);
 		}
 		log.info("User: {} created", user.getUsername());
 		return savedUser;
@@ -96,12 +101,12 @@ public class UserService {
 		return savedUser;
 	}
 
-	private void sendToken(UserEntity user) {
+	private void sendActivationToken(UserEntity user) {
 
 		String tokenValue = UUID.randomUUID().toString();
 		ActivationTokenEntity token = new ActivationTokenEntity(tokenValue, user);
 		activationTokenRepo.save(token);
-		String emailContent = generateEmailContent(user, tokenValue);
+		String emailContent = generateActivationEmailContent(user, tokenValue);
 		mailService.sendMail(user.getEmail(), "Confirm your email address", emailContent, true);
 	}
 
@@ -141,11 +146,7 @@ public class UserService {
 		sessionUtils.expireUserSessions(user.getUsername(), false);
 	}
 
-	public boolean isPasswordCorrect(UserEntity user, String currentPassword) {
-		return passwordEncoder.matches(currentPassword, user.getPassword());
-	}
-
-	private String generateEmailContent(UserEntity user, String tokenValue) {
+	private String generateActivationEmailContent(UserEntity user, String tokenValue) {
 
 		String mailTemplate =
 				"""
