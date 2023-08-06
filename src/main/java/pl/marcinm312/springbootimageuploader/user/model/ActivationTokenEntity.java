@@ -7,7 +7,6 @@ import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
 import pl.marcinm312.springbootimageuploader.shared.model.CommonEntityWithUser;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @Getter
@@ -21,7 +20,6 @@ public class ActivationTokenEntity extends AuditModel implements CommonEntityWit
 	@SequenceGenerator(name = "activation_token_generator", sequenceName = "activation_token_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotBlank
 	private String value;
 
 	@OneToOne(fetch = FetchType.LAZY, optional = false)

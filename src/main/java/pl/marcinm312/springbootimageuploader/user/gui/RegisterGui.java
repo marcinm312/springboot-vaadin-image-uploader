@@ -15,8 +15,7 @@ import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
-import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
-import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserCreate;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
@@ -26,7 +25,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Registration form")
 public class RegisterGui extends VerticalLayout {
 
-	BeanValidationBinder<UserEntity> binder;
+	BeanValidationBinder<UserCreate> binder;
 	Anchor mainPageAnchor;
 	H1 h1;
 	Paragraph paragraph;
@@ -47,7 +46,7 @@ public class RegisterGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		binder = new BeanValidationBinder<>(UserEntity.class);
+		binder = new BeanValidationBinder<>(UserCreate.class);
 
 		mainPageAnchor = new Anchor("..", "Back to main page");
 		h1 = new H1("Registration form");
@@ -87,15 +86,16 @@ public class RegisterGui extends VerticalLayout {
 
 		String username = loginTextField.getValue().trim();
 		String password = passwordField.getValue();
+		String confirmPassword = confirmPasswordField.getValue();
 		String email = emailTextField.getValue().trim();
-		UserEntity user = new UserEntity(username, password, Role.ROLE_USER, email);
-		binder.setBean(user);
+		UserCreate userCreate = new UserCreate(username, password, confirmPassword, email);
+		binder.setBean(userCreate);
 		binder.validate();
 		if (binder.isValid()) {
-			String validationError = userValidator.validateUserRegistration(user, confirmPasswordField.getValue());
+			String validationError = userValidator.validateUserRegistration(userCreate);
 			if (validationError == null) {
 				try {
-					userService.createUser(user, false);
+					userService.createUser(userCreate);
 					VaadinUtils.showNotification("User successfully registered");
 				} catch (Exception e) {
 					String errorMessage = String.format("An error occurred while registering the user: %s", e.getMessage());

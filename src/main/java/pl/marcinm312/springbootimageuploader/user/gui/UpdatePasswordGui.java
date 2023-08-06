@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserPasswordUpdate;
 import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
@@ -25,7 +26,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Update password form")
 public class UpdatePasswordGui extends VerticalLayout {
 
-	BeanValidationBinder<UserEntity> binder;
+	BeanValidationBinder<UserPasswordUpdate> binder;
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
 	Anchor myProfileAnchor;
@@ -49,7 +50,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 		this.userDetailsService = userDetailsService;
 		this.userValidator = userValidator;
 
-		binder = new BeanValidationBinder<>(UserEntity.class);
+		binder = new BeanValidationBinder<>(UserPasswordUpdate.class);
 
 		prepareHorizontalMenu();
 
@@ -94,23 +95,25 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private void updateUserPassword() {
 
-		UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
-		log.info("Old user = {}", user);
-		String validationError = userValidator.validateUserPasswordUpdate(user, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
-		if (validationError == null) {
-			user.setPassword(passwordField.getValue());
-			binder.setBean(user);
-			binder.validate();
-			if (binder.isValid()) {
-				userService.updateUserPassword(user);
+		UserEntity loggedUser = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		String currentPassword = currentPasswordField.getValue();
+		String password = passwordField.getValue();
+		String confirmPassword = confirmPasswordField.getValue();
+		UserPasswordUpdate userPasswordUpdate = new UserPasswordUpdate(currentPassword, password, confirmPassword);
+		binder.setBean(userPasswordUpdate);
+		binder.validate();
+		if (binder.isValid()) {
+			String validationError = userValidator.validateUserPasswordUpdate(userPasswordUpdate, loggedUser);
+			if (validationError == null) {
+				userService.updateUserPassword(userPasswordUpdate, loggedUser);
 				VaadinUtils.showNotification("User password successfully updated");
 			} else {
 				clearPasswordFieldsValues();
-				VaadinUtils.showNotification("Error: Check the validation messages on the form");
+				VaadinUtils.showNotification(validationError);
 			}
 		} else {
 			clearPasswordFieldsValues();
-			VaadinUtils.showNotification(validationError);
+			VaadinUtils.showNotification("Error: Check the validation messages on the form");
 		}
 	}
 

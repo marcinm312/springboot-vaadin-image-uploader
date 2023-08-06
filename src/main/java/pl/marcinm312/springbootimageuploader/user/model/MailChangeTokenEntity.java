@@ -10,8 +10,6 @@ import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
 import pl.marcinm312.springbootimageuploader.shared.model.CommonEntityWithUser;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @Getter
@@ -26,11 +24,7 @@ public class MailChangeTokenEntity extends AuditModel implements CommonEntityWit
 	@SequenceGenerator(name = "mail_change_token_generator", sequenceName = "mail_change_token_sequence", allocationSize = 1)
 	private Long id;
 
-	@NotBlank
 	private String value;
-
-	@NotBlank
-	@Email(message = "Incorrect email address!")
 	private String newEmail;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

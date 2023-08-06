@@ -15,21 +15,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserDataUpdate;
 import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
-@Slf4j
 @Route("myprofile/update")
 @StyleSheet("/css/style.css")
 @PageTitle("Update profile form")
 public class MyProfileGui extends VerticalLayout {
 
-	BeanValidationBinder<UserEntity> binder;
+	BeanValidationBinder<UserDataUpdate> binder;
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;
@@ -58,12 +57,11 @@ public class MyProfileGui extends VerticalLayout {
 		this.userService = userService;
 		this.userValidator = userValidator;
 
-		UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
-		String oldLogin = user.getUsername();
+		UserEntity loggedUser = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
 
-		deleteDialog = prepareDeleteDialog(user);
+		deleteDialog = prepareDeleteDialog(loggedUser);
 
-		binder = new BeanValidationBinder<>(UserEntity.class);
+		binder = new BeanValidationBinder<>(UserDataUpdate.class);
 
 		prepareHorizontalMenu();
 
@@ -71,10 +69,10 @@ public class MyProfileGui extends VerticalLayout {
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
 
-		prepareUpdateProfileForm(user, oldLogin);
+		prepareUpdateProfileForm(loggedUser);
 
 		expireSessionsButton = new Button("Log me out from other devices");
-		expireSessionsButton.addClickListener(event -> expireSessions(user));
+		expireSessionsButton.addClickListener(event -> expireSessions(loggedUser));
 
 		deleteUserButton = new Button("Delete my account");
 		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
@@ -83,26 +81,26 @@ public class MyProfileGui extends VerticalLayout {
 		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
 	}
 
-	private void prepareUpdateProfileForm(UserEntity user, String oldLogin) {
+	private void prepareUpdateProfileForm(UserEntity loggedUser) {
 
 		loginTextField = new TextField();
 		loginTextField.setLabel("Login");
-		loginTextField.setValue(user.getUsername());
-		if ("admin".equals(user.getUsername())) {
+		loginTextField.setValue(loggedUser.getUsername());
+		if ("admin".equals(loggedUser.getUsername())) {
 			loginTextField.setEnabled(false);
 		}
 		binder.forField(loginTextField).bind("username");
 
 		emailTextField = new EmailField();
 		emailTextField.setLabel("Email");
-		if (user.getEmail() != null) {
-			emailTextField.setValue(user.getEmail());
+		if (loggedUser.getEmail() != null) {
+			emailTextField.setValue(loggedUser.getEmail());
 		}
 		binder.forField(emailTextField).bind("email");
 
 		saveUserButton = new Button("Save");
 		saveUserButton.setClassName("updateprofile");
-		saveUserButton.addClickListener(event -> updateUser(oldLogin, user));
+		saveUserButton.addClickListener(event -> updateUser(loggedUser));
 	}
 
 	private void prepareHorizontalMenu() {
@@ -131,17 +129,17 @@ public class MyProfileGui extends VerticalLayout {
 		VaadinUtils.showNotification("You have been successfully logged out from other devices");
 	}
 
-	private void updateUser(String oldLogin, UserEntity user) {
+	private void updateUser(UserEntity loggedUser) {
 
-		log.info("Old user = {}", user);
-		user.setUsername(loginTextField.getValue().trim());
-		user.setEmail(emailTextField.getValue().trim());
-		binder.setBean(user);
+		String username = loginTextField.getValue().trim();
+		String email = emailTextField.getValue().trim();
+		UserDataUpdate userDataUpdate = new UserDataUpdate(username, email);
+		binder.setBean(userDataUpdate);
 		binder.validate();
 		if (binder.isValid()) {
-			String validationError = userValidator.validateUserDataUpdate(user, oldLogin);
+			String validationError = userValidator.validateUserDataUpdate(userDataUpdate, loggedUser);
 			if (validationError == null) {
-				userService.updateUserData(oldLogin, user);
+				userService.updateUserData(userDataUpdate, loggedUser);
 				VaadinUtils.showNotification("User successfully updated");
 			} else {
 				VaadinUtils.showNotification(validationError);

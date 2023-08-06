@@ -2,9 +2,6 @@ package pl.marcinm312.springbootimageuploader.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +12,9 @@ import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserCreate;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserDataUpdate;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserPasswordUpdate;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
@@ -29,7 +29,6 @@ public class UserService {
 
 	private final UserRepo userRepo;
 	private final PasswordEncoder passwordEncoder;
-	private final Environment environment;
 	private final ActivationTokenRepo activationTokenRepo;
 	private final MailService mailService;
 	private final SessionUtils sessionUtils;
@@ -40,63 +39,55 @@ public class UserService {
 		MAIL_CHANGE
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
-	@Transactional
-	public UserEntity createFirstUser() {
-
-		String login = "admin";
-		if (userRepo.findByUsername(login).isEmpty()) {
-			log.info("Creating administrator user");
-			String password = environment.getProperty("admin.default.password");
-			String email = environment.getProperty("admin.default.email");
-			UserEntity userAdmin = new UserEntity(login, password, Role.ROLE_ADMIN, email);
-			return createUser(userAdmin, true);
-		}
-		log.info("Administrator already exists in DB");
-		return null;
-	}
-
-	public Optional<UserEntity> getOptionalUserByUsername(String username) {
+	public Optional<UserEntity> getUserByUsername(String username) {
 		return userRepo.findByUsername(username);
 	}
 
 	@Transactional
-	public UserEntity createUser(UserEntity user, boolean isFirstUser) {
+	public UserEntity createUser(UserCreate userCreate) {
+
+		UserEntity user = UserEntity.builder()
+				.username(userCreate.getUsername())
+				.password(passwordEncoder.encode(userCreate.getPassword()))
+				.email(userCreate.getEmail())
+				.enabled(false)
+				.role(Role.ROLE_USER)
+				.build();
 
 		log.info("Creating user: {}", user);
-		UserEntity savedUser;
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		if (isFirstUser) {
-			user.setEnabled(true);
-			savedUser = userRepo.save(user);
-		} else {
-			user.setEnabled(false);
-			savedUser = userRepo.save(user);
-			sendActivationToken(user);
-		}
+		UserEntity savedUser = userRepo.save(user);
+		sendActivationToken(user);
 		log.info("User: {} created", user.getUsername());
 		return savedUser;
 	}
 
-	public UserEntity updateUserData(String oldLogin, UserEntity newUser) {
+	public UserEntity updateUserData(UserDataUpdate userDataUpdate, UserEntity loggedUser) {
 
 		log.info("Updating user data");
-		log.info("New user = {}", newUser);
-		UserEntity savedUser = userRepo.save(newUser);
-		if (!oldLogin.equals(newUser.getUsername())) {
-			sessionUtils.expireUserSessions(oldLogin, true);
+		log.info("Old user = {}", loggedUser);
+		if (!loggedUser.getUsername().equals(userDataUpdate.getUsername())) {
+			log.info("Login change");
+			sessionUtils.expireUserSessions(loggedUser.getUsername(), true);
+			loggedUser.setUsername(userDataUpdate.getUsername());
 		}
+		if (loggedUser.getEmail() == null || !loggedUser.getEmail().equals(userDataUpdate.getEmail())) {
+			log.info("Mail change");
+			loggedUser.setEmail(userDataUpdate.getEmail());
+		}
+		log.info("New user = {}", loggedUser);
+		UserEntity savedUser = userRepo.save(loggedUser);
 		log.info("User data updated");
 		return savedUser;
 	}
 
-	public UserEntity updateUserPassword(UserEntity newUser) {
+	public UserEntity updateUserPassword(UserPasswordUpdate userPasswordUpdate, UserEntity loggedUser) {
 
 		log.info("Updating user password");
-		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-		log.info("New user = {}", newUser);
-		UserEntity savedUser = userRepo.save(newUser);
-		sessionUtils.expireUserSessions(newUser.getUsername(), true);
+		log.info("Old user = {}", loggedUser);
+		loggedUser.setPassword(passwordEncoder.encode(userPasswordUpdate.getPassword()));
+		sessionUtils.expireUserSessions(loggedUser.getUsername(), true);
+		log.info("New user = {}", loggedUser);
+		UserEntity savedUser = userRepo.save(loggedUser);
 		log.info("User password updated");
 		return savedUser;
 	}

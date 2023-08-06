@@ -12,9 +12,6 @@ import pl.marcinm312.springbootimageuploader.shared.model.CommonEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,12 +29,8 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 	private Long id;
 
 	@Column(unique = true)
-	@NotBlank(message = "This field must be completed!")
-	@Size(min = 3, max = 50, message = "This field must contain between 3 and 50 characters")
 	private String username;
 
-	@NotBlank(message = "This field must be completed!")
-	@Size(min = 5, message = "This field must contain at least 5 characters")
 	private String password;
 
 	@Enumerated(EnumType.STRING)
@@ -46,8 +39,6 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 	@Column(name = "is_enabled")
 	private boolean enabled;
 
-	@NotBlank(message = "This field must be completed!")
-	@Email(message = "Incorrect email address!")
 	private String email;
 
 	public UserEntity(String username, String password, Role role, String email) {
