@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.io.FilenameUtils;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.shared.model.CommonEntityWithUser;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @SuperBuilder
 @Entity
 @Table(name = "image")
-public class ImageEntity extends AuditModel {
+public class ImageEntity extends AuditModel implements CommonEntityWithUser {
 
 	@Id
 	@GeneratedValue(generator = "image_generator")

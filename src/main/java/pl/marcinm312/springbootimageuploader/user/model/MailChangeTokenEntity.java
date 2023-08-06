@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.shared.model.CommonEntityWithUser;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -18,7 +19,7 @@ import javax.validation.constraints.NotBlank;
 @SuperBuilder
 @Entity
 @Table(name = "mail_change_tokens")
-public class MailChangeTokenEntity extends AuditModel {
+public class MailChangeTokenEntity extends AuditModel implements CommonEntityWithUser {
 
 	@Id
 	@GeneratedValue(generator = "mail_change_token_generator")

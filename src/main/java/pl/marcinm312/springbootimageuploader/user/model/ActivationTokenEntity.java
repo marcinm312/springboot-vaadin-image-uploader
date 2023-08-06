@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.shared.model.CommonEntityWithUser;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @SuperBuilder
 @Entity
 @Table(name = "activation_tokens")
-public class ActivationTokenEntity extends AuditModel {
+public class ActivationTokenEntity extends AuditModel implements CommonEntityWithUser {
 
 	@Id
 	@GeneratedValue(generator = "activation_token_generator")

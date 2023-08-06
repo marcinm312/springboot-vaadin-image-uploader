@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.shared.model.CommonEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
 import javax.persistence.*;
@@ -23,7 +24,7 @@ import java.util.Collections;
 @SuperBuilder
 @Entity
 @Table(name = "app_user")
-public class UserEntity extends AuditModel implements UserDetails {
+public class UserEntity extends AuditModel implements UserDetails, CommonEntity {
 
 	@Id
 	@GeneratedValue(generator = "user_generator")
