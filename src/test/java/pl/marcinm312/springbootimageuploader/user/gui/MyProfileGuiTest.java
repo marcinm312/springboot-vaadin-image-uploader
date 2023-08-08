@@ -10,8 +10,10 @@ import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
+import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.repository.MailChangeTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
@@ -36,6 +38,12 @@ class MyProfileGuiTest {
 
 	@Mock
 	private SessionUtils sessionUtils;
+
+	@Mock
+	private MailChangeTokenRepo mailChangeTokenRepo;
+
+	@Mock
+	private MailService mailService;
 
 	@InjectMocks
 	private UserService userService;
