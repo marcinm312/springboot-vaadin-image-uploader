@@ -11,12 +11,14 @@ import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
+import pl.marcinm312.springbootimageuploader.user.model.MailChangeTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.dto.UserCreate;
 import pl.marcinm312.springbootimageuploader.user.model.dto.UserDataUpdate;
 import pl.marcinm312.springbootimageuploader.user.model.dto.UserPasswordUpdate;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.MailChangeTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 
 import java.util.Optional;
@@ -30,6 +32,7 @@ public class UserService {
 	private final UserRepo userRepo;
 	private final PasswordEncoder passwordEncoder;
 	private final ActivationTokenRepo activationTokenRepo;
+	private final MailChangeTokenRepo mailChangeTokenRepo;
 	private final MailService mailService;
 	private final SessionUtils sessionUtils;
 	private final ImageRepo imageRepo;
@@ -72,7 +75,7 @@ public class UserService {
 		}
 		if (loggedUser.getEmail() == null || !loggedUser.getEmail().equals(userDataUpdate.getEmail())) {
 			log.info("Mail change");
-			loggedUser.setEmail(userDataUpdate.getEmail());
+			sendMailChangeToken(loggedUser, userDataUpdate.getEmail());
 		}
 		log.info("New user = {}", loggedUser);
 		UserEntity savedUser = userRepo.save(loggedUser);
@@ -143,7 +146,38 @@ public class UserService {
 				"""
 						Welcome %s,<br>
 						<br>Confirm your email address by clicking on the link below:
-						<br><a href="%stoken?value=%s">Activate account</a>""";
-		return String.format(mailTemplate, user.getUsername(), VaadinUtils.getUriString(), tokenValue);
+						<br><a href="%s">Activate account</a>""";
+		return String.format(mailTemplate, user.getUsername(), getTokenUrl(MailType.ACTIVATION, tokenValue));
+	}
+
+	private String getTokenUrl(MailType mailType, String tokenValue) {
+
+		String applicationUrl = VaadinUtils.getUriString();
+		String tokenUrl;
+		switch(mailType) {
+			case ACTIVATION -> tokenUrl = applicationUrl + "token?value=" + tokenValue;
+			case MAIL_CHANGE -> tokenUrl = applicationUrl + "myprofile/update/confirm?value=" + tokenValue;
+			default -> tokenUrl = "";
+		}
+		return tokenUrl;
+	}
+
+	private void sendMailChangeToken(UserEntity user, String newEmail) {
+
+		String tokenValue = UUID.randomUUID().toString();
+		MailChangeTokenEntity token = new MailChangeTokenEntity(tokenValue, newEmail, user);
+		mailChangeTokenRepo.save(token);
+		String emailContent = generateMailChangeEmailContent(user, tokenValue);
+		mailService.sendMail(newEmail, "Confirm your new email address", emailContent, true);
+	}
+
+	private String generateMailChangeEmailContent(UserEntity user, String tokenValue) {
+
+		String mailTemplate =
+				"""
+						Welcome %s,<br>
+						<br>Confirm your new email address by clicking on the link below:
+						<br><a href="%s">I confirm the change of the email address</a>""";
+		return String.format(mailTemplate, user.getUsername(), getTokenUrl(MailType.MAIL_CHANGE, tokenValue));
 	}
 }
