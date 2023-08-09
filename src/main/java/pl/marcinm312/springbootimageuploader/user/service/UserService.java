@@ -152,7 +152,7 @@ public class UserService {
 
 	private String getTokenUrl(MailType mailType, String tokenValue) {
 
-		String applicationUrl = VaadinUtils.getUriString();
+		String applicationUrl = VaadinUtils.getApplicationUrl();
 		String tokenUrl;
 		switch(mailType) {
 			case ACTIVATION -> tokenUrl = applicationUrl + "token?value=" + tokenValue;

@@ -55,7 +55,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_simpleCase_success() {
-		given(VaadinUtils.getUriString()).willReturn("http://localhost:8080");
+		given(VaadinUtils.getApplicationUrl()).willReturn("http://localhost:8080");
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(activationTokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 

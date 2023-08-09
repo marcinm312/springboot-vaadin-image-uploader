@@ -16,19 +16,19 @@ import pl.marcinm312.springbootimageuploader.user.service.UserService;
 @Route("token")
 @StyleSheet("/css/style.css")
 @PageTitle("User activation")
-public class TokenGui extends VerticalLayout {
+public class ActivationTokenGui extends VerticalLayout {
 
 	H1 h1;
 	Anchor anchor;
 
 	@Autowired
-	public TokenGui(UserService userService) {
+	public ActivationTokenGui(UserService userService) {
 
 		String tokenValue = null;
 		anchor = new Anchor("..", "Back to main page");
 
 		try {
-			tokenValue = VaadinUtils.getParamValueFromUrlQuery("value");
+			tokenValue = VaadinUtils.getParamValueFromCurrentUrlQuery("value");
 		} catch (Exception exc) {
 			String errorMessage = String.format("Error retrieving the value of the token: %s", exc.getMessage());
 			log.error(errorMessage, exc);

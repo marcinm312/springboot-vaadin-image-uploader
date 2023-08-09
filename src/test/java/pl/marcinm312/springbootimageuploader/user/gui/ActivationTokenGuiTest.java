@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-class TokenGuiTest {
+class ActivationTokenGuiTest {
 
 	@Mock
 	private UserRepo userRepo;
@@ -56,11 +56,11 @@ class TokenGuiTest {
 		ActivationTokenEntity foundToken = TokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(activationTokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
-		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleExistingTokenValue);
+		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(exampleExistingTokenValue);
 
-		TokenGui tokenGui = new TokenGui(userService);
+		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = tokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.h1.getText();
 		Assertions.assertEquals("User activated", receivedMessage);
 		verify(activationTokenRepo, times(1)).delete(foundToken);
 		verify(userRepo, times(1)).save(any(UserEntity.class));
@@ -70,11 +70,11 @@ class TokenGuiTest {
 	void tokenGuiTest_tokenNotFound_userNotActivated() {
 		String exampleNotExistingTokenValue = "000-000-000";
 		given(activationTokenRepo.findByValue(exampleNotExistingTokenValue)).willReturn(Optional.empty());
-		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(exampleNotExistingTokenValue);
+		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(exampleNotExistingTokenValue);
 
-		TokenGui tokenGui = new TokenGui(userService);
+		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = tokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.h1.getText();
 		Assertions.assertEquals("Token not found", receivedMessage);
 		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
@@ -82,11 +82,11 @@ class TokenGuiTest {
 
 	@Test
 	void tokenGuiTest_nullTokenValue_userNotActivated() {
-		given(VaadinUtils.getParamValueFromUrlQuery("value")).willReturn(null);
+		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(null);
 
-		TokenGui tokenGui = new TokenGui(userService);
+		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = tokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.h1.getText();
 		Assertions.assertEquals("Error getting token value", receivedMessage);
 		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));

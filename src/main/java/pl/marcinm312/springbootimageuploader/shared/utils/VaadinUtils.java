@@ -14,7 +14,7 @@ import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VaadinUtils {
 
-	public static String getUriString() {
+	public static String getApplicationUrl() {
 		VaadinServletRequest request = (VaadinServletRequest) VaadinService.getCurrentRequest();
 		return request.getRequestURL().toString();
 	}
@@ -37,7 +37,7 @@ public class VaadinUtils {
 		Notification.show(notificationText, 5000, Notification.Position.MIDDLE);
 	}
 
-	public static String getParamValueFromUrlQuery(String queryParamName) {
+	public static String getParamValueFromCurrentUrlQuery(String queryParamName) {
 		return UI.getCurrent().getInternals().getLastHandledLocation().getQueryParameters().getParameters()
 				.get(queryParamName).get(0);
 	}
