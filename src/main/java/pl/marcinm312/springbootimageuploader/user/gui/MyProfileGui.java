@@ -35,6 +35,7 @@ public class MyProfileGui extends VerticalLayout {
 	Anchor logoutAnchor;
 	H1 h1;
 	Paragraph paragraph;
+	Paragraph paragraph2;
 	TextField loginTextField;
 	EmailField emailTextField;
 	Button saveUserButton;
@@ -50,6 +51,9 @@ public class MyProfileGui extends VerticalLayout {
 	private final transient UserValidator userValidator;
 
 	private static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
+	private static final String PARAGRAPH_VALUE_2 = "After changing your e-mail address, " +
+			"you will receive an e-mail to the new e-mail address. " +
+			"The change of e-mail will take place only after clicking on the link in the received e-mail.";
 
 	@Autowired
 	public MyProfileGui(UserService userService, UserDetailsServiceImpl userDetailsService, UserValidator userValidator) {
@@ -68,6 +72,8 @@ public class MyProfileGui extends VerticalLayout {
 		h1 = new H1("Update profile form");
 		paragraph = new Paragraph(PARAGRAPH_VALUE);
 		paragraph.setClassName("registration");
+		paragraph2 = new Paragraph(PARAGRAPH_VALUE_2);
+		paragraph2.setClassName("registration");
 
 		prepareUpdateProfileForm(loggedUser);
 
@@ -78,7 +84,8 @@ public class MyProfileGui extends VerticalLayout {
 		deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
 		deleteUserButton.addClickListener(event -> deleteDialog.open());
 
-		add(horizontalMenu, h1, paragraph, loginTextField, emailTextField, saveUserButton, expireSessionsButton, deleteUserButton);
+		add(horizontalMenu, h1, paragraph, paragraph2,loginTextField, emailTextField, saveUserButton,
+				expireSessionsButton, deleteUserButton);
 	}
 
 	private void prepareUpdateProfileForm(UserEntity loggedUser) {
