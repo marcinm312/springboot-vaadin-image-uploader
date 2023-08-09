@@ -124,6 +124,25 @@ public class UserService {
 	}
 
 	@Transactional
+	public UserEntity confirmMailChange(String tokenValue, UserEntity loggedUser) {
+
+		String userName = loggedUser.getUsername();
+		log.info("Token value = {}, userName={}", tokenValue, userName);
+		Optional<MailChangeTokenEntity> optionalToken = mailChangeTokenRepo.findByValueAndUsername(tokenValue, userName);
+		if (optionalToken.isEmpty()) {
+			throw new TokenNotFoundException();
+		}
+		MailChangeTokenEntity token = optionalToken.get();
+		UserEntity user = token.getUser();
+		log.info("Changing mail for user = {}", user);
+		user.setEmail(token.getNewEmail());
+		UserEntity savedUser = userRepo.save(user);
+		mailChangeTokenRepo.deleteByUser(user);
+		log.info("Mail change confirmed");
+		return savedUser;
+	}
+
+	@Transactional
 	public void deleteUser(UserEntity user) {
 
 		log.info("Deleting user = {}", user.getUsername());
