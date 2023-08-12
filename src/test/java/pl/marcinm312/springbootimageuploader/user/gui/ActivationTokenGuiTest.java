@@ -11,15 +11,14 @@ import org.mockito.MockitoAnnotations;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
+import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
+import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.TokenDataProvider;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
-import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
-import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
-import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -38,12 +37,12 @@ class ActivationTokenGuiTest {
 
 	@BeforeEach
 	void setUp() {
+
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
 		UserEntity activatedUser = UserDataProvider.prepareExampleActivatedUserWithEncodedPassword();
 		given(userRepo.save(any(UserEntity.class))).willReturn(activatedUser);
-		doNothing().when(activationTokenRepo).delete(isA(ActivationTokenEntity.class));
 	}
 
 	@AfterEach
@@ -53,6 +52,7 @@ class ActivationTokenGuiTest {
 
 	@Test
 	void tokenGuiTest_simpleCase_userActivated() {
+
 		ActivationTokenEntity foundToken = TokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(activationTokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
@@ -68,6 +68,7 @@ class ActivationTokenGuiTest {
 
 	@Test
 	void tokenGuiTest_tokenNotFound_userNotActivated() {
+
 		String exampleNotExistingTokenValue = "000-000-000";
 		given(activationTokenRepo.findByValue(exampleNotExistingTokenValue)).willReturn(Optional.empty());
 		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(exampleNotExistingTokenValue);
@@ -82,6 +83,7 @@ class ActivationTokenGuiTest {
 
 	@Test
 	void tokenGuiTest_nullTokenValue_userNotActivated() {
+
 		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(null);
 
 		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
