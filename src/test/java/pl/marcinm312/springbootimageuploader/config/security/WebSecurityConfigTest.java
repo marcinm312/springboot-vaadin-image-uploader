@@ -3,6 +3,9 @@ package pl.marcinm312.springbootimageuploader.config.security;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,6 +24,7 @@ import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
@@ -55,12 +59,15 @@ class WebSecurityConfigTest {
 
 	@BeforeEach
 	void setUp() {
+
 		given(userRepo.findByUsername("admin"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword()));
 		given(userRepo.findByUsername("username"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleGoodUserWithEncodedPassword()));
 		given(userRepo.findByUsername("lalala"))
 				.willReturn(Optional.empty());
+		given(userRepo.findByUsername("username3"))
+				.willReturn(Optional.of(UserDataProvider.prepareExampleDisabledUserWithEncodedPassword()));
 
 		this.mockMvc = MockMvcBuilders
 				.webAppContextSetup(this.webApplicationContext)
@@ -71,6 +78,7 @@ class WebSecurityConfigTest {
 
 	@Test
 	void getCss_simpleCase_success() throws Exception {
+
 		mockMvc.perform(
 						get("/css/style.css"))
 				.andExpect(status().isOk())
@@ -80,6 +88,7 @@ class WebSecurityConfigTest {
 
 	@Test
 	void formLogin_userWithGoodCredentials_success() throws Exception {
+
 		mockMvc.perform(
 						formLogin().user("username").password("password"))
 				.andExpect(authenticated().withUsername("username").withRoles("USER"));
@@ -87,37 +96,35 @@ class WebSecurityConfigTest {
 
 	@Test
 	void formLogin_administratorWithGoodCredentials_success() throws Exception {
+
 		mockMvc.perform(
 						formLogin().user("admin").password("password"))
 				.andExpect(authenticated().withUsername("admin").withRoles("ADMIN"));
 	}
 
-	@Test
-	void formLogin_userWithBadCredentials_unauthenticated() throws Exception {
+	@ParameterizedTest
+	@MethodSource("examplesOfUnauthenticatedErrors")
+	void formLogin_userWithBadCredentials_unauthenticated(String username, String password) throws Exception {
+
 		mockMvc.perform(
-						formLogin().user("username").password("invalid"))
+						formLogin().user(username).password(password))
 				.andExpect(redirectedUrl("/login?error"))
 				.andExpect(unauthenticated());
 	}
 
-	@Test
-	void formLogin_administratorWithBadCredentials_unauthenticated() throws Exception {
-		mockMvc.perform(
-						formLogin().user("admin").password("invalid"))
-				.andExpect(redirectedUrl("/login?error"))
-				.andExpect(unauthenticated());
-	}
+	private static Stream<Arguments> examplesOfUnauthenticatedErrors() {
 
-	@Test
-	void formLogin_notExistingUser_unauthenticated() throws Exception {
-		mockMvc.perform(
-						formLogin().user("lalala").password("password"))
-				.andExpect(redirectedUrl("/login?error"))
-				.andExpect(unauthenticated());
+		return Stream.of(
+				Arguments.of("username", "invalid"),
+				Arguments.of("admin", "invalid"),
+				Arguments.of("lalala", "password"),
+				Arguments.of("user3", "password")
+		);
 	}
 
 	@Test
 	void logout_simpleCase_success() throws Exception {
+
 		mockMvc.perform(
 						logout())
 				.andExpect(status().is3xxRedirection())

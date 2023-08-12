@@ -5,17 +5,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
-import org.springframework.core.env.Environment;
 import org.vaadin.klaudeta.PaginatedGrid;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
-import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.image.testdataprovider.ImageDataProvider;
+import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 
@@ -24,9 +27,6 @@ class ImageManagementGuiTest {
 	@Mock
 	private ImageRepo imageRepo;
 
-	@Spy
-	private Environment environment;
-
 	@InjectMocks
 	private ImageService imageService;
 
@@ -34,6 +34,7 @@ class ImageManagementGuiTest {
 
 	@BeforeEach
 	void setup() {
+
 		mockedVaadinUtils = Mockito.mockStatic(VaadinUtils.class);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
 		MockitoAnnotations.openMocks(this);
@@ -44,10 +45,12 @@ class ImageManagementGuiTest {
 		mockedVaadinUtils.close();
 	}
 
-	@Test
-	void imageManagementGuiTest_simpleCase_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
+	@ParameterizedTest
+	@MethodSource("examplesOfImagesLists")
+	void imageManagementGuiTest_notEmptyImagesList_success(List<ImageEntity> expectedImageList) {
+
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
 		PaginatedGrid<ImageDto> grid = imageManagementGui.grid;
@@ -59,25 +62,20 @@ class ImageManagementGuiTest {
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 	}
 
-	@Test
-	void imageManagementGuiTest_imageListWithEmptyUser_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
-		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
+	private static Stream<Arguments> examplesOfImagesLists() {
 
-		PaginatedGrid<ImageDto> grid = imageManagementGui.grid;
-		int receivedNormalSize = imageManagementGui.grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(5, receivedNormalSize);
-
-		grid.setPageSize(expectedImageList.size() + 5);
-		int receivedSize = grid.getDataProvider().size(new Query<>());
-		Assertions.assertEquals(expectedImageList.size(), receivedSize);
+		return Stream.of(
+				Arguments.of(ImageDataProvider.prepareExampleImageList()),
+				Arguments.of(ImageDataProvider.prepareImageListWithEmptyUser())
+		);
 	}
 
 	@Test
 	void imageManagementGuiTest_emptyImageList_success() {
+
 		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
+
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
 		int receivedSize = imageManagementGui.grid.getDataProvider().size(new Query<>());

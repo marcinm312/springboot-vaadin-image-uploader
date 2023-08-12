@@ -36,6 +36,7 @@ public class ImageEntity extends AuditModel implements CommonEntityWithUser {
 	}
 
 	public String getPublicId() {
+
 		String[] splitAddress = getImageAddress().split("/");
 		String fileName = splitAddress[splitAddress.length - 1];
 		return FilenameUtils.removeExtension(fileName);

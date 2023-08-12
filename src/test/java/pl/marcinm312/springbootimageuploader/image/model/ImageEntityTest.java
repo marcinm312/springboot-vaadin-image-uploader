@@ -8,6 +8,7 @@ class ImageEntityTest {
 
 	@Test
 	void getPublicId_simpleCase_extractedPublicIdFromUrl() {
+
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
 		String receivedPublicId = image.getPublicId();
 		String expectedPublicId = "test123";

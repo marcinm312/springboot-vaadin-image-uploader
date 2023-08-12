@@ -20,12 +20,14 @@ public class ImageDto {
 	private String updatedAt;
 
 	public String getCompressedImageAddress(int imageHeight) {
+
 		String[] splitAddress = getImageAddress().split("/");
 		String target = splitAddress[splitAddress.length - 2];
 		return getImageAddress().replace(target, "h_" + imageHeight + ",f_auto/q_100");
 	}
 
 	public String getAutoCompressedImageAddress() {
+
 		String[] splitAddress = getImageAddress().split("/");
 		String target = splitAddress[splitAddress.length - 2];
 		return getImageAddress().replace(target, "h_700,f_auto/q_auto:best");
@@ -33,6 +35,7 @@ public class ImageDto {
 
 	@Override
 	public final boolean equals(Object o) {
+
 		if (this == o) return true;
 		if (!(o instanceof ImageDto imageDto)) return false;
 
@@ -48,6 +51,7 @@ public class ImageDto {
 
 	@Override
 	public final int hashCode() {
+
 		int result = getId() != null ? getId().hashCode() : 0;
 		result = 31 * result + (getImageAddress() != null ? getImageAddress().hashCode() : 0);
 		result = 31 * result + (getPublicId() != null ? getPublicId().hashCode() : 0);
