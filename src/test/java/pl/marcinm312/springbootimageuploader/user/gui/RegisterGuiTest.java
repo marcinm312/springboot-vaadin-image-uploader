@@ -4,6 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.shared.mail.MailService;
@@ -16,9 +19,9 @@ import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -43,9 +46,11 @@ class RegisterGuiTest {
 
 	@BeforeEach
 	void setUp() {
+
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
-		doNothing().when(mailService).sendMail(isA(String.class), isA(String.class), isA(String.class), isA(boolean.class));
+
+		given(VaadinUtils.getApplicationUrl()).willReturn("http://localhost:8080/");
 	}
 
 	@AfterEach
@@ -55,7 +60,7 @@ class RegisterGuiTest {
 
 	@Test
 	void registerGuiTest_simpleCase_success() {
-		given(VaadinUtils.getApplicationUrl()).willReturn("http://localhost:8080");
+
 		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
 		given(activationTokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
 
@@ -66,131 +71,52 @@ class RegisterGuiTest {
 		registerGui.passwordField.setValue("hhhhhh");
 		registerGui.confirmPasswordField.setValue("hhhhhh");
 		registerGui.emailTextField.setValue("aaa@abc.com");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
 
 		registerGui.saveUserButton.click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully registered")),
 				times(1));
-		verify(mailService, times(1)).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
+		verify(mailService, times(1)).sendMail(eq("aaa@abc.com"), any(String.class), any(String.class), eq(true));
 	}
 
-	@Test
-	void registerGuiTest_creatingUserWithTooShortLoginAndPassword_binderIsNotValid() {
+	@ParameterizedTest
+	@MethodSource("examplesOfInvalidUsers")
+	void registerGuiTest_invalidUser_userIsNotRegistered(String login, String password, String confirmPassword,
+														 String email, UserEntity foundUserWithTheSameLogin,
+														 String errorMessage) {
+
+		given(userRepo.findByUsername(login)).willReturn(Optional.ofNullable(foundUserWithTheSameLogin));
+
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
-		registerGui.loginTextField.setValue("hh");
-		registerGui.passwordField.setValue("hhhh");
-		registerGui.confirmPasswordField.setValue("hhhh");
-		registerGui.emailTextField.setValue("aaa@abc.com");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertFalse(binderResult);
+		registerGui.loginTextField.setValue(login);
+		registerGui.passwordField.setValue(password);
+		registerGui.confirmPasswordField.setValue(confirmPassword);
+		registerGui.emailTextField.setValue(email);
 
 		registerGui.saveUserButton.click();
 
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq(errorMessage)),
 				times(1));
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
 		Assertions.assertEquals("", registerGui.passwordField.getValue());
 		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
 	}
 
-	@Test
-	void registerGuiTest_stringTrimmerTestInLogin_validationMessage() {
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		RegisterGui registerGui = new RegisterGui(userService, userValidator);
+	private static Stream<Arguments> examplesOfInvalidUsers() {
 
-		registerGui.loginTextField.setValue(" hh ");
-		registerGui.passwordField.setValue("hhhhhhhh");
-		registerGui.confirmPasswordField.setValue("hhhhhhhh");
-		registerGui.emailTextField.setValue("aaa@abc.com");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
-
-		registerGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
-				times(1));
-		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
-		Assertions.assertEquals("", registerGui.passwordField.getValue());
-		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
-	}
-
-	@Test
-	void registerGuiTest_creatingUserThatAlreadyExists_notificationThatUserExists() {
-		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.of(new UserEntity()));
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		RegisterGui registerGui = new RegisterGui(userService, userValidator);
-
-		registerGui.loginTextField.setValue("hhhhhh");
-		registerGui.passwordField.setValue("hhhhhh");
-		registerGui.confirmPasswordField.setValue("hhhhhh");
-		registerGui.emailTextField.setValue("aaa@abc.com");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
-
-		registerGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: This user already exists!")),
-				times(1));
-		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
-		Assertions.assertEquals("", registerGui.passwordField.getValue());
-		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
-	}
-
-	@Test
-	void registerGuiTest_creatingUserWithInvalidEmail_binderIsNotValid() {
-		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		RegisterGui registerGui = new RegisterGui(userService, userValidator);
-
-		registerGui.loginTextField.setValue("hhhhhh");
-		registerGui.passwordField.setValue("hhhhhh");
-		registerGui.confirmPasswordField.setValue("hhhhhh");
-		registerGui.emailTextField.setValue("aaaaaaaaaaaaaaaaaa");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertFalse(binderResult);
-
-		registerGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
-				times(1));
-		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
-		Assertions.assertEquals("", registerGui.passwordField.getValue());
-		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
-	}
-
-	@Test
-	void registerGuiTest_creatingUserWithDifferentPasswords_notificationThatPasswordsMustBeTheSame() {
-		given(userRepo.findByUsername("hhhhhh")).willReturn(Optional.empty());
-		given(activationTokenRepo.save(any(ActivationTokenEntity.class))).willReturn(new ActivationTokenEntity());
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		RegisterGui registerGui = new RegisterGui(userService, userValidator);
-
-		registerGui.loginTextField.setValue("hhhhhh");
-		registerGui.passwordField.setValue("hhhhhh");
-		registerGui.confirmPasswordField.setValue("aaaaaaaaaa");
-		registerGui.emailTextField.setValue("aaa@abc.com");
-		boolean binderResult = registerGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
-
-		registerGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: The passwords in both fields must be the same!")),
-				times(1));
-		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
-		Assertions.assertEquals("", registerGui.passwordField.getValue());
-		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
+		return Stream.of(
+				Arguments.of("hh", "hhhh", "hhhh", "aaa@abc.com", null,
+						"Error: Check the validation messages on the form"),
+				Arguments.of(" hh ", "hhhhhhhh", "hhhhhhhh", "aaa@abc.com", null,
+						"Error: Check the validation messages on the form"),
+				Arguments.of("hhhhhh", "hhhhhh", "hhhhhh", "aaa@abc.com", new UserEntity(),
+						"Error: This user already exists!"),
+				Arguments.of("hhhhhh", "hhhhhh", "hhhhhh", "aaaaaaaaaaaaaaaaaa", null,
+						"Error: Check the validation messages on the form"),
+				Arguments.of("hhhhhh", "hhhhhh", "aaaaaaaaaa", "aaa@abc.com", null,
+						"Error: The passwords in both fields must be the same!")
+		);
 	}
 }
