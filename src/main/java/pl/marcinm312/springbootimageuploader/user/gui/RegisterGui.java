@@ -25,7 +25,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Registration form")
 public class RegisterGui extends VerticalLayout {
 
-	BeanValidationBinder<UserCreate> binder;
+	private final BeanValidationBinder<UserCreate> binder;
 	Anchor mainPageAnchor;
 	H1 h1;
 	Paragraph paragraph;

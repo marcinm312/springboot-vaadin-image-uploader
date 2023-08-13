@@ -90,9 +90,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -120,9 +118,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -147,9 +143,7 @@ class MyProfileGuiTest {
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -173,9 +167,7 @@ class MyProfileGuiTest {
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertFalse(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -186,7 +178,7 @@ class MyProfileGuiTest {
 	}
 
 	@Test
-	void myProfileGuiTest_updateUserWithTooShortLogin_binderIsNotValid() {
+	void myProfileGuiTest_updateUserWithTooShortLogin_userIsNotValid() {
 		String newLogin = "hh";
 		String newEmail = "aaa@abc.com";
 
@@ -201,9 +193,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertFalse(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -230,9 +220,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -260,9 +248,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newPassword);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertTrue(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();
@@ -274,7 +260,7 @@ class MyProfileGuiTest {
 	}
 
 	@Test
-	void myProfileGuiTest_updateUserWithInvalidEmail_binderIsNotValid() {
+	void myProfileGuiTest_updateUserWithInvalidEmail_userIsNotValid() {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaaaaaaaaaaaaaaaaa";
 
@@ -289,9 +275,7 @@ class MyProfileGuiTest {
 
 		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.emailTextField.setValue(newEmail);
-		boolean binderResult = myProfileGui.binder.isValid();
 
-		Assertions.assertFalse(binderResult);
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
 		myProfileGui.saveUserButton.click();

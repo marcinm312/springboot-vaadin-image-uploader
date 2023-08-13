@@ -26,7 +26,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Update password form")
 public class UpdatePasswordGui extends VerticalLayout {
 
-	BeanValidationBinder<UserPasswordUpdate> binder;
+	private final BeanValidationBinder<UserPasswordUpdate> binder;
 	HorizontalLayout horizontalMenu;
 	Anchor logoutAnchor;
 	Anchor myProfileAnchor;

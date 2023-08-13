@@ -28,7 +28,7 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 @PageTitle("Update profile form")
 public class MyProfileGui extends VerticalLayout {
 
-	BeanValidationBinder<UserDataUpdate> binder;
+	private final BeanValidationBinder<UserDataUpdate> binder;
 	HorizontalLayout horizontalMenu;
 	Anchor galleryAnchor;
 	Anchor updatePasswordAnchor;

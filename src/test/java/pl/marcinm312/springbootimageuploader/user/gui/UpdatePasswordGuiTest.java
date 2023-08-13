@@ -68,9 +68,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		boolean binderResult = updatePasswordGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
 
 		updatePasswordGui.saveUserButton.click();
 
@@ -80,7 +77,7 @@ class UpdatePasswordGuiTest {
 	}
 
 	@Test
-	void updatePasswordGuiTest_tooShortPassword_binderIsNotValid() {
+	void updatePasswordGuiTest_tooShortPassword_userIsNotValid() {
 		String currentPassword = "password";
 		String password = "hh2";
 		String confirmPassword = "hh2";
@@ -97,9 +94,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		boolean binderResult = updatePasswordGui.binder.isValid();
-
-		Assertions.assertFalse(binderResult);
 
 		updatePasswordGui.saveUserButton.click();
 
@@ -129,9 +123,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		boolean binderResult = updatePasswordGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
 
 		updatePasswordGui.saveUserButton.click();
 
@@ -161,9 +152,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		boolean binderResult = updatePasswordGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
 
 		updatePasswordGui.saveUserButton.click();
 
@@ -193,9 +181,6 @@ class UpdatePasswordGuiTest {
 		updatePasswordGui.currentPasswordField.setValue(currentPassword);
 		updatePasswordGui.passwordField.setValue(password);
 		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		boolean binderResult = updatePasswordGui.binder.isValid();
-
-		Assertions.assertTrue(binderResult);
 
 		updatePasswordGui.saveUserButton.click();
 
