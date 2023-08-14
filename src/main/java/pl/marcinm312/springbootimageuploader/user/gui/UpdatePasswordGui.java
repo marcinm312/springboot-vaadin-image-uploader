@@ -106,6 +106,7 @@ public class UpdatePasswordGui extends VerticalLayout {
 			String validationError = userValidator.validateUserPasswordUpdate(userPasswordUpdate, loggedUser);
 			if (validationError == null) {
 				userService.updateUserPassword(userPasswordUpdate, loggedUser);
+				clearPasswordFieldsValues();
 				VaadinUtils.showNotification("User password successfully updated");
 			} else {
 				clearPasswordFieldsValues();
