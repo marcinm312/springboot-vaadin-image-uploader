@@ -94,11 +94,11 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+		Assertions.assertTrue(myProfileGui.getLoginTextField().isEnabled());
 
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
-		myProfileGui.saveUserButton.click();
+		myProfileGui.getLoginTextField().setValue(newLogin);
+		myProfileGui.getEmailTextField().setValue(newEmail);
+		myProfileGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
@@ -122,10 +122,10 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+		Assertions.assertTrue(myProfileGui.getLoginTextField().isEnabled());
 
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.saveUserButton.click();
+		myProfileGui.getLoginTextField().setValue(newLogin);
+		myProfileGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
@@ -157,13 +157,13 @@ class MyProfileGuiTest {
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		if ("admin".equals(oldLogin)) {
-			Assertions.assertFalse(myProfileGui.loginTextField.isEnabled());
+			Assertions.assertFalse(myProfileGui.getLoginTextField().isEnabled());
 		} else {
-			Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+			Assertions.assertTrue(myProfileGui.getLoginTextField().isEnabled());
 		}
 
-		myProfileGui.emailTextField.setValue(newEmail);
-		myProfileGui.saveUserButton.click();
+		myProfileGui.getEmailTextField().setValue(newEmail);
+		myProfileGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
@@ -193,12 +193,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
+		myProfileGui.getLoginTextField().setValue(newLogin);
+		myProfileGui.getEmailTextField().setValue(newEmail);
 
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+		Assertions.assertTrue(myProfileGui.getLoginTextField().isEnabled());
 
-		myProfileGui.saveUserButton.click();
+		myProfileGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
 				times(1));
@@ -224,12 +224,12 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
+		myProfileGui.getLoginTextField().setValue(newLogin);
+		myProfileGui.getEmailTextField().setValue(newEmail);
 
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+		Assertions.assertTrue(myProfileGui.getLoginTextField().isEnabled());
 
-		myProfileGui.saveUserButton.click();
+		myProfileGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: This user already exists!")),
 				times(1));
@@ -260,8 +260,8 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.deleteUserButton.click();
-		myProfileGui.cancelDeleteButton.click();
+		myProfileGui.getDeleteUserButton().click();
+		myProfileGui.getCancelDeleteButton().click();
 
 		verify(userRepo, never()).delete(any());
 		verify(sessionUtils, never()).expireUserSessions(any(), eq(true));
@@ -280,8 +280,8 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.deleteUserButton.click();
-		myProfileGui.confirmDeleteButton.click();
+		myProfileGui.getDeleteUserButton().click();
+		myProfileGui.getConfirmDeleteButton().click();
 
 		verify(userRepo, times(1)).delete(loggedUser);
 		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
@@ -300,7 +300,7 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.expireSessionsButton.click();
+		myProfileGui.getExpireSessionsButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("You have been successfully logged out from other devices")),
 				times(1));

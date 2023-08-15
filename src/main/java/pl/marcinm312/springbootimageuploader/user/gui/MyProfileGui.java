@@ -15,6 +15,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
@@ -23,29 +25,31 @@ import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Getter(AccessLevel.PACKAGE)
 @Route("myprofile/update")
 @StyleSheet("/css/style.css")
 @PageTitle("Update profile form")
 public class MyProfileGui extends VerticalLayout {
 
 	private final BeanValidationBinder<UserDataUpdate> binder;
-	HorizontalLayout horizontalMenu;
-	Anchor galleryAnchor;
-	Anchor updatePasswordAnchor;
-	Anchor logoutAnchor;
-	H1 h1;
-	Paragraph paragraph;
-	Paragraph paragraph2;
-	TextField loginTextField;
-	EmailField emailTextField;
-	Button saveUserButton;
-	Button deleteUserButton;
 
-	Dialog deleteDialog;
-	Button confirmDeleteButton;
-	Button cancelDeleteButton;
+	private HorizontalLayout horizontalMenu;
+	private Anchor galleryAnchor;
+	private Anchor updatePasswordAnchor;
+	private Anchor logoutAnchor;
+	private final H1 h1;
+	private final Paragraph paragraph;
+	private final Paragraph paragraph2;
+	private TextField loginTextField;
+	private EmailField emailTextField;
+	private Button saveUserButton;
+	private final Button deleteUserButton;
 
-	Button expireSessionsButton;
+	private final Dialog deleteDialog;
+	private Button confirmDeleteButton;
+	private Button cancelDeleteButton;
+
+	private final Button expireSessionsButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;
