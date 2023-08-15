@@ -14,7 +14,7 @@ import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.repository.ActivationTokenRepo;
 import pl.marcinm312.springbootimageuploader.user.repository.UserRepo;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
-import pl.marcinm312.springbootimageuploader.user.testdataprovider.TokenDataProvider;
+import pl.marcinm312.springbootimageuploader.user.testdataprovider.ActivationTokenDataProvider;
 import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvider;
 
 import java.util.Optional;
@@ -51,9 +51,9 @@ class ActivationTokenGuiTest {
 	}
 
 	@Test
-	void tokenGuiTest_simpleCase_userActivated() {
+	void activationTokenGuiTest_simpleCase_userActivated() {
 
-		ActivationTokenEntity foundToken = TokenDataProvider.prepareExampleToken();
+		ActivationTokenEntity foundToken = ActivationTokenDataProvider.prepareExampleToken();
 		String exampleExistingTokenValue = "123456-123-123-1234";
 		given(activationTokenRepo.findByValue(exampleExistingTokenValue)).willReturn(Optional.of(foundToken));
 		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(exampleExistingTokenValue);
@@ -67,7 +67,7 @@ class ActivationTokenGuiTest {
 	}
 
 	@Test
-	void tokenGuiTest_tokenNotFound_userNotActivated() {
+	void activationTokenGuiTest_tokenNotFound_userNotActivated() {
 
 		String exampleNotExistingTokenValue = "000-000-000";
 		given(activationTokenRepo.findByValue(exampleNotExistingTokenValue)).willReturn(Optional.empty());
@@ -82,7 +82,7 @@ class ActivationTokenGuiTest {
 	}
 
 	@Test
-	void tokenGuiTest_nullTokenValue_userNotActivated() {
+	void activationTokenGuiTest_nullTokenValue_userNotActivated() {
 
 		given(VaadinUtils.getParamValueFromCurrentUrlQuery("value")).willReturn(null);
 

@@ -3,7 +3,7 @@ package pl.marcinm312.springbootimageuploader.user.testdataprovider;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.ActivationTokenEntity;
 
-public class TokenDataProvider {
+public class ActivationTokenDataProvider {
 
 	public static ActivationTokenEntity prepareExampleToken() {
 
