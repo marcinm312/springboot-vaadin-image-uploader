@@ -6,6 +6,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.marcinm312.springbootimageuploader.config.security.utils.SessionUtils;
@@ -21,6 +24,7 @@ import pl.marcinm312.springbootimageuploader.user.testdataprovider.UserDataProvi
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -58,6 +62,7 @@ class MyProfileGuiTest {
 
 	@BeforeEach
 	void setUp() {
+
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
@@ -69,15 +74,44 @@ class MyProfileGuiTest {
 
 	@AfterEach
 	void tearDown() {
+
 		mockedVaadinUtils.close();
 		UI.setCurrent(null);
 	}
 
-	@Test
-	void myProfileGuiTest_updateUserWithLoginAndEmailChange_success() {
+	@ParameterizedTest
+	@MethodSource("examplesOfLoginAndEmailChanges")
+	void myProfileGuiTest_updateUserWithLoginAndEmailChange_success(UserEntity loggedUser) {
+
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
+		String oldLogin = loggedUser.getUsername();
 
+		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
+		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
+		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
+
+		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
+		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
+
+		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+
+		myProfileGui.loginTextField.setValue(newLogin);
+		myProfileGui.emailTextField.setValue(newEmail);
+		myProfileGui.saveUserButton.click();
+
+		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
+				times(1));
+		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
+		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		verify(mailService, times(1)).sendMail(eq(newEmail), any(String.class), any(String.class),
+				eq(true));
+	}
+
+	@Test
+	void myProfileGuiTest_updateUserWithOnlyLoginChange_success() {
+
+		String newLogin = "hhhhhh";
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
@@ -88,52 +122,32 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
-
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
+		myProfileGui.loginTextField.setValue(newLogin);
 		myProfileGui.saveUserButton.click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
 		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
 		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class),
+				eq(true));
 	}
 
-	@Test
-	void myProfileGuiTest_updateEmptyEmailUserWithLoginAndEmailChange_success() {
-		String newLogin = "hhhhhh";
-		String newEmail = "aaa@abc.com";
+	private static Stream<Arguments> examplesOfLoginAndEmailChanges() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleUserWithNullEmail();
-		String oldLogin = loggedUser.getUsername();
-
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-		given(userRepo.findByUsername(newLogin)).willReturn(Optional.empty());
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
-
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
-
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
-
-		myProfileGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
-				times(1));
-		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
-		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		return Stream.of(
+				Arguments.of(UserDataProvider.prepareExampleGoodUser()),
+				Arguments.of(UserDataProvider.prepareExampleUserWithNullEmail())
+		);
 	}
 
-	@Test
-	void myProfileGuiTest_updateUserWithOnlyEmailChange_success() {
-		String newEmail = "aaa@abc.com";
+	@ParameterizedTest
+	@MethodSource("examplesOfEmailChanges")
+	void myProfileGuiTest_updateUserWithOnlyEmailChange_success(UserEntity loggedUser) {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		String newEmail = "aaa@abc.com";
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -142,45 +156,33 @@ class MyProfileGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
+		if ("admin".equals(oldLogin)) {
+			Assertions.assertFalse(myProfileGui.loginTextField.isEnabled());
+		} else {
+			Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
+		}
+
 		myProfileGui.emailTextField.setValue(newEmail);
-
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
-
 		myProfileGui.saveUserButton.click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
 		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		verify(mailService, times(1)).sendMail(eq(newEmail), any(String.class), any(String.class),
+				eq(true));
 	}
 
-	@Test
-	void myProfileGuiTest_updateAdministratorWithOnlyEmailChange_success() {
-		String newEmail = "aaa@abc.com";
+	private static Stream<Arguments> examplesOfEmailChanges() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodAdministrator();
-		String oldLogin = loggedUser.getUsername();
-
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
-
-		myProfileGui.emailTextField.setValue(newEmail);
-
-		Assertions.assertFalse(myProfileGui.loginTextField.isEnabled());
-
-		myProfileGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
-				times(1));
-		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
+		return Stream.of(
+				Arguments.of(UserDataProvider.prepareExampleGoodUser()),
+				Arguments.of(UserDataProvider.prepareExampleGoodAdministrator())
+		);
 	}
 
-	@Test
-	void myProfileGuiTest_updateUserWithTooShortLogin_userIsNotValid() {
-		String newLogin = "hh";
-		String newEmail = "aaa@abc.com";
+	@ParameterizedTest
+	@MethodSource("examplesOfInvalidUserUpdates")
+	void myProfileGuiTest_invalidUser_userIsNotUpdated(String newLogin, String newEmail) {
 
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
@@ -202,39 +204,15 @@ class MyProfileGuiTest {
 				times(1));
 		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
-	}
-
-	@Test
-	void myProfileGuiTest_stringTrimmerTestInLogin_validationMessage() {
-		String newLogin = " hh ";
-		String newEmail = "aaa@abc.com";
-
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
-		String oldLogin = loggedUser.getUsername();
-
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
-
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
-
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
-
-		myProfileGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
-				times(1));
-		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
-		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class),
+				eq(true));
 	}
 
 	@Test
 	void myProfileGuiTest_updateUserWithLoginThatAlreadyExists_notificationThatUserExists() {
+
 		String newLogin = "hhhhhh";
-		String newPassword = "aaa@abc.com";
+		String newEmail = "aaa@abc.com";
 
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
@@ -247,7 +225,7 @@ class MyProfileGuiTest {
 		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
 
 		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newPassword);
+		myProfileGui.emailTextField.setValue(newEmail);
 
 		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
 
@@ -257,37 +235,22 @@ class MyProfileGuiTest {
 				times(1));
 		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
 		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class),
+				eq(true));
 	}
 
-	@Test
-	void myProfileGuiTest_updateUserWithInvalidEmail_userIsNotValid() {
-		String newLogin = "hhhhhh";
-		String newEmail = "aaaaaaaaaaaaaaaaaa";
+	private static Stream<Arguments> examplesOfInvalidUserUpdates() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
-		String oldLogin = loggedUser.getUsername();
-
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
-		given(userRepo.findByUsername(oldLogin)).willReturn(Optional.of(loggedUser));
-
-		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
-		MyProfileGui myProfileGui = new MyProfileGui(userService, userDetailsService, userValidator);
-
-		myProfileGui.loginTextField.setValue(newLogin);
-		myProfileGui.emailTextField.setValue(newEmail);
-
-		Assertions.assertTrue(myProfileGui.loginTextField.isEnabled());
-
-		myProfileGui.saveUserButton.click();
-
-		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("Error: Check the validation messages on the form")),
-				times(1));
-		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
-		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
+		return Stream.of(
+				Arguments.of("hh", "aaa@abc.com"),
+				Arguments.of(" hh ", "aaa@abc.com"),
+				Arguments.of("hhhhhh", "aaaaaaaaaaaaaaaaaa")
+		);
 	}
 
 	@Test
 	void myProfileGuiTest_cancelDeletingUser_userIsNotDeleted() {
+
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
@@ -307,6 +270,7 @@ class MyProfileGuiTest {
 
 	@Test
 	void myProfileGuiTest_confirmDeletingUser_userIsDeleted() {
+
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
@@ -326,6 +290,7 @@ class MyProfileGuiTest {
 
 	@Test
 	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
+
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
 		String oldLogin = loggedUser.getUsername();
 
