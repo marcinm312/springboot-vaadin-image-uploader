@@ -6,20 +6,23 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundException;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("token")
 @StyleSheet("/css/style.css")
 @PageTitle("User activation")
 public class ActivationTokenGui extends VerticalLayout {
 
-	H1 h1;
-	Anchor anchor;
+	private H1 h1;
+	private final Anchor anchor;
 
 	@Autowired
 	public ActivationTokenGui(UserService userService) {

@@ -53,8 +53,8 @@ class ImageManagementGuiTest {
 
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
-		PaginatedGrid<ImageDto> grid = imageManagementGui.grid;
-		int receivedNormalSize = imageManagementGui.grid.getDataProvider().size(new Query<>());
+		PaginatedGrid<ImageDto> grid = imageManagementGui.getGrid();
+		int receivedNormalSize = imageManagementGui.getGrid().getDataProvider().size(new Query<>());
 		Assertions.assertEquals(5, receivedNormalSize);
 
 		grid.setPageSize(expectedImageList.size() + 5);
@@ -78,7 +78,7 @@ class ImageManagementGuiTest {
 
 		ImageManagementGui imageManagementGui = new ImageManagementGui(imageService);
 
-		int receivedSize = imageManagementGui.grid.getDataProvider().size(new Query<>());
+		int receivedSize = imageManagementGui.getGrid().getDataProvider().size(new Query<>());
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
 	}
 }

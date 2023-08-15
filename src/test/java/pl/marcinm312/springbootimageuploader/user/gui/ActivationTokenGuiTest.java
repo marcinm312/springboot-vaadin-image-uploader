@@ -60,7 +60,7 @@ class ActivationTokenGuiTest {
 
 		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = activationTokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.getH1().getText();
 		Assertions.assertEquals("User activated", receivedMessage);
 		verify(activationTokenRepo, times(1)).delete(foundToken);
 		verify(userRepo, times(1)).save(any(UserEntity.class));
@@ -75,7 +75,7 @@ class ActivationTokenGuiTest {
 
 		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = activationTokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.getH1().getText();
 		Assertions.assertEquals("Token not found", receivedMessage);
 		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
@@ -88,7 +88,7 @@ class ActivationTokenGuiTest {
 
 		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
 
-		String receivedMessage = activationTokenGui.h1.getText();
+		String receivedMessage = activationTokenGui.getH1().getText();
 		Assertions.assertEquals("Error getting token value", receivedMessage);
 		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));

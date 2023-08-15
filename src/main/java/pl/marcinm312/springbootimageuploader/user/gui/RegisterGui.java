@@ -12,6 +12,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
@@ -19,6 +21,7 @@ import pl.marcinm312.springbootimageuploader.user.model.dto.UserCreate;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("register")
 @StyleSheet("/css/style.css")
@@ -26,14 +29,15 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 public class RegisterGui extends VerticalLayout {
 
 	private final BeanValidationBinder<UserCreate> binder;
-	Anchor mainPageAnchor;
-	H1 h1;
-	Paragraph paragraph;
-	TextField loginTextField;
-	PasswordField passwordField;
-	PasswordField confirmPasswordField;
-	EmailField emailTextField;
-	Button saveUserButton;
+
+	private final Anchor mainPageAnchor;
+	private final H1 h1;
+	private final Paragraph paragraph;
+	private TextField loginTextField;
+	private PasswordField passwordField;
+	private PasswordField confirmPasswordField;
+	private EmailField emailTextField;
+	private Button saveUserButton;
 
 	private final transient UserService userService;
 	private final transient UserValidator userValidator;

@@ -63,9 +63,9 @@ class GalleryGuiTest {
 
 		GalleryGui galleryGui = new GalleryGui(imageService);
 
-		int receivedSize = galleryGui.carousel.getSlides().length;
+		int receivedSize = galleryGui.getCarousel().getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
+		Assertions.assertFalse(galleryGui.getHorizontalMenu().getChildren()
 				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
@@ -88,9 +88,9 @@ class GalleryGuiTest {
 
 		GalleryGui galleryGui = new GalleryGui(imageService);
 
-		int receivedSize = galleryGui.carousel.getSlides().length;
+		int receivedSize = galleryGui.getCarousel().getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
+		Assertions.assertTrue(galleryGui.getHorizontalMenu().getChildren()
 				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 }

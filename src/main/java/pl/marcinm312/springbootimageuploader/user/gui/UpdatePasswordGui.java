@@ -11,6 +11,8 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
@@ -20,6 +22,7 @@ import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
@@ -27,15 +30,16 @@ import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 public class UpdatePasswordGui extends VerticalLayout {
 
 	private final BeanValidationBinder<UserPasswordUpdate> binder;
-	HorizontalLayout horizontalMenu;
-	Anchor logoutAnchor;
-	Anchor myProfileAnchor;
-	H1 h1;
-	Paragraph paragraph;
-	PasswordField currentPasswordField;
-	PasswordField passwordField;
-	PasswordField confirmPasswordField;
-	Button saveUserButton;
+
+	private HorizontalLayout horizontalMenu;
+	private Anchor logoutAnchor;
+	private Anchor myProfileAnchor;
+	private final H1 h1;
+	private final Paragraph paragraph;
+	private PasswordField currentPasswordField;
+	private PasswordField passwordField;
+	private PasswordField confirmPasswordField;
+	private Button saveUserButton;
 
 	private final transient UserService userService;
 	private final transient UserDetailsServiceImpl userDetailsService;

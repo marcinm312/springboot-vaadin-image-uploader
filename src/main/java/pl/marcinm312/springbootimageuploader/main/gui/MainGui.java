@@ -5,14 +5,17 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 
+@Getter(AccessLevel.PACKAGE)
 @Route("")
 @StyleSheet("/css/style.css")
 @PageTitle("Main page")
 public class MainGui extends VerticalLayout {
 
-	Anchor registerAnchor;
-	Anchor galleryAnchor;
+	private final Anchor registerAnchor;
+	private final Anchor galleryAnchor;
 
 	public MainGui() {
 

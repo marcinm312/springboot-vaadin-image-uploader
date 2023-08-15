@@ -67,12 +67,12 @@ class RegisterGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
-		registerGui.loginTextField.setValue("hhhhhh");
-		registerGui.passwordField.setValue("hhhhhh");
-		registerGui.confirmPasswordField.setValue("hhhhhh");
-		registerGui.emailTextField.setValue("aaa@abc.com");
+		registerGui.getLoginTextField().setValue("hhhhhh");
+		registerGui.getPasswordField().setValue("hhhhhh");
+		registerGui.getConfirmPasswordField().setValue("hhhhhh");
+		registerGui.getEmailTextField().setValue("aaa@abc.com");
 
-		registerGui.saveUserButton.click();
+		registerGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully registered")),
 				times(1));
@@ -90,18 +90,18 @@ class RegisterGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		RegisterGui registerGui = new RegisterGui(userService, userValidator);
 
-		registerGui.loginTextField.setValue(login);
-		registerGui.passwordField.setValue(password);
-		registerGui.confirmPasswordField.setValue(confirmPassword);
-		registerGui.emailTextField.setValue(email);
+		registerGui.getLoginTextField().setValue(login);
+		registerGui.getPasswordField().setValue(password);
+		registerGui.getConfirmPasswordField().setValue(confirmPassword);
+		registerGui.getEmailTextField().setValue(email);
 
-		registerGui.saveUserButton.click();
+		registerGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq(errorMessage)),
 				times(1));
 		verify(mailService, never()).sendMail(any(String.class), any(String.class), any(String.class), eq(true));
-		Assertions.assertEquals("", registerGui.passwordField.getValue());
-		Assertions.assertEquals("", registerGui.confirmPasswordField.getValue());
+		Assertions.assertEquals("", registerGui.getPasswordField().getValue());
+		Assertions.assertEquals("", registerGui.getConfirmPasswordField().getValue());
 	}
 
 	private static Stream<Arguments> examplesOfInvalidUsers() {

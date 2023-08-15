@@ -11,6 +11,8 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
@@ -20,20 +22,21 @@ import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 
 import java.io.InputStream;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("upload")
 @StyleSheet("/css/style.css")
 @PageTitle("Upload image")
 public class UploadGui extends VerticalLayout {
 
-	Anchor logoutAnchor;
-	Anchor managementAnchor;
-	HorizontalLayout horizontalMenu;
+	private Anchor logoutAnchor;
+	private Anchor managementAnchor;
+	private HorizontalLayout horizontalMenu;
 
-	H1 h1;
+	private final H1 h1;
 
-	Upload upload;
-	Image image;
+	private Upload upload;
+	private final Image image;
 
 	private final transient ImageService imageService;
 

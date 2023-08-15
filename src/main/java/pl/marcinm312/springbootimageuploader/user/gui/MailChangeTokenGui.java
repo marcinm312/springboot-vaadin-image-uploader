@@ -7,6 +7,8 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
@@ -14,16 +16,17 @@ import pl.marcinm312.springbootimageuploader.user.exception.TokenNotFoundExcepti
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("myprofile/update/confirm")
 @StyleSheet("/css/style.css")
 @PageTitle("Mail change confirmation")
 public class MailChangeTokenGui extends VerticalLayout {
 
-	Anchor logoutAnchor;
-	H1 h1;
-	Paragraph paragraph;
-	Anchor galleryAnchor;
+	private final Anchor logoutAnchor;
+	private H1 h1;
+	private Paragraph paragraph;
+	private final Anchor galleryAnchor;
 
 	@Autowired
 	public MailChangeTokenGui(UserService userService) {

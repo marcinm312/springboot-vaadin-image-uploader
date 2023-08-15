@@ -69,17 +69,17 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
-		updatePasswordGui.currentPasswordField.setValue(currentPassword);
-		updatePasswordGui.passwordField.setValue(password);
-		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		updatePasswordGui.saveUserButton.click();
+		updatePasswordGui.getCurrentPasswordField().setValue(currentPassword);
+		updatePasswordGui.getPasswordField().setValue(password);
+		updatePasswordGui.getConfirmPasswordField().setValue(confirmPassword);
+		updatePasswordGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User password successfully updated")),
 				times(1));
 		verify(sessionUtils, times(1)).expireUserSessions(loggedUserUsername, true);
-		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
-		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
-		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.getCurrentPasswordField().getValue());
+		Assertions.assertEquals("", updatePasswordGui.getPasswordField().getValue());
+		Assertions.assertEquals("", updatePasswordGui.getConfirmPasswordField().getValue());
 	}
 
 	@ParameterizedTest
@@ -95,16 +95,16 @@ class UpdatePasswordGuiTest {
 		UserValidator userValidator = new UserValidator(userService, passwordEncoder);
 		UpdatePasswordGui updatePasswordGui = new UpdatePasswordGui(userService, userDetailsService, userValidator);
 
-		updatePasswordGui.currentPasswordField.setValue(currentPassword);
-		updatePasswordGui.passwordField.setValue(password);
-		updatePasswordGui.confirmPasswordField.setValue(confirmPassword);
-		updatePasswordGui.saveUserButton.click();
+		updatePasswordGui.getCurrentPasswordField().setValue(currentPassword);
+		updatePasswordGui.getPasswordField().setValue(password);
+		updatePasswordGui.getConfirmPasswordField().setValue(confirmPassword);
+		updatePasswordGui.getSaveUserButton().click();
 
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq(errorMessage)), times(1));
 		verify(sessionUtils, never()).expireUserSessions(loggedUserUsername, true);
-		Assertions.assertEquals("", updatePasswordGui.currentPasswordField.getValue());
-		Assertions.assertEquals("", updatePasswordGui.passwordField.getValue());
-		Assertions.assertEquals("", updatePasswordGui.confirmPasswordField.getValue());
+		Assertions.assertEquals("", updatePasswordGui.getCurrentPasswordField().getValue());
+		Assertions.assertEquals("", updatePasswordGui.getPasswordField().getValue());
+		Assertions.assertEquals("", updatePasswordGui.getConfirmPasswordField().getValue());
 	}
 
 	private static Stream<Arguments> examplesOfUnsuccessfulPasswordChanges() {
