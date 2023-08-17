@@ -93,4 +93,17 @@ class ActivationTokenGuiTest {
 		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
 	}
+
+	@Test
+	void activationTokenGuiTest_tokenValueException_userNotActivated() {
+
+		doThrow(new RuntimeException("Exception")).when(VaadinUtils.class);
+
+		ActivationTokenGui activationTokenGui = new ActivationTokenGui(userService);
+
+		String receivedMessage = activationTokenGui.getH1().getText();
+		Assertions.assertEquals("Error getting token value", receivedMessage);
+		verify(activationTokenRepo, never()).delete(any(ActivationTokenEntity.class));
+		verify(userRepo, never()).save(any(UserEntity.class));
+	}
 }

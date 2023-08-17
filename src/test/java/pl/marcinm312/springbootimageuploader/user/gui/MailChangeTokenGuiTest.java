@@ -101,4 +101,17 @@ class MailChangeTokenGuiTest {
 		verify(mailChangeTokenRepo, never()).deleteByUser(any(UserEntity.class));
 		verify(userRepo, never()).save(any(UserEntity.class));
 	}
+
+	@Test
+	void mailChangeTokenGuiTest_tokenValueException_userNotActivated() {
+
+		doThrow(new RuntimeException("Exception")).when(VaadinUtils.class);
+
+		MailChangeTokenGui mailChangeTokenGui = new MailChangeTokenGui(userService);
+
+		String receivedMessage = mailChangeTokenGui.getH1().getText();
+		Assertions.assertEquals("Error getting token value", receivedMessage);
+		verify(mailChangeTokenRepo, never()).deleteByUser(any(UserEntity.class));
+		verify(userRepo, never()).save(any(UserEntity.class));
+	}
 }
