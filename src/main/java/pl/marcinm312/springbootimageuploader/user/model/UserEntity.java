@@ -41,13 +41,6 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 
 	private String email;
 
-	public UserEntity(String username, String password, Role role, String email) {
-		this.username = username;
-		this.password = password;
-		this.role = role;
-		this.email = email;
-	}
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.singleton(new SimpleGrantedAuthority(role.name()));
