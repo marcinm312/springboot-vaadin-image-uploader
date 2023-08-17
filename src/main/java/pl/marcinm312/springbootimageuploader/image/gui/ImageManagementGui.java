@@ -13,6 +13,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -22,20 +24,21 @@ import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.List;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("management")
 @StyleSheet("/css/style.css")
 @PageTitle("Image management")
 public class ImageManagementGui extends VerticalLayout {
 
-	HorizontalLayout horizontalMenu;
-	Anchor logoutAnchor;
-	Anchor galleryAnchor;
-	Anchor uploadAnchor;
+	private HorizontalLayout horizontalMenu;
+	private Anchor logoutAnchor;
+	private Anchor galleryAnchor;
+	private Anchor uploadAnchor;
 
-	H1 h1;
+	private final H1 h1;
 
-	PaginatedGrid<ImageDto> grid;
+	private PaginatedGrid<ImageDto> grid;
 
 	private transient List<ImageDto> allImagesFromDB;
 	private final transient ImageService imageService;

@@ -8,12 +8,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.marcinm312.springbootimageuploader.shared.model.AuditModel;
+import pl.marcinm312.springbootimageuploader.shared.model.CommonEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -23,19 +21,16 @@ import java.util.Collections;
 @SuperBuilder
 @Entity
 @Table(name = "app_user")
-public class UserEntity extends AuditModel implements UserDetails {
+public class UserEntity extends AuditModel implements UserDetails, CommonEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "user_generator")
+	@SequenceGenerator(name = "user_generator", sequenceName = "app_user_id_seq", allocationSize = 1)
 	private Long id;
 
 	@Column(unique = true)
-	@NotBlank(message = "This field must be completed!")
-	@Size(min = 3, max = 50, message = "This field must contain between 3 and 50 characters")
 	private String username;
 
-	@NotBlank(message = "This field must be completed!")
-	@Size(min = 5, message = "This field must contain at least 5 characters")
 	private String password;
 
 	@Enumerated(EnumType.STRING)
@@ -44,16 +39,7 @@ public class UserEntity extends AuditModel implements UserDetails {
 	@Column(name = "is_enabled")
 	private boolean enabled;
 
-	@NotBlank(message = "This field must be completed!")
-	@Email(message = "Incorrect email address! ")
 	private String email;
-
-	public UserEntity(String username, String password, Role role, String email) {
-		this.username = username;
-		this.password = password;
-		this.role = role;
-		this.email = email;
-	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

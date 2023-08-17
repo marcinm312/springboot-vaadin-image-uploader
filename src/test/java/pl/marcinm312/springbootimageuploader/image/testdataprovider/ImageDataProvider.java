@@ -13,6 +13,7 @@ public class ImageDataProvider {
 	private static final String IMAGE_URL = "https://res.cloudinary.com/test/image/upload/v1111222233/test123.jpg";
 
 	public static List<ImageEntity> prepareExampleImageList() {
+
 		List<ImageEntity> images = new ArrayList<>();
 		images.add(buildImageEntity(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
 		images.add(buildImageEntity(2L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
@@ -27,6 +28,7 @@ public class ImageDataProvider {
 	}
 
 	public static List<ImageEntity> prepareImageListWithEmptyUser() {
+
 		List<ImageEntity> images = new ArrayList<>();
 		images.add(buildImageEntity(1L, IMAGE_URL, null, LocalDateTime.now(), LocalDateTime.now()));
 		images.add(buildImageEntity(2L, IMAGE_URL, null, LocalDateTime.now(), LocalDateTime.now()));
@@ -49,6 +51,7 @@ public class ImageDataProvider {
 	}
 
 	private static ImageEntity buildImageEntity(Long id, String imageAddress, UserEntity user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
 		return ImageEntity.builder()
 				.id(id)
 				.imageAddress(imageAddress)

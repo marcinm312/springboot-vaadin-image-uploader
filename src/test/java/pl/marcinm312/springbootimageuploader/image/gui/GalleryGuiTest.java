@@ -1,22 +1,23 @@
 package pl.marcinm312.springbootimageuploader.image.gui;
 
-import com.flowingcode.vaadin.addons.carousel.Carousel;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.server.VaadinSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
-import org.springframework.core.env.Environment;
 import pl.marcinm312.springbootimageuploader.image.model.ImageEntity;
 import pl.marcinm312.springbootimageuploader.image.repository.ImageRepo;
 import pl.marcinm312.springbootimageuploader.image.service.ImageService;
-import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.image.testdataprovider.ImageDataProvider;
+import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mockStatic;
@@ -28,9 +29,6 @@ class GalleryGuiTest {
 	@Mock
 	private ImageRepo imageRepo;
 
-	@Spy
-	private Environment environment;
-
 	@InjectMocks
 	private ImageService imageService;
 
@@ -38,6 +36,7 @@ class GalleryGuiTest {
 
 	@BeforeEach
 	void setUp() {
+
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
@@ -49,87 +48,49 @@ class GalleryGuiTest {
 
 	@AfterEach
 	void tearDown() {
+
 		mockedVaadinUtils.close();
 		UI.setCurrent(null);
 	}
 
-	@Test
-	void galleryGuiTest_simpleCase_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
+	@ParameterizedTest
+	@MethodSource("examplesOfImagesLists")
+	void galleryGuiTest_commonUser_success(List<ImageEntity> expectedImageList) {
+
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
+
 		GalleryGui galleryGui = new GalleryGui(imageService);
 
-		Carousel carousel = galleryGui.carousel;
-		int receivedSize = carousel.getSlides().length;
+		int receivedSize = galleryGui.getCarousel().getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-
-		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
+		Assertions.assertFalse(galleryGui.getHorizontalMenu().getChildren()
 				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 
-	@Test
-	void galleryGuiTest_imageListWithEmptyUser_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareImageListWithEmptyUser();
-		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
-		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
-		GalleryGui galleryGui = new GalleryGui(imageService);
+	private static Stream<Arguments> examplesOfImagesLists() {
 
-		Carousel carousel = galleryGui.carousel;
-		int receivedSize = carousel.getSlides().length;
-		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-
-		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
+		return Stream.of(
+			Arguments.of(ImageDataProvider.prepareExampleImageList()),
+			Arguments.of(ImageDataProvider.prepareImageListWithEmptyUser()),
+			Arguments.of(ImageDataProvider.prepareEmptyImageList())
+		);
 	}
 
-	@Test
-	void galleryGuiTest_emptyImageList_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
-		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("user");
-		given(VaadinUtils.isCurrentUserAdmin()).willReturn(false);
-		GalleryGui galleryGui = new GalleryGui(imageService);
+	@ParameterizedTest
+	@MethodSource("examplesOfImagesLists")
+	void galleryGuiTest_adminUser_success(List<ImageEntity> expectedImageList) {
 
-		Carousel carousel = galleryGui.carousel;
-		int receivedSize = carousel.getSlides().length;
-		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-
-		Assertions.assertFalse(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
-	}
-
-	@Test
-	void galleryGuiTest_simpleCaseWithAdmin_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareExampleImageList();
 		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
 		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);
+
 		GalleryGui galleryGui = new GalleryGui(imageService);
 
-		Carousel carousel = galleryGui.carousel;
-		int receivedSize = carousel.getSlides().length;
+		int receivedSize = galleryGui.getCarousel().getSlides().length;
 		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-
-		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
-				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
-	}
-
-	@Test
-	void galleryGuiTest_emptyImageListWithAdmin_success() {
-		List<ImageEntity> expectedImageList = ImageDataProvider.prepareEmptyImageList();
-		given(imageRepo.findAllByOrderByIdDesc()).willReturn(expectedImageList);
-		given(VaadinUtils.getAuthenticatedUserName()).willReturn("admin");
-		given(VaadinUtils.isCurrentUserAdmin()).willReturn(true);
-		GalleryGui galleryGui = new GalleryGui(imageService);
-
-		Carousel carousel = galleryGui.carousel;
-		int receivedSize = carousel.getSlides().length;
-		Assertions.assertEquals(expectedImageList.size(), receivedSize);
-
-		Assertions.assertTrue(galleryGui.horizontalMenu.getChildren()
+		Assertions.assertTrue(galleryGui.getHorizontalMenu().getChildren()
 				.anyMatch(t -> ((Anchor) t).getText().equals("Image management")));
 	}
 }

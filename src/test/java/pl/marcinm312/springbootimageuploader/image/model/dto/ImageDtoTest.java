@@ -12,6 +12,7 @@ class ImageDtoTest {
 
 	@Test
 	void getCompressedImageAddress_simpleCase_returnAddressToCompressedImage() {
+
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
 		ImageDto imageDto = ImageMapper.convertImageEntityToImageDto(image);
 		String receivedCompressedImageAddress = imageDto.getCompressedImageAddress(100);
@@ -20,7 +21,8 @@ class ImageDtoTest {
 	}
 
 	@Test
-	void getAutoCompressedImageAddress() {
+	void getAutoCompressedImageAddress_simpleCase_returnAddressToCompressedImage() {
+
 		ImageEntity image = ImageDataProvider.prepareExampleImage();
 		ImageDto imageDto = ImageMapper.convertImageEntityToImageDto(image);
 		String receivedCompressedImageAddress = imageDto.getAutoCompressedImageAddress();
@@ -30,6 +32,7 @@ class ImageDtoTest {
 
 	@Test
 	void equalsHashCode_differentCases() {
+
 		EqualsVerifier.forClass(ImageDto.class)
 				.suppress(Warning.NONFINAL_FIELDS)
 				.suppress(Warning.ALL_FIELDS_SHOULD_BE_USED)

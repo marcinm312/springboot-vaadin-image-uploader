@@ -12,6 +12,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.image.model.dto.ImageDto;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("gallery")
 @StyleSheet("/css/style.css")
@@ -30,22 +33,22 @@ public class GalleryGui extends VerticalLayout {
 
 	private static final String MARGIN = "margin";
 
-	HorizontalLayout horizontalMenu;
-	Anchor logoutAnchor;
-	Anchor managementAnchor;
-	Anchor myProfileAnchor;
-	H1 h1;
+	private HorizontalLayout horizontalMenu;
+	private Anchor logoutAnchor;
+	private Anchor managementAnchor;
+	private Anchor myProfileAnchor;
+	private final H1 h1;
 
-	Carousel carousel;
+	private Carousel carousel;
 
-	HorizontalLayout paginationContainer;
-	Paragraph paginationText;
+	private HorizontalLayout paginationContainer;
+	private Paragraph paginationText;
 
-	HorizontalLayout navigationButtons;
-	Button nextImageButton;
-	Button prevImageButton;
-	Button lastImageButton;
-	Button firstImageButton;
+	private HorizontalLayout navigationButtons;
+	private Button nextImageButton;
+	private Button prevImageButton;
+	private Button lastImageButton;
+	private Button firstImageButton;
 
 	private final transient List<ImageDto> allImagesFromDB;
 

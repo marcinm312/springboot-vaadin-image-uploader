@@ -35,6 +35,7 @@ class UploadGuiTest {
 
 	@BeforeEach
 	void setUp() {
+
 		mockedVaadinUtils = mockStatic(VaadinUtils.class);
 		MockitoAnnotations.openMocks(this);
 
@@ -46,15 +47,16 @@ class UploadGuiTest {
 
 	@AfterEach
 	void tearDown() {
+
 		mockedVaadinUtils.close();
 		UI.setCurrent(null);
 	}
 
 	@Test
 	void uploadGuiTest_initView_success() {
+
 		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String login = loggedUser.getUsername();
-
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(login);
 		given(VaadinUtils.getCurrentUser()).willReturn(loggedUser);
 		given(userRepo.findByUsername(login)).willReturn(Optional.of(loggedUser));

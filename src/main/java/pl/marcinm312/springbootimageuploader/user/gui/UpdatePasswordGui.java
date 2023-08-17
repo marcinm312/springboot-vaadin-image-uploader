@@ -11,42 +11,50 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.marcinm312.springbootimageuploader.shared.utils.VaadinUtils;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserPasswordUpdate;
+import pl.marcinm312.springbootimageuploader.user.service.UserDetailsServiceImpl;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 import pl.marcinm312.springbootimageuploader.user.validator.UserValidator;
 
+@Getter(AccessLevel.PACKAGE)
 @Slf4j
 @Route("myprofile/updatePassword")
 @StyleSheet("/css/style.css")
 @PageTitle("Update password form")
 public class UpdatePasswordGui extends VerticalLayout {
 
-	BeanValidationBinder<UserEntity> binder;
-	HorizontalLayout horizontalMenu;
-	Anchor logoutAnchor;
-	Anchor myProfileAnchor;
-	H1 h1;
-	Paragraph paragraph;
-	PasswordField currentPasswordField;
-	PasswordField passwordField;
-	PasswordField confirmPasswordField;
-	Button saveUserButton;
+	private final BeanValidationBinder<UserPasswordUpdate> binder;
+
+	private HorizontalLayout horizontalMenu;
+	private Anchor logoutAnchor;
+	private Anchor myProfileAnchor;
+	private final H1 h1;
+	private final Paragraph paragraph;
+	private PasswordField currentPasswordField;
+	private PasswordField passwordField;
+	private PasswordField confirmPasswordField;
+	private Button saveUserButton;
 
 	private final transient UserService userService;
+	private final transient UserDetailsServiceImpl userDetailsService;
 	private final transient UserValidator userValidator;
 
 	private static final String PARAGRAPH_VALUE = "After changing your password, you will need to log in again.";
 
 	@Autowired
-	public UpdatePasswordGui(UserService userService, UserValidator userValidator) {
+	public UpdatePasswordGui(UserService userService, UserDetailsServiceImpl userDetailsService, UserValidator userValidator) {
 
 		this.userService = userService;
+		this.userDetailsService = userDetailsService;
 		this.userValidator = userValidator;
 
-		binder = new BeanValidationBinder<>(UserEntity.class);
+		binder = new BeanValidationBinder<>(UserPasswordUpdate.class);
 
 		prepareHorizontalMenu();
 
@@ -91,23 +99,26 @@ public class UpdatePasswordGui extends VerticalLayout {
 
 	private void updateUserPassword() {
 
-		UserEntity user = userService.getUserByUsername(VaadinUtils.getAuthenticatedUserName());
-		log.info("Old user = {}", user);
-		String validationError = userValidator.validateUserPasswordUpdate(user, currentPasswordField.getValue(), passwordField.getValue(), confirmPasswordField.getValue());
-		if (validationError == null) {
-			user.setPassword(passwordField.getValue());
-			binder.setBean(user);
-			binder.validate();
-			if (binder.isValid()) {
-				userService.updateUserPassword(user);
+		UserEntity loggedUser = (UserEntity) userDetailsService.loadUserByUsername(VaadinUtils.getAuthenticatedUserName());
+		String currentPassword = currentPasswordField.getValue();
+		String password = passwordField.getValue();
+		String confirmPassword = confirmPasswordField.getValue();
+		UserPasswordUpdate userPasswordUpdate = new UserPasswordUpdate(currentPassword, password, confirmPassword);
+		binder.setBean(userPasswordUpdate);
+		binder.validate();
+		if (binder.isValid()) {
+			String validationError = userValidator.validateUserPasswordUpdate(userPasswordUpdate, loggedUser);
+			if (validationError == null) {
+				userService.updateUserPassword(userPasswordUpdate, loggedUser);
+				clearPasswordFieldsValues();
 				VaadinUtils.showNotification("User password successfully updated");
 			} else {
 				clearPasswordFieldsValues();
-				VaadinUtils.showNotification("Error: Check the validation messages on the form");
+				VaadinUtils.showNotification(validationError);
 			}
 		} else {
 			clearPasswordFieldsValues();
-			VaadinUtils.showNotification(validationError);
+			VaadinUtils.showNotification("Error: Check the validation messages on the form");
 		}
 	}
 

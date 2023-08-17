@@ -19,12 +19,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	private final UserRepo userRepo;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-		log.info("Loading user: {}", username);
-		Optional<UserEntity> optionalUser = userRepo.findByUsername(username);
+		log.info("Loading user: {}", userName);
+		Optional<UserEntity> optionalUser = userRepo.findByUsername(userName);
 		if (optionalUser.isEmpty()) {
-			throw new UsernameNotFoundException("User not found");
+			log.error("User {} not found!", userName);
+			throw new UsernameNotFoundException(String.format("User %s not found", userName));
 		}
 		return optionalUser.get();
 	}

@@ -1,8 +1,12 @@
 package pl.marcinm312.springbootimageuploader.user.validator;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserCreate;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserDataUpdate;
+import pl.marcinm312.springbootimageuploader.user.model.dto.UserPasswordUpdate;
 import pl.marcinm312.springbootimageuploader.user.service.UserService;
 
 import java.util.Optional;
@@ -12,38 +16,51 @@ import java.util.Optional;
 public class UserValidator {
 
 	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
 
-	public String validateUserRegistration(UserEntity user, String confirmPasswordValue) {
+	public String validateUserRegistration(UserCreate user) {
 
 		String username = user.getUsername();
-		Optional<UserEntity> optionalUser = userService.getOptionalUserByUsername(username);
+		String password = user.getPassword();
+		String confirmPassword = user.getConfirmPassword();
+
+		Optional<UserEntity> optionalUser = userService.getUserByUsername(username);
 		if (optionalUser.isPresent()) {
 			return "Error: This user already exists!";
 		}
-		if (!confirmPasswordValue.equals(user.getPassword())) {
+
+		if (!password.equals(confirmPassword)) {
 			return "Error: The passwords in both fields must be the same!";
 		}
+
 		return null;
 	}
 
-	public String validateUserDataUpdate(UserEntity newUser, String oldLogin) {
+	public String validateUserDataUpdate(UserDataUpdate userDataUpdate, UserEntity loggedUser) {
 
-		if (!newUser.getUsername().equals(oldLogin) && userService.getOptionalUserByUsername(newUser.getUsername()).isPresent()) {
+		String newUsername = userDataUpdate.getUsername();
+		String loggedUserLogin = loggedUser.getUsername();
+
+		if (!loggedUserLogin.equals(newUsername) && userService.getUserByUsername(newUsername).isPresent()) {
 			return "Error: This user already exists!";
 		}
 		return null;
 	}
 
-	public String validateUserPasswordUpdate(UserEntity oldUser, String currentPasswordEntered, String newPassword, String confirmPasswordValue) {
+	public String validateUserPasswordUpdate(UserPasswordUpdate userPasswordUpdate, UserEntity loggedUser) {
 
-		if (currentPasswordEntered.isEmpty() || !userService.isPasswordCorrect(oldUser, currentPasswordEntered)) {
+		String currentPassword = userPasswordUpdate.getCurrentPassword();
+		String password = userPasswordUpdate.getPassword();
+		String confirmPassword = userPasswordUpdate.getConfirmPassword();
+
+		if (!passwordEncoder.matches(currentPassword, loggedUser.getPassword())) {
 			return "Error: The current password is incorrect";
 		}
-		if (!confirmPasswordValue.equals(newPassword)) {
-			return "Error: The passwords in both fields must be the same!";
-		}
-		if (currentPasswordEntered.equals(newPassword)) {
+		if (currentPassword.equals(password)) {
 			return "Error: The new password must be different from the previous one!";
+		}
+		if (!password.equals(confirmPassword)) {
+			return "Error: The passwords in both fields must be the same!";
 		}
 		return null;
 	}
