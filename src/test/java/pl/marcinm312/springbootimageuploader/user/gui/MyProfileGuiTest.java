@@ -104,8 +104,8 @@ class MyProfileGuiTest {
 				times(1));
 		verify(sessionUtils, times(1)).expireUserSessions(oldLogin, true);
 		verify(sessionUtils, never()).expireUserSessions(newLogin, true);
-		verify(mailService, times(1)).sendMail(eq(newEmail), any(String.class), any(String.class),
-				eq(true));
+		verify(mailService, times(1)).sendMail(eq(loggedUser.getEmail()), any(String.class),
+				any(String.class), eq(true));
 	}
 
 	@Test
@@ -168,8 +168,8 @@ class MyProfileGuiTest {
 		mockedVaadinUtils.verify(() -> VaadinUtils.showNotification(eq("User successfully updated")),
 				times(1));
 		verify(sessionUtils, never()).expireUserSessions(oldLogin, true);
-		verify(mailService, times(1)).sendMail(eq(newEmail), any(String.class), any(String.class),
-				eq(true));
+		verify(mailService, times(1)).sendMail(eq(loggedUser.getEmail()), any(String.class),
+				any(String.class), eq(true));
 	}
 
 	private static Stream<Arguments> examplesOfEmailChanges() {

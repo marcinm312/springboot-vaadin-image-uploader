@@ -181,22 +181,23 @@ public class UserService {
 		return tokenUrl;
 	}
 
-	private void sendMailChangeToken(UserEntity user, String newEmail) {
+	private void sendMailChangeToken(UserEntity loggedUser, String newEmail) {
 
 		String tokenValue = UUID.randomUUID().toString();
-		MailChangeTokenEntity token = new MailChangeTokenEntity(tokenValue, newEmail, user);
+		MailChangeTokenEntity token = new MailChangeTokenEntity(tokenValue, newEmail, loggedUser);
 		mailChangeTokenRepo.save(token);
-		String emailContent = generateMailChangeEmailContent(user, tokenValue);
-		mailService.sendMail(newEmail, "Confirm your new email address", emailContent, true);
+		String emailContent = generateMailChangeEmailContent(loggedUser, tokenValue, newEmail);
+		mailService.sendMail(loggedUser.getEmail(), "Confirm your new email address", emailContent, true);
 	}
 
-	private String generateMailChangeEmailContent(UserEntity user, String tokenValue) {
+	private String generateMailChangeEmailContent(UserEntity user, String tokenValue, String newEmail) {
 
 		String mailTemplate =
 				"""
 						Welcome %s,<br>
+						<br>Your new email address: <b>%s</b><br>
 						<br>Confirm your new email address by clicking on the link below:
 						<br><a href="%s">I confirm the change of the email address</a>""";
-		return String.format(mailTemplate, user.getUsername(), getTokenUrl(MailType.MAIL_CHANGE, tokenValue));
+		return String.format(mailTemplate, user.getUsername(), newEmail, getTokenUrl(MailType.MAIL_CHANGE, tokenValue));
 	}
 }

@@ -56,7 +56,7 @@ public class MyProfileGui extends VerticalLayout {
 
 	private static final String PARAGRAPH_VALUE = "After changing your login, you will need to log in again.";
 	private static final String PARAGRAPH_VALUE_2 = "After changing your e-mail address, " +
-			"you will receive an e-mail to the new e-mail address. " +
+			"you will receive an e-mail to the old e-mail address. " +
 			"The change of e-mail will take place only after clicking on the link in the received e-mail.";
 
 	@Autowired
