@@ -119,7 +119,8 @@ public class GalleryGui extends VerticalLayout {
 
 	private void prepareImageCarousel() {
 
-		carousel = new Carousel().withoutNavigation();
+		carousel = new Carousel();
+		carousel.setHideNavigation(true);
 		List<Slide> slidesList = new ArrayList<>();
 
 		for (ImageDto imageDto : allImagesFromDB) {
