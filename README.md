@@ -63,7 +63,7 @@ First, create a database with any name, e.g. `image_uploader_app`. You will use 
 
 #### 5. Create a launch configuration in your favorite IDE
 
-Using the example of IntelliJ IDE, select **JDK (Java) version 17**. Select the main class: `pl.marcinm312.springbootimageuploader.SpringbootImageUploaderApplication` and set the environment variables as described above.
+Using the example of IntelliJ IDE, select **JDK (Java) version 21**. Select the main class: `pl.marcinm312.springbootimageuploader.SpringbootImageUploaderApplication` and set the environment variables as described above.
 
 #### 6. Run the application using the configuration created in the previous step.
 
