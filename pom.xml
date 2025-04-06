@@ -262,7 +262,6 @@
                 <configuration>
                     <environmentVariables>
                         <LOGGING_FILE_NAME/>
-                        <TIME_ZONE>Europe/Warsaw</TIME_ZONE>
                     </environmentVariables>
                 </configuration>
             </plugin>
