@@ -91,8 +91,7 @@ public class UploadGui extends VerticalLayout {
 				VaadinUtils.showNotification(errorMessage);
 			}
 		} else {
-			log.info("Invalid file type");
-			log.info("fileType={}", fileType);
+			log.info("Invalid file type! fileType={}", fileType);
 			VaadinUtils.showNotification("Error: Invalid file type");
 		}
 	}
