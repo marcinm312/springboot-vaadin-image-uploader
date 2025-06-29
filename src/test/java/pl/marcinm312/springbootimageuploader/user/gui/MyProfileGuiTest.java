@@ -112,7 +112,7 @@ class MyProfileGuiTest {
 	void myProfileGuiTest_updateUserWithOnlyLoginChange_success() {
 
 		String newLogin = "hhhhhh";
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -138,7 +138,7 @@ class MyProfileGuiTest {
 	private static Stream<Arguments> examplesOfLoginAndEmailChanges() {
 
 		return Stream.of(
-				Arguments.of(UserDataProvider.prepareExampleGoodUser()),
+				Arguments.of(UserDataProvider.prepareExampleGoodUserWithEncodedPassword()),
 				Arguments.of(UserDataProvider.prepareExampleUserWithNullEmail())
 		);
 	}
@@ -175,8 +175,8 @@ class MyProfileGuiTest {
 	private static Stream<Arguments> examplesOfEmailChanges() {
 
 		return Stream.of(
-				Arguments.of(UserDataProvider.prepareExampleGoodUser()),
-				Arguments.of(UserDataProvider.prepareExampleGoodAdministrator())
+				Arguments.of(UserDataProvider.prepareExampleGoodUserWithEncodedPassword()),
+				Arguments.of(UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword())
 		);
 	}
 
@@ -184,7 +184,7 @@ class MyProfileGuiTest {
 	@MethodSource("examplesOfInvalidUserUpdates")
 	void myProfileGuiTest_invalidUser_userIsNotUpdated(String newLogin, String newEmail) {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -214,7 +214,7 @@ class MyProfileGuiTest {
 		String newLogin = "hhhhhh";
 		String newEmail = "aaa@abc.com";
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -251,7 +251,7 @@ class MyProfileGuiTest {
 	@Test
 	void myProfileGuiTest_cancelDeletingUser_userIsNotDeleted() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -271,7 +271,7 @@ class MyProfileGuiTest {
 	@Test
 	void myProfileGuiTest_confirmDeletingUser_userIsDeleted() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
@@ -291,7 +291,7 @@ class MyProfileGuiTest {
 	@Test
 	void myProfileGuiTest_logoutFromOtherDevices_sessionsAreExpired() {
 
-		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUser();
+		UserEntity loggedUser = UserDataProvider.prepareExampleGoodUserWithEncodedPassword();
 		String oldLogin = loggedUser.getUsername();
 
 		given(VaadinUtils.getAuthenticatedUserName()).willReturn(oldLogin);
