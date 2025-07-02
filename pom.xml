@@ -15,7 +15,7 @@
     <name>springboot-image-uploader</name>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-core -->
         <vaadin.version>14.11.13</vaadin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -24,7 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http5</artifactId>
-            <version>2.2.0</version>
+            <version>2.3.0</version>
         </dependency>
 
         <dependency>
@@ -192,7 +192,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.19.2</version>
+            <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -207,13 +207,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.15.11</version>
         </dependency>
 
     </dependencies>
