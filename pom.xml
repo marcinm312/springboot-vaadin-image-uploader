@@ -17,14 +17,14 @@
     <properties>
         <java.version>17</java.version>
         <!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-core -->
-        <vaadin.version>14.11.0</vaadin.version>
+        <vaadin.version>14.11.13</vaadin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -140,7 +140,7 @@
         <dependency>
             <groupId>com.flowingcode.addons.carousel</groupId>
             <artifactId>carousel-addon</artifactId>
-            <version>2.1.2</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
@@ -175,11 +175,11 @@
             </exclusions>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http45 -->
+        <!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http5 -->
         <dependency>
             <groupId>com.cloudinary</groupId>
-            <artifactId>cloudinary-http45</artifactId>
-            <version>1.36.0</version>
+            <artifactId>cloudinary-http5</artifactId>
+            <version>2.3.0</version>
         </dependency>
 
         <dependency>
@@ -192,7 +192,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.15.5</version>
+            <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -255,7 +255,6 @@
                 <configuration>
                     <environmentVariables>
                         <LOGGING_FILE_NAME/>
-                        <TIME_ZONE>Europe/Warsaw</TIME_ZONE>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -342,7 +341,7 @@
                         <artifactId>frontend-maven-plugin</artifactId>
                         <!-- Use the latest released version:
                         https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-                        <version>1.15.0</version>
+                        <version>1.15.1</version>
                         <executions>
                             <execution>
                                 <id>install node and npm</id>
@@ -354,7 +353,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <nodeVersion>v18.19.0</nodeVersion>
+                            <nodeVersion>v18.20.8</nodeVersion>
                         </configuration>
                     </plugin>
                 </plugins>

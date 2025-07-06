@@ -54,6 +54,7 @@ public class UserService {
 				.password(passwordEncoder.encode(userCreate.getPassword()))
 				.email(userCreate.getEmail())
 				.enabled(false)
+				.accountNonLocked(true)
 				.role(Role.ROLE_USER)
 				.build();
 

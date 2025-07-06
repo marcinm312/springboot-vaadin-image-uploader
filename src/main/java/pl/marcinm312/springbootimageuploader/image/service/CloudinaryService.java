@@ -27,7 +27,8 @@ public class CloudinaryService {
 		cloudinary = new Cloudinary(ObjectUtils.asMap(
 				"cloud_name", environment.getProperty("cloudinary.cloudNameValue"),
 				"api_key", environment.getProperty("cloudinary.apiKeyValue"),
-				"api_secret", environment.getProperty("cloudinary.apiSecretValue")));
+				"api_secret", environment.getProperty("cloudinary.apiSecretValue"),
+				"timeout", environment.getProperty("cloudinary.timeout")));
 	}
 
 	public String uploadImageToCloudinary(InputStream inputStream) throws IOException, CloudinaryException {

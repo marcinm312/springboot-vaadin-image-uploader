@@ -15,15 +15,15 @@ public class ImageDataProvider {
 	public static List<ImageEntity> prepareExampleImageList() {
 
 		List<ImageEntity> images = new ArrayList<>();
-		images.add(buildImageEntity(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(2L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(3L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(4L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(5L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(6L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(7L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(8L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
-		images.add(buildImageEntity(9L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(2L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(3L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(4L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(5L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(6L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(7L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(8L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
+		images.add(buildImageEntity(9L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now()));
 		return images;
 	}
 
@@ -47,7 +47,7 @@ public class ImageDataProvider {
 	}
 
 	public static ImageEntity prepareExampleImage() {
-		return buildImageEntity(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministrator(), LocalDateTime.now(), LocalDateTime.now());
+		return buildImageEntity(1L, IMAGE_URL, UserDataProvider.prepareExampleGoodAdministratorWithEncodedPassword(), LocalDateTime.now(), LocalDateTime.now());
 	}
 
 	private static ImageEntity buildImageEntity(Long id, String imageAddress, UserEntity user, LocalDateTime createdAt, LocalDateTime updatedAt) {

@@ -17,26 +17,21 @@ public class MailService {
 
 	private final JavaMailSender javaMailSender;
 
-	@Value("${spring.mail.username}")
+	@Value("${mail.from}")
 	private String emailFrom;
 
 	public void sendMail(String to, String subject, String text, boolean isHtmlContent) {
 
-		log.info("Starting creating an email");
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		try {
+			log.info("Sending email: to = {}, subject = {}, isHtmlContent = {}", to, subject, isHtmlContent);
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 			mimeMessageHelper.setFrom(emailFrom);
 			mimeMessageHelper.setTo(to);
 			mimeMessageHelper.setSubject(subject);
 			mimeMessageHelper.setText(text, isHtmlContent);
-			log.info("mail to = {}", to);
-			log.info("mail subject = {}", subject);
-			log.info("mail text = {}", text);
-			log.info("mail isHtmlContent = {}", isHtmlContent);
-			log.info("Starting sending an email");
 			javaMailSender.send(mimeMessage);
-			log.info("The mail has been sent");
+			log.info("Email sent: to = {}, subject = {}, isHtmlContent = {}", to, subject, isHtmlContent);
 		} catch (MessagingException e) {
 			String errorMessage = String.format("An error occurred while sending the email. [MESSAGE]: %s", e.getMessage());
 			log.error(errorMessage, e);

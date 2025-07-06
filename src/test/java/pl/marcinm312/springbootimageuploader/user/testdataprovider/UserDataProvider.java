@@ -2,36 +2,76 @@ package pl.marcinm312.springbootimageuploader.user.testdataprovider;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.marcinm312.springbootimageuploader.shared.testdataprovider.DateProvider;
 import pl.marcinm312.springbootimageuploader.user.model.UserEntity;
 import pl.marcinm312.springbootimageuploader.user.model.enums.Role;
 
+import java.time.Month;
+
 public class UserDataProvider {
 
-	public static UserEntity prepareExampleGoodAdministrator() {
-		return buildUserEntity(1L, "admin", "password", Role.ROLE_ADMIN, true, "aaa@abc.pl");
-	}
-
-	public static UserEntity prepareExampleGoodUser() {
-		return buildUserEntity(2L, "username", "password", Role.ROLE_USER, true, "bbb@abc.pl");
-	}
-
-	public static UserEntity prepareExampleUserWithNullEmail() {
-		return buildUserEntity(4L, "username4", "password", Role.ROLE_USER, false, null);
-	}
-
 	public static UserEntity prepareExampleGoodAdministratorWithEncodedPassword() {
+
 		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		return buildUserEntity(1L, "admin", passwordEncoder.encode("password"), Role.ROLE_ADMIN, true, "aaa@abc.pl");
+		return UserEntity.builder()
+				.id(1L)
+				.username("admin")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_ADMIN)
+				.enabled(true)
+				.accountNonLocked(true)
+				.email("aaa@abc.pl")
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 30, 30))
+				.build();
 	}
 
 	public static UserEntity prepareExampleGoodUserWithEncodedPassword() {
+
 		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		return buildUserEntity(2L, "username", passwordEncoder.encode("password"), Role.ROLE_USER, true, "bbb@abc.pl");
+		return UserEntity.builder()
+				.id(2L)
+				.username("username")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_USER)
+				.enabled(true)
+				.accountNonLocked(true)
+				.email("bbb@abc.pl")
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 30, 30))
+				.build();
 	}
 
 	public static UserEntity prepareExampleDisabledUserWithEncodedPassword() {
+
 		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		return buildUserEntity(3L, "username3", passwordEncoder.encode("password"), Role.ROLE_USER, false, "bbb@abc.pl");
+		return UserEntity.builder()
+				.id(3L)
+				.username("username3")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_USER)
+				.enabled(false)
+				.accountNonLocked(true)
+				.email("bbb@abc.pl")
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 30, 30))
+				.build();
+	}
+
+	public static UserEntity prepareExampleUserWithNullEmail() {
+
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return UserEntity.builder()
+				.id(4L)
+				.username("username4")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_USER)
+				.enabled(true)
+				.accountNonLocked(true)
+				.email(null)
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.build();
 	}
 
 	public static UserEntity prepareExampleActivatedUserWithEncodedPassword() {
@@ -40,16 +80,35 @@ public class UserDataProvider {
 		return activatedUser;
 	}
 
-	private static UserEntity buildUserEntity(Long id, String username, String password, Role role, boolean enabled,
-											  String email) {
+	public static UserEntity prepareExampleLockedUserWithEncodedPassword() {
 
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		return UserEntity.builder()
-				.id(id)
-				.username(username)
-				.password(password)
-				.role(role)
-				.enabled(enabled)
-				.email(email)
+				.id(5L)
+				.username("username5")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_USER)
+				.enabled(true)
+				.accountNonLocked(false)
+				.email("test@abc.pl")
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 30, 30))
+				.build();
+	}
+
+	public static UserEntity prepareExampleDisabledAndLockedUserWithEncodedPassword() {
+
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return UserEntity.builder()
+				.id(6L)
+				.username("username6")
+				.password(passwordEncoder.encode("password"))
+				.role(Role.ROLE_USER)
+				.enabled(false)
+				.accountNonLocked(false)
+				.email("test@abc.pl")
+				.createdAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 25, 30))
+				.updatedAt(DateProvider.prepareDate(2020, Month.JANUARY, 10, 10, 30, 30))
 				.build();
 	}
 }

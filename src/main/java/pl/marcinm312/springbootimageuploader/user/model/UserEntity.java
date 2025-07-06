@@ -39,6 +39,9 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 	@Column(name = "is_enabled")
 	private boolean enabled;
 
+	@Column(name = "is_account_non_locked")
+	private boolean accountNonLocked;
+
 	private String email;
 
 	@Override
@@ -52,11 +55,6 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 	}
 
 	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
@@ -66,7 +64,8 @@ public class UserEntity extends AuditModel implements UserDetails, CommonEntity 
 		return "UserEntity{" +
 				"username='" + username + '\'' +
 				", role='" + role + '\'' +
-				", isEnabled=" + enabled +
+				", enabled=" + enabled +
+				", accountNonLocked=" + accountNonLocked +
 				'}';
 	}
 

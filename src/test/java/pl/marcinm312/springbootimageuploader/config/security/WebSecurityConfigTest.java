@@ -68,6 +68,10 @@ class WebSecurityConfigTest {
 				.willReturn(Optional.empty());
 		given(userRepo.findByUsername("username3"))
 				.willReturn(Optional.of(UserDataProvider.prepareExampleDisabledUserWithEncodedPassword()));
+		given(userRepo.findByUsername("username5"))
+				.willReturn(Optional.of(UserDataProvider.prepareExampleLockedUserWithEncodedPassword()));
+		given(userRepo.findByUsername("username6"))
+				.willReturn(Optional.of(UserDataProvider.prepareExampleDisabledAndLockedUserWithEncodedPassword()));
 
 		this.mockMvc = MockMvcBuilders
 				.webAppContextSetup(this.webApplicationContext)
@@ -118,7 +122,10 @@ class WebSecurityConfigTest {
 				Arguments.of("username", "invalid"),
 				Arguments.of("admin", "invalid"),
 				Arguments.of("lalala", "password"),
-				Arguments.of("user3", "password")
+				Arguments.of("user3", "password"),
+				Arguments.of("username3", "password"),
+				Arguments.of("username5", "password"),
+				Arguments.of("username6", "password")
 		);
 	}
 
