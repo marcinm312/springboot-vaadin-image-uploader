@@ -44,3 +44,4 @@ package-lock.json
 
 /logs/
 /node/
+/.sonar/
